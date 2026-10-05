@@ -217,7 +217,7 @@ func _build_scene_viewport() -> SubViewport:
 	stage.pivot_offset = stage.size / 2.0
 	vp.add_child(stage)
 	_layer(assets["base"])
-	for n in ["uneasy", "scared", "terror", "saved", "failed"]:
+	for n in ["uneasy", "scared", "terror", "saved", "failed", "kawaii"]:
 		if assets.has(n):
 			react_tex[n] = load(assets[n])
 	for i in lures.size():
@@ -249,6 +249,9 @@ func _react_target() -> String:
 				return "lure%d" % i
 		if t >= uneasy_at:
 			return "uneasy"
+		# 信頼度が高いとき・人影が薄いときはかわいい笑顔
+		if belief >= TRUST_HIGH - TRUST_EPS and react_tex.has("kawaii"):
+			return "kawaii"
 	return ""
 
 
