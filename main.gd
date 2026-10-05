@@ -1104,6 +1104,9 @@ func _on_video_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_on_video_click(event.position / VIDEO_SIZE * Vector2(SCENE_W, SCENE_H))
+	elif event is InputEventScreenTouch and event.pressed:
+		# モバイル Web: Godot はマウスイベントも吐くが、明示的にも拾う（DPI 差分を吸収）
+		_on_video_click(event.position / VIDEO_SIZE * Vector2(SCENE_W, SCENE_H))
 
 
 # 映像クリックの入口。通話は場所を指して _on_warn を、配信はクリック位置を _on_comment に渡す
