@@ -1128,10 +1128,16 @@ func _select_phrase(i: int) -> void:
 
 
 # 選ばれている伝え方のボタンを明るくする（ロック中・誤警告中でも無効化しない）
+# 選択中のボタンには「▶」マーカーを先頭に付けて、選択中であることを明確にする
 func _update_phrase_btns() -> void:
 	for i in len(act_btns):
 		var b: Button = act_btns[i] as Button
 		b.modulate = Color(1.4, 1.4, 1.5) if i == selected_phrase else Color(1.0, 1.0, 1.0)
+		# 選択マーカー。テキストの先頭に ▶ を付ける（stage2/3 の PHRASES のみ）
+		if b.text.begins_with("▶") or b.text.begins_with("  "):
+			b.text = b.text.substr(2)
+		if i == selected_phrase:
+			b.text = "▶ " + b.text
 
 
 func _set_mark(scene_pos: Vector2) -> void:
@@ -1463,14 +1469,14 @@ func _process(delta: float) -> void:
 		var clock := Time.get_ticks_msec() / 1000.0
 		shake_offset = Vector2(sin(clock * 0.8) * 2.0, sin(clock * 1.3) * 1.5) * _curve_alpha(t)
 	var stutter_pos := Vector2.ZERO
-	if not calm and _curve_alpha(t) >= 0.3:
+	if not calm and _curve_alpha(t) >= 0.5:   # プラン 13: 0.3→0.5 に上げて頻度を半減
 		if stutter_left > 0.0:
 			stutter_left = maxf(0.0, stutter_left - delta)
 			stutter_pos = stutter_offset
 		elif stutter_next <= 0.0:
 			stutter_left = 0.07
-			stutter_offset = Vector2(randf_range(-6, 6), randf_range(-6, 6))
-			stutter_next = randf_range(0.6, 2.0)
+			stutter_offset = Vector2(randf_range(-4, 4), randf_range(-4, 4))   # ±6→±4 に縮小
+			stutter_next = randf_range(1.5, 3.5)   # 0.6-2.0→1.5-3.5 に増やして頻度減
 			stutter_pos = stutter_offset
 		else:
 			stutter_next = maxf(0.0, stutter_next - delta)
@@ -1526,8 +1532,9 @@ func _process(delta: float) -> void:
 	video.position = VIDEO_POS + Vector2(sin(clock * 53.1) + sin(clock * 31.7), cos(clock * 47.3) + cos(clock * 29.9)) * 0.5 * 22.0 * shake
 	flash.color.a = move_toward(flash.color.a, 0.0, delta * 0.9)
 	cam_mat.set_shader_parameter("time", t)
-	# 映像の乱れ: 人影が濃くなるほど強い。「演出を弱める」では出さない
-	var glitch_amt := 0.0 if calm else clampf((ghost_layer.modulate.a - 0.2) / 0.8, 0.0, 1.0)
+	# 映像の乱れ: 人影が濃くなるほど強い。プラン 13（過剰演出削減）:
+	# ghost alpha 0.4 までは出さない、0.4〜1.0 で 0.0〜0.5（半減）。stutter も同条件
+	var glitch_amt := 0.0 if calm else clampf((ghost_layer.modulate.a - 0.4) / 0.6, 0.0, 0.5)
 	cam_mat.set_shader_parameter("glitch", glitch_amt)
 	# きしみに合わせた暗転（dim）: 0.3 秒だけ素早く点滅させて 0 に戻す。calm では常に 0
 	var dim := 0.0

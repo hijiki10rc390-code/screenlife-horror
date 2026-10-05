@@ -9,7 +9,7 @@ const SFX := "Sfx"
 
 # 名前: [ファイル, 基準の大きさ(dB), ループするか, バス]
 const FILES := {
-	"ambient": ["res://assets/sound/ambient_room.wav", -13.0, true, AMBIENT],
+	"ambient": ["res://assets/sound/ambient_room.wav", -6.0, true, AMBIENT],   # プラン 13: -13→-6 dB に上げて明るく
 	"drone": ["res://assets/sound/drone.wav", -60.0, true, AMBIENT],
 	"heart": ["res://assets/sound/heart.wav", -60.0, true, AMBIENT],
 	"ping": ["res://assets/sound/ping.wav", -8.0, false, SFX],
