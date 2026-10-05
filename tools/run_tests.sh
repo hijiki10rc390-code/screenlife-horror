@@ -1,9 +1,19 @@
 #!/usr/bin/env bash
 # tests/test_*.gd を全部実行して、成功数・失敗数を表示する。
 # 使い方: bash tools/run_tests.sh
-G="/c/Users/hijik/AppData/Local/Programs/Godot/Godot_v4.7.2-stable_win64_console.exe"
+# Git Bash (Windows) と WSL bash の両方で動くよう、Windows パスを自動判定する
+if command -v wslpath >/dev/null 2>&1; then
+  # WSL: Linux パスを Windows パスに変換
+  G="/mnt/c/Users/hijik/AppData/Local/Programs/Godot/Godot_v4.7.2-stable_win64_console.exe"
+else
+  G="/c/Users/hijik/AppData/Local/Programs/Godot/Godot_v4.7.2-stable_win64_console.exe"
+fi
 cd "$(dirname "$0")/.." || exit 1
-P="$(pwd -W)"
+if command -v wslpath >/dev/null 2>&1; then
+  P="$(wslpath -w "$PWD")"
+else
+  P="$(pwd -W)"
+fi
 "$G" --headless --path "$P" --import >/dev/null 2>&1
 total_ok=0; total_ng=0; bad=0
 for f in tests/test_*.gd; do
