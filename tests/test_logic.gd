@@ -969,6 +969,28 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
+	# 31. 計画09: 口パクと瞬き
+	# face_overlay があり、_say で mouth_open_until がセットされ、_set_react で next_blink がセットされる
+	S.stage_no = 1
+	m = await fresh()
+	m._start_call()
+	# テストでは _react_target の顔がころころ変わると mouth_open がリセットされるため、
+	# react_top.texture を scare 用に直接固定する
+	m._set_react("scared")
+	# _react_target() が "scared" を返すよう t を人影が濃い位置にセット
+	m.t = 65.0
+	m._process(0.0)
+	check("plan09・face_overlay がある", m.face_overlay != null)
+	check("plan09・stage_d に face_fx がある", m.stage_d.has("face_fx"))
+	check("plan09・_set_react で next_blink が設定される", m.next_blink > 0.0)
+	m._say("Aoi", "テスト")  # friend と同じ名前にして、_say の mouth_open_until をトリガ
+	check("plan09・_say で mouth_open_until > t", m.mouth_open_until > m.t)
+	# 数フレーム進めて mouth_open が動く
+	m._process(0.1)
+	check("plan09・mouth_open が > 0（セリフ中）", m.mouth_open > 0.0)
+	m.queue_free()
+	S.stage_no = 0
+
 	# stage2: act_btns は 3 つ、選択中のボタンは modulate が明るい
 	S.stage_no = 1
 	m = await fresh()

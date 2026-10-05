@@ -167,6 +167,14 @@ var win_dots: Array[ColorRect] = []   # タイトルバーの赤黄緑の点
 var rec_label: Label               # 映像枠の左上の REC インジケーター
 var live_badge: Control            # 配信の LIVE バッジ
 var call_bars: Array[ColorRect] = []   # 通話品質の縦線バー（5 本）
+# --- 計画 09: 口パクと瞬き ---
+var face_overlay: Control          # 顔の上のオーバーレイ（口・まぶた）
+var mouth_open := 0.0              # 0.0=閉じている、1.0=全開
+var mouth_open_until := 0.0        # この時刻まで口を開いている
+var next_blink := 0.0              # 次の瞬きの予定時刻
+var blink_t := 0.0                 # 瞬きの開始時刻（0=瞬き中ではない）
+var face_fx_scale := Vector2(1, 1) # face_fx 座標を画面座標に変換するスケール
+var stage_d: Dictionary = {}        # 計画 09: ステージ JSON 全体（face_fx 参照用）
 
 
 func _ready() -> void:
@@ -254,6 +262,13 @@ func _set_react(name: String) -> void:
 	react_top.modulate.a = 0.0
 	react_speed = 3.0 if name == "terror" else 1.2
 	react_name = name
+	# 計画 09: 表情が変わったら瞬きと口のタイマーをリセット
+	next_blink = t + randf_range(2.0, 5.0)
+	blink_t = 0.0
+	mouth_open = 0.0
+	mouth_open_until = 0.0
+	if face_overlay != null:
+		face_overlay.queue_redraw()
 
 
 func _layer(path: String) -> TextureRect:
@@ -346,6 +361,93 @@ func _draw_live_badge_on(c: Control) -> void:
 	# 配信の LIVE バッジ。赤丸が 1 秒周期で点滅（alpha を sin で）
 	var blink := 0.6 + 0.4 * sin(Time.get_ticks_msec() / 1000.0 * TAU)
 	c.draw_circle(Vector2(12, 12), 6.0, Color(1.0, 0.3, 0.3, blink))
+
+
+# --- 計画 09: 口パク・瞬き -----------------------------------------------------------
+
+const BLINK_DURATION := 0.15   # 瞬きの持続（秒）
+
+
+func _update_face_overlay(delta: float) -> void:
+	# 口の開閉（mouth_open_until まで開き、0.2 秒で閉じる）
+	if t < mouth_open_until:
+		mouth_open = minf(1.0, mouth_open + delta * 4.0)
+	else:
+		mouth_open = maxf(0.0, mouth_open - delta * 5.0)
+	# 瞬き
+	if next_blink < 0.001:
+		next_blink = t + randf_range(2.0, 5.0)
+	elif t >= next_blink and blink_t == 0.0:
+		blink_t = t
+		next_blink = t + BLINK_DURATION + randf_range(2.0, 5.0)
+	if blink_t > 0.0 and t > blink_t + BLINK_DURATION:
+		blink_t = 0.0
+	# 口の開閉か瞬き中なら face_overlay を再描画
+	if mouth_open > 0.01 or blink_t > 0.0:
+		face_overlay.visible = true
+		face_overlay.queue_redraw()
+	else:
+		face_overlay.visible = false
+
+
+# 口の矩形と瞬きの矩形は face_fx から得る。なければ画面中央にフォールバック
+func _current_face_fx() -> Dictionary:
+	# react_name → face_*.png ファイル名（"smile_40" 等）のマッピング
+	# react_tex["saved"] = face_happy_41 のような対応
+	var m := {
+		"saved": "happy_41",
+		"failed": "despair_41",
+		"scared": "fear_40",
+		"terror": "fear_41",
+		"uneasy": "worry_40",
+	}
+	if react_name in m and not stage_d.is_empty() and stage_d.get("face_fx", {}).has(m[react_name]):
+		return stage_d["face_fx"][m[react_name]]
+	return {}
+
+
+func _draw_face_on(c: Control) -> void:
+	# face_fx の座標は元の画像（1280x720 など）での座標。VIDEO_SIZE / 1280 でスケール
+	var fx := _current_face_fx()
+	var sx := VIDEO_SIZE.x / 1280.0
+	var sy := VIDEO_SIZE.y / 720.0
+	# デフォルトの口と目の位置（face_fx が無いとき、またはサイズが 0 のとき）
+	var mouth_pos := Vector2(VIDEO_SIZE.x * 0.5, VIDEO_SIZE.y * 0.78)
+	var mouth_size := Vector2(VIDEO_SIZE.x * 0.06, VIDEO_SIZE.y * 0.03)
+	var eye_pos := Vector2(VIDEO_SIZE.x * 0.5, VIDEO_SIZE.y * 0.38)
+	var eye_size := Vector2(VIDEO_SIZE.x * 0.18, VIDEO_SIZE.y * 0.04)
+	if fx.has("mouth"):
+		var mb = fx["mouth"]
+		if mb[2] > 0 and mb[3] > 0:
+			mouth_pos = Vector2(mb[0] * sx, mb[1] * sy)
+			mouth_size = Vector2(mb[2] * sx, mb[3] * sy)
+	if fx.has("eye"):
+		var eb = fx["eye"]
+		if eb[2] > 0 and eb[3] > 0:
+			eye_pos = Vector2(eb[0] * sx, eb[1] * sy)
+			eye_size = Vector2(eb[2] * sx, eb[3] * sy)
+	# 口（mouth_open に応じて縦に開く）
+	if mouth_open > 0.01:
+		var open_h := mouth_size.y * (0.2 + mouth_open * 0.8)
+		var center := mouth_pos + Vector2(mouth_size.x * 0.5, mouth_size.y * 0.5)
+		# 口の影（黒い楕円）: draw_circle 2 枚で楕円を表現
+		var rx := mouth_size.x * 0.45
+		var ry := open_h * 0.5
+		c.draw_rect(Rect2(center.x - rx, center.y - ry, rx * 2, ry * 2), Color(0.0, 0.0, 0.0, 0.7), true)
+		# 唇の薄い赤（楕円の輪郭）
+		var pts := PackedVector2Array()
+		for i in 24:
+			var a := float(i) / 24.0 * TAU
+			pts.append(Vector2(center.x + cos(a) * rx, center.y + sin(a) * ry))
+		pts.append(pts[0])
+		c.draw_polyline(pts, Color(0.5, 0.15, 0.15, 0.4), 1.5)
+	# 瞬き（目の上に矩形が降りてくる）
+	if blink_t > 0.0:
+		var p := clampf((t - blink_t) / BLINK_DURATION, 0.0, 1.0)
+		# 0.0→0.5: 降りてくる、0.5→1.0: 持ち上がる
+		var h := eye_size.y * (1.0 - absf(p * 2.0 - 1.0))
+		var eye_rect := Rect2(eye_pos.x, eye_pos.y, eye_size.x, h)
+		c.draw_rect(eye_rect, Color(0.1, 0.1, 0.15, 0.85))
 
 
 func _refresh_rec_label() -> void:
@@ -488,6 +590,14 @@ func _build_ui(vp: SubViewport) -> void:
 	# ● REC + 時刻（左上）
 	rec_label = _label("● REC  00:00:00", Vector2(VIDEO_POS.x + 10, VIDEO_POS.y + 6), Vector2(220, 24), self, 16)
 	rec_label.modulate = Color(1.0, 0.55, 0.55)
+	# 計画 09: 顔オーバーレイ（口パク・瞬き）
+	face_overlay = Control.new()
+	face_overlay.position = VIDEO_POS
+	face_overlay.size = VIDEO_SIZE
+	face_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	face_overlay.draw.connect(_draw_face_on.bind(face_overlay))
+	face_overlay.visible = false
+	add_child(face_overlay)
 
 	hint_label = _label("", Vector2(70, 510), Vector2(750, 40), self, 16)
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART   # 長いヒントは2行に折り返す
@@ -844,6 +954,7 @@ func _load_stage() -> void:
 	belief = belief_start
 	doubt_lines = d.get("doubt", ["...またそうやって脅かす。", "え、ほんとに？ いたずらじゃなくて？"])
 	use_phrases = mode != "stream" and belief_start < 1.0
+	stage_d = d
 
 
 func _has_next_stage() -> bool:
@@ -871,6 +982,10 @@ func _say(who: String, text: String) -> void:
 	chat_log.append_text("[color=%s]%s[/color]  %s\n\n" % [color, who, text])
 	if who == friend:
 		_play("ping")
+		# 計画 09: セリフの表示中、口を開ける
+		mouth_open_until = maxf(mouth_open_until, t + 0.8)
+		face_overlay.visible = true
+		face_overlay.queue_redraw()
 
 
 # 人影の濃さを時間割（ghost_curve）から求める。ちらつきや緩和は含めない素の値
@@ -1247,6 +1362,9 @@ func _process(delta: float) -> void:
 		if live_badge != null:
 			var blink := 0.6 + 0.4 * sin(Time.get_ticks_msec() / 1000.0 * TAU)
 			live_badge.modulate.a = blink
+	# 計画 09: 口パクと瞬き
+	if state == State.PLAYING and face_overlay != null:
+		_update_face_overlay(delta)
 	if paused:
 		if shot_mode:
 			shot_frame += 1
