@@ -15,7 +15,7 @@ const FILES := {
 	"ping": ["res://assets/sound/ping.wav", -8.0, false, SFX],
 	"creak": ["res://assets/sound/creak.wav", -12.0, false, SFX],
 	"scream": ["res://assets/sound/scream.wav", -2.0, false, SFX],
-	"lunge": ["res://assets/sound/lunge.wav", 0.0, false, SFX],   # プラン 13: 風切り + インパクト + 叫びの合成 SE
+	"lunge": ["res://assets/sound/lunge.wav", -3.0, false, SFX],   # プラン 13: 風切り + インパクト + 叫びの合成 SE（少し控えめ）
 	"relief": ["res://assets/sound/relief.wav", -8.0, false, SFX],
 	"send": ["res://assets/sound/send.wav", -10.0, false, SFX],
 	"ring": ["res://assets/sound/ring.wav", -16.0, true, SFX],
