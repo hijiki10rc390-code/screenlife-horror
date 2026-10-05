@@ -1,0 +1,12 @@
+{
+  "_comment": "config.example.json を <PJ>/config.local.json にコピーして使う雛形。秘匿値（API キー、トークン、パスワード）はここには書かず、%USERPROFILE%\\.claude\\secrets\\<name> から読む形式にする。",
+  "_example_keys": {
+    "api_key_path": "%USERPROFILE%\\.claude\\secrets\\<service>.key",
+    "_note": "実値は書かない。コード側で (Get-Content $api_key_path -Raw).Trim() などで読み込む"
+  },
+  "log_dir": "<PJ>\\logs",
+  "settings": {
+    "timeout_sec": 30,
+    "retry_count": 0
+  }
+}

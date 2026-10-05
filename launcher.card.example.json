@@ -1,0 +1,9 @@
+{
+  "_comment": "_TEMPLATE/ 配下のこのファイルを <PJ>/launcher.card.json にコピーして使う。ランチャー本体 (_launcher/server.py) は ClaudeCode/<PJ>/launcher.card.json を glob で自動収集する。id は省略可（親ディレクトリ名から自動補完）。秘匿値は書かない。",
+  "name": "my-task",
+  "description": "このタスクが何をするか・しないかを 1 行で",
+  "command": "notepad.exe",
+  "args": [],
+  "cwd": "<このカードを置くPJのディレクトリに置換してください。例: C:\\\\Users\\\\hijik\\\\ClaudeCode\\\\<PJ>>",
+  "env": {}
+}

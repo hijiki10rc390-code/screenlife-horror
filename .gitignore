@@ -1,0 +1,60 @@
+# 秘密情報（絶対にコミットしない）
+config.local.json
+*.key
+secrets/
+.env
+.env.local
+
+# ログ
+logs/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node.js
+node_modules/
+
+# OS（Windows / macOS）
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 一時ファイル
+*.tmp
+*.bak
+*.bak.*
+
+# Godot
+.godot/
+*.import   # 自動生成。再生成できる
+
+# ビルド成果物・実行ファイル
+*.exe
+*.pck
+*.zip
+
+# スクリーンショット・録画（生成物。共有は outputs/share/ を手動で）
+outputs/
+!outputs/share/   # 共有用スクショだけは残す
+
+# 古いバージョンの退避（Git には要らない）
+_archive/
+
+# 実験・スクラップ
+experiments/
+scratch/
+
+# SDXL のモデル（巨大・再ダウンロード可）
+*.safetensors
+models/
+checkpoints/
+

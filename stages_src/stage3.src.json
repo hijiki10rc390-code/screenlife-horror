@@ -1,0 +1,81 @@
+{
+ "id": "stage3",
+ "base_image": "outputs/stages_build/stage3/chosen_base.png",
+ "base_prompt": "dark night webcam photo, grainy, medium shot: pretty adult japanese woman, 24 years old, round soft face, smooth skin, hair in a high ponytail, white headset, pastel camisole top, sitting at a desk facing the camera, laptop, dim purple LED strip, open dark doorway behind her",
+ "base_neg": "bright, daylight, sofa, white wall, living room, cartoon, anime, text, watermark, neon sign, saturated colors, close-up, thin face, hollow cheeks, wrinkles, nasolabial folds, tired eyes, dark circles, harsh shadows on face, aged, middle-aged, childlike, twin tails, ribbon, flash photography, wide angle distortion",
+ "base_seeds": [
+  17000,
+  17001,
+  17002,
+  17003,
+  17004,
+  17005,
+  17006,
+  17007
+ ],
+ "style": "dark night webcam photo, grainy, underexposed",
+ "ghost_box": [
+  380,
+  20,
+  545,
+  540
+ ],
+ "ghost_prompt": "a tall thin pale figure standing perfectly still in the dark doorway, long black hair covering the face, white dress, unsettling, barely visible",
+ "ghost_neg": "text, watermark, cartoon, anime, bright, colorful",
+ "ghost_seeds": [
+  7,
+  8,
+  9
+ ],
+ "subject": "a pretty adult japanese woman, 24 years old, round soft face, smooth skin, hair in a high ponytail, white headset, pastel camisole top",
+ "pronoun": "her",
+ "body_box": [
+  440,
+  10,
+  900,
+  576
+ ],
+ "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+ "react_seed": 40,
+ "overlay": {
+  "ghost_box": [
+   100,
+   0,
+   400,
+   560
+  ],
+  "body_box": [
+   450,
+   20,
+   890,
+   570
+  ],
+  "feather": 16
+ },
+ "figure_prompt": "full body photo of a tall man in a black hoodie with the hood up and a dark face mask, standing perfectly still, facing the camera, plain light gray studio background, creepy, grainy",
+ "figure_neg": "weapon, knife, gun, blood, gore, text, watermark, smile, colorful, dark background, child, woman",
+ "figure_seeds": [
+  31,
+  32,
+  33,
+  34
+ ],
+ "figure_place": [
+  120,
+  0,
+  380,
+  540
+ ],
+ "figure_mode": "mask",
+ "figure_alpha": 0.88,
+ "figure_tone": {
+  "dark": 0.42,
+  "tint": [
+   74,
+   56,
+   96
+  ],
+  "mix": 0.32,
+  "blur": 1.3
+ }
+}
