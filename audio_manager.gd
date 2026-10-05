@@ -9,12 +9,13 @@ const SFX := "Sfx"
 
 # 名前: [ファイル, 基準の大きさ(dB), ループするか, バス]
 const FILES := {
-	"ambient": ["res://assets/sound/ambient_room.wav", -6.0, true, AMBIENT],   # プラン 13: -13→-6 dB に上げて明るく
+	"ambient": ["res://assets/sound/ambient_room.wav", -6.0, true, AMBIENT],
 	"drone": ["res://assets/sound/drone.wav", -60.0, true, AMBIENT],
 	"heart": ["res://assets/sound/heart.wav", -60.0, true, AMBIENT],
 	"ping": ["res://assets/sound/ping.wav", -8.0, false, SFX],
 	"creak": ["res://assets/sound/creak.wav", -12.0, false, SFX],
 	"scream": ["res://assets/sound/scream.wav", -2.0, false, SFX],
+	"lunge": ["res://assets/sound/lunge.wav", 0.0, false, SFX],   # プラン 13: 風切り + インパクト + 叫びの合成 SE
 	"relief": ["res://assets/sound/relief.wav", -8.0, false, SFX],
 	"send": ["res://assets/sound/send.wav", -10.0, false, SFX],
 	"ring": ["res://assets/sound/ring.wav", -16.0, true, SFX],

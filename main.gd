@@ -1326,7 +1326,7 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 	if new_state == State.FAILED:
 		shake_left = 1.0
 		flash.color = Color(1, 0, 0, 0.45)
-		_play("scream")
+		_play("lunge")   # プラン 13: 風切り + インパクト + 叫びの合成 SE
 	else:
 		flash.color = Color(1, 1, 1, 0.35)
 		_play("relief")

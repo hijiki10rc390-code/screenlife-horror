@@ -1,0 +1,15 @@
+{
+  "id": "stage2_ghost_dynamic",
+  "step": "ghost",
+  "base_image": "outputs/stages_build/stage2/chosen_base.png",
+  "ghost_prompt": "a tall thin pale figure of a ghost woman, long black hair covering the face, white dress, leaning forward aggressively with arms slightly outstretched toward the camera, very tall and looming, standing in a dark doorway, unsettling and menacing, low light, dramatic horror, the ghost is taking a step forward toward the viewer",
+  "style": "dark night webcam photo, grainy, low light, horror atmosphere",
+  "ghost_neg": "text, watermark, cartoon, anime, bright, colorful, cute, kawaii, close up face, hand reaching out, single body part",
+  "ghost_seeds": [42, 43, 44],
+  "ghost_box": [140, 0, 390, 560],
+  "body_box": [350, 50, 780, 570],
+  "lure_box": [320, 0, 820, 576],
+  "feather": 16,
+  "ghost_strength": 0.95,
+  "out_path": "outputs/stages_build/stage2_ghost_dynamic"
+}
