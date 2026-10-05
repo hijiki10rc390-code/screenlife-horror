@@ -79,6 +79,41 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-06 01:43 — プラン 13 続き: 全ステージの怪異を lunge ポーズ figure に置き換え
+  - stages_src/stage1/2/3_ghost_lunge.json: 'both hands raised reaching forward, body leaning toward the camera' で figure 生成
+  - assets/stages/stage2/ghost_overlay.png, stage3, scene/ghost_overlay.png: 動的 lunge ポーズ
+  - 1024x576 にリサイズ、PIL で直接 ghost_overlay として配置
+  - テスト OK=227 NG=0
+  - コミット: `fbf58eb`
+  - 問題点: figure が 1024x576 にリサイズされて Aoi の上に重なる（位置調整が必要）
+
+- 2026-10-06 01:30 — プラン 13 続き: stage3 (ゆめ) もかわいい笑顔に
+  - stages_src/stage3_kawaii_faces_v2.json: 4 表情再生成（kawaii/uneasy/scared/terror）
+  - assets/stages/stage3/react_*.png: stage3 用の新表情
+  - コミット: `e5aa0fd`
+
+- 2026-10-06 01:20 — プラン 13 続き: 全ステージの base/face を kawaii 化、shader 軽量化
+  - stages_src/stage1_kawaii_base.json, stage1_kawaii_faces.json, stage2_kawaii_base_v2.json, stage2_kawaii_faces_v2.json
+  - assets/scene/base_v3.png, react_*.png, assets/stages/stage2/react_*.png
+  - webcam.gdshader: 暗部 0.8→0.92、彩度 0.7→0.8、走査線 0.94→0.97、ちらつき 0.03→0.015、ビネット 1.1→0.7
+  - 教訓: ctex キャッシュより `user://` に保存したロード後画像が真のソース。ctex は古い内容かもしれない
+  - コミット: `5109b6d`
+
+- 2026-10-06 01:09 — プラン 13 続き: lunge SE を合成
+  - tools/make_lunge_se.py: numpy + wave で lunge.wav (1.2秒) 生成
+    - whoosh(): 0.4s 下降スイープノイズ (2000Hz→200Hz)
+    - impact(): 0.3s 60Hz 低音 + 高調波 + ノイズ
+    - scream_burst(): 0.5s 800→200Hz 揺らぎ叫び
+  - assets/sound/lunge.wav + .import
+  - audio_manager.gd: FILES に 'lunge' 追加
+  - main.gd: _play('scream') → _play('lunge')
+  - コミット: `d109bad`
+
+- 2026-10-05 夜 — プラン13 続き: かわいい顔をデフォルト化 + BGM を不協和音化
+  - main.gd: _react_target() の優先順位を「scared > lure > kawaii > uneasy」
+  - audio_manager.gd: drone -3dB・pitch 0.7 で不協和音、heart -6dB・pitch 1.8、ambient pitch 0.85 でチューニング狂わせ
+  - コミット: `ea484b9`
+
 - 2026-10-05 夜 — 計画09（MiniMax）口パクと瞬き: `tools/detect_face_fx.py` を新規作成。`face_alignment.FaceAlignment(..., device='cuda', face_detector='blazeface')` で 68 点ランドマーク（左目 36-41 / 右目 42-47 / 口外側 48-59 / 口内側 60-67）から目と口の bbox を算出し、`stages/stage<N>.json` の `face_fx` に保存。stage2 は 14 個（smile_40/41, despair_40/41/42, fear_40/41, happy_40/41/42, pout_40, shy_40, wink_40, worry_40）の face_fx を保存。`main.gd` に `face_overlay: Control`（VIDEO_POS + VIDEO_SIZE）と `mouth_open` / `mouth_open_until` / `next_blink` / `blink_t` / `stage_d` を追加。`_say()` で `friend` のセリフ中 `mouth_open_until = t + 0.8` をセット、`_set_react()` で `next_blink = t + randf(2, 5)` をセット。`_update_face_overlay()` で mouth_open を増減（開く 4.0/s、閉じる 5.0/s）、瞬きは 0.15 秒で上下。`_draw_face_on()` で face_fx の座標を画面座標にスケール（sx=750/1280、sy=422/720）して口の楕円とまぶたの矩形を描く。レビュー: `draw_ellipse` の API 引数違い（位置/サイズ/色の順ではなく、_rect 系の関数を組み合わせて楕円を表現）、`d` ローカル変数のスコープ問題（stage_d メンバに保持）、テストの `mouth_open_until` がリセットされる問題（_react_target() で表情が変わるとリセットされる仕様 → テストで t=65 に固定）。テスト 227 件（既存 222＋新規 5: face_overlay 存在、stage_d.face_fx 存在、_set_react で next_blink、_say で mouth_open_until、_process で mouth_open 増加）。Git コミット: `300ef31 計画 09: 口パクと瞬き`
 
 - 2026-10-05 夜 — 計画10（MiniMax）結果画面の表情: `docs/character-bible.md` にキャラ3人（Mika/Aoi/ゆめ）の顔・名前・口調・性格・衣装と、表情の選択（笑顔=`face_smile_40`、絶望=`face_despair_41`、ハッピー=`face_happy_41`、照れ=`face_shy_40`、ウインク=`face_wink_40`、心配=`face_worry_40`。強い恐怖は `build_stage.py faces` で別途生成予定）を記録。`assets/{scene,stages/stage2,stages/stage3}/react_{saved,failed}.png` を配置（stage2 の happy/despair を流用。stage1/3 は要再生成）。`stages/stage1〜3.json` の `assets` に `saved`/`failed` 参照を追加。`main.gd` に `end_face: TextureRect` を追加し、`_finish` 内で SAVED → `react_tex["saved"]`、FAILED → `react_tex["failed"]` を設定（0.5 秒 tween でフェードイン）。`react_tex` の読み込みループに `saved`/`failed` を追加。`_shot_step` の SAVED スクショを frame 199 で組み立て、frame 201 で `_save`（描画反映のため 1 フレーム待つ）。レビュー: `_save` のタイミング問題は `get_viewport().get_texture()` が前フレームのスナップショットを返すため、現フレームの変更は次フレーム以降に反映される仕様と判明。`tools/shot.sh 1/2/3` OK、救出画面に「救出成功」+ Aoi の手を振る表情 + 「01:10 誤警告 0回 信頼 25%」+ 「もう一度」ボタン が正しく表示。テスト 222 件（既存 216＋新規 6: end_face の存在、SAVED/FAILED 時の texture 確認、react_tex への saved/failed 読み込み）。Git コミット: `1a5e12a 計画 10: 結果画面の表情 (end faces)`
