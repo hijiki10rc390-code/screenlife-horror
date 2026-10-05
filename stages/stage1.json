@@ -9,7 +9,8 @@
     "scared": "res://assets/scene/react_scared.png",
     "terror": "res://assets/scene/react_terror.png",
     "saved": "res://assets/scene/react_saved.png",
-    "failed": "res://assets/scene/react_failed.png"
+    "failed": "res://assets/scene/react_failed.png",
+    "kawaii": "res://assets/scene/react_kawaii.png"
   },
   "ghost_box": [
     580,

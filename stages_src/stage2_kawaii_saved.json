@@ -1,0 +1,18 @@
+{
+  "id": "stage2_kawaii_saved",
+  "step": "faces",
+  "base_image": "outputs/stages_build/stage2/chosen_base.png",
+  "subject": "pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair, curvy figure, full bust, white headset, camisole top, sitting at a desk facing the camera, laptop, open dark doorway behind her",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face",
+  "react_neg": "loli, child, naked, blurry, low quality, deformed, ugly",
+  "lure_box": [200, 80, 470, 290],
+  "body_box": [200, 80, 470, 290],
+  "faces": [
+    {
+      "name": "kawaii_happy",
+      "seeds": [40],
+      "strength": 0.82,
+      "prompt": "thrilled happy kawaii smile with sparkling eyes wide open, blushing pink cheeks, both hands on cheeks in delighted surprise, mouth open in joyful smile, soft warm light"
+    }
+  ]
+}
