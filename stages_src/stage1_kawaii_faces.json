@@ -1,0 +1,36 @@
+{
+  "id": "stage1_kawaii_faces",
+  "step": "faces",
+  "base_image": "assets/scene/base_v3.png",
+  "subject": "pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair, curvy figure, white headset with microphone, camisole top, sitting at a desk facing the camera, laptop",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "lure_box": [200, 80, 470, 290],
+  "body_box": [200, 80, 470, 290],
+  "faces": [
+    {
+      "name": "kawaii",
+      "seeds": [40],
+      "strength": 0.7,
+      "prompt": "cute kawaii smile, sparkling eyes, blushing pink cheeks, looking at camera with happy expression, soft warm light, energetic and cute"
+    },
+    {
+      "name": "uneasy",
+      "seeds": [40],
+      "strength": 0.55,
+      "prompt": "subtle worried expression, eyes slightly looking aside, slightly open lips, soft warm light, kawaii style"
+    },
+    {
+      "name": "scared",
+      "seeds": [40],
+      "strength": 0.65,
+      "prompt": "frightened wide eyes, parted lips, shoulders tense, looking toward something behind her, soft warm light, kawaii style"
+    },
+    {
+      "name": "terror",
+      "seeds": [40],
+      "strength": 0.7,
+      "prompt": "terrified screaming face, eyes wide open, mouth open in scream, hands raised, dramatic expression, soft warm light, kawaii style"
+    }
+  ]
+}

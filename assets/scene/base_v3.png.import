@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0a7a8e3a8375"
-path="res://.godot/imported/react_scared.png-858ca45ce846658d7276bc53bae75dba.ctex"
+uid="uid://h5j7oxh3kns0"
+path="res://.godot/imported/base_v3.png-276b717728a279ef324eab105e93b801.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/stages/stage2/react_scared.png"
-dest_files=["res://.godot/imported/react_scared.png-858ca45ce846658d7276bc53bae75dba.ctex"]
+source_file="res://assets/scene/base_v3.png"
+dest_files=["res://.godot/imported/base_v3.png-276b717728a279ef324eab105e93b801.ctex"]
 
 [params]
 

@@ -27,20 +27,20 @@ void fragment() {
 	float g = texture(TEXTURE, uv).g;
 	float b = texture(TEXTURE, uv - vec2(sh, 0.0)).b;
 	vec3 c = vec3(r, g, b);
-	// 暗部を持ち上げて、緑がかった安いカメラの色にする
-	c = pow(c, vec3(0.8));
+	// 暗部を持ち上げて、緑がかった安いカメラの色にする（プラン 13: 控えめに）
+	c = pow(c, vec3(0.92));
 	float l = dot(c, vec3(0.299, 0.587, 0.114));
-	c = mix(vec3(l), c, 0.7) * vec3(0.92, 1.02, 0.95);
+	c = mix(vec3(l), c, 0.8) * vec3(0.96, 1.02, 0.97);
 	// ノイズ
 	float n = hash(uv * res + fract(time) * 37.0) - 0.5;
 	c += n * noise_amt;
-	// 走査線
-	c *= 0.94 + 0.06 * sin(UV.y * res.y * 3.14159);
-	// 全体のちらつき
-	c *= 1.0 + 0.03 * sin(time * 47.0) + 0.02 * sin(time * 13.0);
-	// 四隅を暗く
+	// 走査線（プラン 13: 0.94→0.97 で薄く）
+	c *= 0.97 + 0.03 * sin(UV.y * res.y * 3.14159);
+	// 全体のちらつき（プラン 13: 0.03→0.015 で控えめに）
+	c *= 1.0 + 0.015 * sin(time * 47.0) + 0.01 * sin(time * 13.0);
+	// 四隅を暗く（プラン 13: 1.1→0.7 で vignette 軽減）
 	vec2 q = UV - 0.5;
-	c *= 1.0 - dot(q, q) * 1.1;
+	c *= 1.0 - dot(q, q) * 0.7;
 	// きしみに合わせた暗転（点滅）
 	c *= 1.0 - dim * 0.6;
 	COLOR = vec4(c, 1.0);

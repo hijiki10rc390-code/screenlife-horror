@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://nh14b1jda23v"
-path="res://.godot/imported/base.png-ba5e02bc3021a23161c57bfb5a0b0c99.ctex"
+uid="uid://pxx47lhpkcwx"
+path="res://.godot/imported/scene_kawaii_v3.png-53c8295b547d46d91c5ac3b448c62f1c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/scene/base.png"
-dest_files=["res://.godot/imported/base.png-ba5e02bc3021a23161c57bfb5a0b0c99.ctex"]
+source_file="res://assets/scene/scene_kawaii_v3.png"
+dest_files=["res://.godot/imported/scene_kawaii_v3.png-53c8295b547d46d91c5ac3b448c62f1c.ctex"]
 
 [params]
 
