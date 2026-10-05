@@ -3,7 +3,7 @@
   "friend": "Mika",
   "placeholder": false,
   "assets": {
-    "base": "res://assets/scene/base_v3.png",
+    "base": "res://assets/scene/base.png",
     "ghost": "res://assets/scene/ghost_overlay.png",
     "uneasy": "res://assets/scene/react_uneasy.png",
     "scared": "res://assets/scene/react_scared.png",
