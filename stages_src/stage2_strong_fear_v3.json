@@ -1,0 +1,18 @@
+{
+  "id": "stage2_strong_fear_v3",
+  "step": "faces",
+  "base_image": "outputs/stages_build/stage2_kawaii/chosen_base.png",
+  "subject": "pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair, curvy figure, full bust, white headset, camisole top, sitting at a desk facing the camera, laptop, open dark doorway behind her",
+  "style": "horror photography, dark night webcam, dim red light, film grain, disturbing",
+  "react_neg": "cute, kawaii, smile, happy, calm, beautiful, perfect skin, bright, colorful, childlike",
+  "lure_box": [200, 80, 470, 290],
+  "body_box": [200, 80, 470, 290],
+  "faces": [
+    {
+      "name": "scream",
+      "seeds": [80, 81],
+      "strength": 1.0,
+      "prompt": "extreme terror scream, mouth wide open in blood curdling scream, eyes wide and rolled back in horror, veins showing, distorted face of absolute fear, looking directly at camera in panic, intense dramatic horror expression"
+    }
+  ]
+}

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b32cf2fca6622"
-path="res://.godot/imported/ghost_overlay.png-feea0c1f2959e2c36412db36f273d2dd.ctex"
+uid="uid://b0521eb462b4b"
+path="res://.godot/imported/react_kawaii.png-0fa0dc989c05ea151f6d8027cfde3c5e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/scene/ghost_overlay.png"
-dest_files=["res://.godot/imported/ghost_overlay.png-feea0c1f2959e2c36412db36f273d2dd.ctex"]
+source_file="res://assets/scene/react_kawaii.png"
+dest_files=["res://.godot/imported/react_kawaii.png-0fa0dc989c05ea151f6d8027cfde3c5e.ctex"]
 
 [params]
 

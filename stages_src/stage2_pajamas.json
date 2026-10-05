@@ -1,0 +1,12 @@
+{
+  "id": "stage2_pajamas",
+  "step": "base",
+  "pronoun": "her",
+  "base_prompt": "a pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair loose and flowing, soft and slightly rumpled hair, soft silk pajamas in pastel pink, looking sleepy and cozy, sitting on bed in dimly lit bedroom, laptop on lap, warm soft lighting, blush on cheeks, kawaii idol style",
+  "base_neg": "text, watermark, cartoon, anime, bright background, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles, mature, sexy",
+  "style": "warm bedroom photo, soft warm light, intimate, dreamy, kawaii idol",
+  "body_box": [200, 60, 720, 400],
+  "react_seed": 50,
+  "base_seeds": [70, 71, 72, 73],
+  "out_path": "outputs/stages_build/stage2_pajamas"
+}
