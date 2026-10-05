@@ -1,0 +1,9 @@
+{
+  "id": "stage3_ghost_lunge",
+  "step": "figure",
+  "pronoun": "her",
+  "figure_prompt": "full body horror photo of a tall thin pale ghost woman, long black wet hair covering face, tattered white dress, both hands raised reaching forward, body leaning toward the camera, low angle, dramatic lunge pose, terrifying, in total darkness, black background, creepy, low light, grainy",
+  "figure_neg": "bright background, colorful, cartoon, anime, text, watermark, smile, gore, blood, nude, child",
+  "figure_seeds": [50, 51, 52, 53, 54],
+  "out_path": "outputs/stages_build/stage3_ghost_lunge"
+}
