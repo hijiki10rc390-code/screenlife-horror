@@ -232,7 +232,7 @@ func _initialize() -> void:
 	m.t = m.lures[1]["from"] + 1.0
 	check("次の時間帯は lure1", m._react_target() == "lure1")
 	m.t = m.lures[0]["to"] + 1.0
-	check("時間帯の外は不安な表情", m._react_target() == "uneasy")
+	check("時間帯の外はかわいい表情（プラン 13 修正）", m._react_target() == "kawaii")
 	m.t = 75.0   # 人影が濃い（0.4以上）ときは、仕草より怯えが優先。緩和の時間帯を避ける
 	check("人影が濃いと怯えた表情", m._react_target() == "scared")
 	m.queue_free()

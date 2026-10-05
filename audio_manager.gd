@@ -115,17 +115,26 @@ func set_paused(on: bool) -> void:
 
 # 毎フレーム: 人影の濃さ ghost_a（0〜1）に合わせて、唸り・心音・こもり具合を変える
 # pan: 人影の左右位置（-1〜1）。両バスのパンナーに反映する
+# プラン 13: 通常は明るい BGM、危険時にドローン・心音を増やし ambient の pitch を下げて不協和音を出す
 func update(delta: float, ghost_a: float, playing: bool, saved: bool, pan: float = 0.0) -> void:
 	var ga := clampf(ghost_a, 0.0, 1.0)
+	# ドローン: 危険時に大きく。不協和音を強調
 	var drone: AudioStreamPlayer = players["drone"]
-	var drone_target := -60.0 if saved else lerpf(-60.0, -7.0, pow(ga, 0.7))
+	var drone_target := -60.0 if saved else lerpf(-60.0, -3.0, pow(ga, 0.6))
 	drone.volume_db = move_toward(drone.volume_db, drone_target, delta * 30.0)
+	drone.pitch_scale = lerpf(1.0, 0.7, ga)   # プラン 13: ドローンのピッチを下げて不協和音
+	# 心音: 危険時に大きく、速く
 	var heart: AudioStreamPlayer = players["heart"]
-	var heart_target := lerpf(-60.0, -9.0, clampf((ga - 0.1) / 0.9, 0.0, 1.0)) if playing else -60.0
+	var heart_target := lerpf(-60.0, -6.0, clampf((ga - 0.05) / 0.95, 0.0, 1.0)) if playing else -60.0
 	heart.volume_db = move_toward(heart.volume_db, heart_target, delta * 30.0)
-	heart.pitch_scale = lerpf(1.0, 1.7, ga)
+	heart.pitch_scale = lerpf(1.0, 1.8, ga)   # 心音を速く
+	# ambient: 危険時は音量を少し下げ、ピッチも下げて不穏にする
+	var amb: AudioStreamPlayer = players["ambient"]
+	var amb_target := -6.0 if saved else lerpf(-6.0, -10.0, ga)
+	amb.volume_db = move_toward(amb.volume_db, amb_target, delta * 8.0)
+	amb.pitch_scale = lerpf(1.0, 0.85, ga)   # プラン 13: ピッチを下げてチューニング狂わせる
 	if lowpass:
-		lowpass.cutoff_hz = lerpf(16000.0, 2200.0, ga)   # 人影が濃いほど、環境音がこもる
+		lowpass.cutoff_hz = lerpf(16000.0, 2200.0, ga)
 	if ambient_pan:
 		ambient_pan.pan = clampf(pan, -1.0, 1.0)
 	if sfx_pan:

@@ -242,16 +242,16 @@ func _react_target() -> String:
 	if state == State.SAVED or state == State.FAILED:
 		return "terror"
 	if state == State.PLAYING:
-		if _ghost_alpha_at(t) >= 0.4:
+		if _ghost_alpha_at(t) >= 0.5:
 			return "scared"
-		for i in lures.size():   # 人影がまだ薄い間、彼女が気を引く仕草を見せる
+		# プラン 13: 仕草 > かわいい > 不安 の順
+		for i in lures.size():
 			if t >= lures[i]["from"] and t < lures[i]["to"]:
 				return "lure%d" % i
-		if t >= uneasy_at:
-			return "uneasy"
-		# 信頼度が高いとき・人影が薄いときはかわいい笑顔
-		if belief >= TRUST_HIGH - TRUST_EPS and react_tex.has("kawaii"):
+		if react_tex.has("kawaii"):
 			return "kawaii"
+		if _ghost_alpha_at(t) >= 0.2:
+			return "uneasy"
 	return ""
 
 
