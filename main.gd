@@ -982,23 +982,28 @@ func _restart() -> void:
 
 func _say(who: String, text: String) -> void:
 	var is_friend := who == friend
-	# 信頼度と文脈で「可愛げ」を追加（ハート・絵文字・スタンプ）
+	# キャラ別の色・装飾（character-bible.md の性格の三軸に対応）
+	var cs := _char_style(who)
 	var deco := ""
 	if is_friend and belief >= 0.6 - TRUST_EPS:
-		# 信頼度が高いとき、相手はハートや照れスタンプを添える
-		var decos := ["💕", "🌸", "✨", "(//ω//)", "(>ω<)"]
-		deco = "  [color=#ff8db0]" + decos[randi() % decos.size()] + "[/color]"
-	var name_color := "#a8b8d0" if is_friend else "#e0c8a0"
-	var bubble_color := "#2a2d36" if is_friend else "#3a3220"  # 吹き出しの背景
-	var text_color := "#dde2ea" if is_friend else "#f0e0c8"
+		# 信頼度が高いとき、キャラごとに違うハート・スタンプを添える
+		deco = "  [color=#ff8db0]" + cs["stamp"][randi() % cs["stamp"].size()] + "[/color]"
+	var name_color := cs["name_color"]
+	var bubble_color := cs["bubble_color"]
+	var text_color := cs["text_color"]
+	var outline_color := cs["outline_color"]
 	var align_tag := "" if is_friend else "[right]"
 	var end_tag := "" if is_friend else "[/right]"
 	var tm := int(t)
 	var time_str := "%02d:%02d" % [(tm / 60) % 60, tm % 60]
 	# 吹き出し形式の BBCode。親しげのとき左上にピンクの小さいハート 💗
 	var heart := "[color=#ff8db0]💗[/color]  " if is_friend and belief >= TRUST_HIGH - TRUST_EPS else ""
-	var line := "%s[bgcolor=%s]  [color=%s]%s[/color]%s  %s%s  [color=#888]%s[/color]  [/bgcolor]%s\n\n" % [
-		align_tag, bubble_color, name_color, who, deco, heart, text, time_str, end_tag
+	# outline= で視認性を上げる（暗い背景に薄いチャットが溶ける問題を緩和）
+	# indent= で左寄せ時に余白を作って「吹き出し感」を出す
+	var indent := "[indent=12]" if is_friend else "[indent=12]"
+	var end_indent := "[/indent]"
+	var line := "%s%s[bgcolor=%s][outline_color=%s][color=%s]%s[/color]%s  %s[/outline_color][color=%s]%s[/color]  [color=#888]%s[/color][/bgcolor]%s%s\n\n" % [
+		align_tag, indent, bubble_color, outline_color, name_color, who, deco, heart, text_color, text, time_str, end_indent, end_tag
 	]
 	chat_log.append_text(line)
 	if is_friend:
@@ -1007,6 +1012,60 @@ func _say(who: String, text: String) -> void:
 		mouth_open_until = maxf(mouth_open_until, t + 0.8)
 		face_overlay.visible = true
 		face_overlay.queue_redraw()
+
+
+# キャラ別のチャットスタイル。`character-bible.md` の性格の三軸を色と装飾に反映
+# who: 発言者名（friend / 自分 / 視聴者）
+# 戻り値: name_color / bubble_color / text_color / outline_color / stamp（信頼度の高いとき添える）の dict
+func _char_style(who: String) -> Dictionary:
+	if who == friend:
+		# 自分のキャラ。Mika / Aoi / ゆめ で色を差別化
+		match friend:
+			"Mika":
+				# Mika: 明るい・元気。フレッシュなブルー寄りに
+				return {
+					"name_color": "#a8c8e8",
+					"bubble_color": "#1f2c3a",
+					"text_color": "#dde6f0",
+					"outline_color": "#3a5070",  # バブルの枠線
+					"stamp": ["💕", "🌸", "✨", "(//ω//)", "(>ω<)", "(≧▽≦)"]
+				}
+			"Aoi":
+				# Aoi: 柔らか・甘え。ピンク寄りに
+				return {
+					"name_color": "#e8b0c8",
+					"bubble_color": "#2a1f2c",
+					"text_color": "#f0e0ea",
+					"outline_color": "#70504a",
+					"stamp": ["💕", "🌸", "💗", "(//ω//)", "(*ˊᗜˋ*)", "(>ω<)"]
+				}
+			"ゆめ":
+				# ゆめ: 配信・元気。ビビッドなオレンジ系で
+				return {
+					"name_color": "#e8c890",
+					"bubble_color": "#2c2818",
+					"text_color": "#f0e8d8",
+					"outline_color": "#705a40",
+					"stamp": ["💕", "🌸", "✨", "(≧▽≦)", "(*≧▽≦)", "(>ω<)"]
+				}
+			_:
+				# デフォルト（後方互換）
+				return {
+					"name_color": "#a8b8d0",
+					"bubble_color": "#2a2d36",
+					"text_color": "#dde2ea",
+					"outline_color": "#3e4250",
+					"stamp": ["💕", "🌸", "✨", "(//ω//)", "(>ω<)"]
+				}
+	else:
+		# 自分 / 視聴者。元の挙動を維持
+		return {
+			"name_color": "#e0c8a0",
+			"bubble_color": "#3a3220",
+			"text_color": "#f0e0c8",
+			"outline_color": "#5a4838",
+			"stamp": []
+		}
 
 
 # 人影の濃さを時間割（ghost_curve）から求める。ちらつきや緩和は含めない素の値
