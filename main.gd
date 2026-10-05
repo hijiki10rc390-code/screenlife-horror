@@ -978,9 +978,21 @@ func _restart() -> void:
 
 
 func _say(who: String, text: String) -> void:
-	var color := "#9ab" if who == friend else "#cda"
-	chat_log.append_text("[color=%s]%s[/color]  %s\n\n" % [color, who, text])
-	if who == friend:
+	var is_friend := who == friend
+	var name_color := "#a8b8d0" if is_friend else "#e0c8a0"  # 相手=青系、あなた=オレンジ系
+	var bubble_color := "#2a2d36" if is_friend else "#3a3220"  # 吹き出しの背景
+	var text_color := "#dde2ea" if is_friend else "#f0e0c8"
+	var align_tag := "" if is_friend else "[right]"  # あなたの発言は右寄せ
+	var end_tag := "" if is_friend else "[/right]"
+	# 時刻（HH:MM）
+	var tm := int(t)
+	var time_str := "%02d:%02d" % [(tm / 60) % 60, tm % 60]
+	# 吹き出し形式の BBCode（bgcolor + 角丸は擬似的に indent と spacer）
+	var line := "%s[bgcolor=%s]  [color=%s]%s[/color]  %s  [color=#888]%s[/color]  [/bgcolor]%s\n\n" % [
+		align_tag, bubble_color, name_color, who, text, time_str, end_tag
+	]
+	chat_log.append_text(line)
+	if is_friend:
 		_play("ping")
 		# 計画 09: セリフの表示中、口を開ける
 		mouth_open_until = maxf(mouth_open_until, t + 0.8)
