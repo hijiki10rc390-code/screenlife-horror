@@ -7,7 +7,9 @@
     "ghost": "res://assets/scene/ghost_overlay.png",
     "uneasy": "res://assets/scene/react_uneasy.png",
     "scared": "res://assets/scene/react_scared.png",
-    "terror": "res://assets/scene/react_terror.png"
+    "terror": "res://assets/scene/react_terror.png",
+    "saved": "res://assets/scene/react_saved.png",
+    "failed": "res://assets/scene/react_failed.png"
   },
   "ghost_box": [
     580,

@@ -945,6 +945,30 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
+	# 30. 計画10: 結果画面の表情
+	# SAVED のとき end_face.texture == react_tex["saved"]
+	S.stage_no = 1
+	m = await fresh()
+	m._start_call()
+	check("plan10・end_face がある", m.end_face != null)
+	check("plan10・end_face は end_panel の子", m.end_face.get_parent() == m.end_panel)
+	check("plan10・react_tex に saved がある", m.react_tex.has("saved"))
+	check("plan10・react_tex に failed がある", m.react_tex.has("failed"))
+	# 強制 SAVED にして表情を確認
+	m._finish(m.State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
+	check("plan10・SAVED の end_face.texture == react_tex['saved']", m.end_face.texture == m.react_tex.get("saved"))
+	m.queue_free()
+	S.stage_no = 0
+
+	# FAILED のとき end_face.texture == react_tex["failed"]
+	S.stage_no = 1
+	m = await fresh()
+	m._start_call()
+	m._finish(m.State.FAILED, "信頼を失った", Color(1.0, 0.45, 0.45))
+	check("plan10・FAILED の end_face.texture == react_tex['failed']", m.end_face.texture == m.react_tex.get("failed"))
+	m.queue_free()
+	S.stage_no = 0
+
 	# stage2: act_btns は 3 つ、選択中のボタンは modulate が明るい
 	S.stage_no = 1
 	m = await fresh()

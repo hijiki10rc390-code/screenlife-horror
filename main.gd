@@ -137,6 +137,7 @@ var flash: ColorRect
 var title_panel: Control
 var end_panel: Control
 var end_label: Label
+var end_face: TextureRect      # 結果画面の表情（end_panel の子）
 const AudioMgrScript := preload("res://audio_manager.gd")
 var audio: Node                    # 音の管理（audio_manager.gd）
 var paused := false
@@ -208,8 +209,9 @@ func _build_scene_viewport() -> SubViewport:
 	stage.pivot_offset = stage.size / 2.0
 	vp.add_child(stage)
 	_layer(assets["base"])
-	for n in ["uneasy", "scared", "terror"]:
-		react_tex[n] = load(assets[n])
+	for n in ["uneasy", "scared", "terror", "saved", "failed"]:
+		if assets.has(n):
+			react_tex[n] = load(assets[n])
 	for i in lures.size():
 		react_tex["lure%d" % i] = load(lures[i]["asset"])
 	react_bottom = _blank_layer()
@@ -594,12 +596,21 @@ func _build_ui(vp: SubViewport) -> void:
 	# 終了画面
 	end_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0, 0, 0, 0.72))
 	end_panel.visible = false
-	end_label = _label("", Vector2(0, 130), Vector2(750, 70), end_panel, 44)
+	end_label = _label("", Vector2(0, 60), Vector2(750, 70), end_panel, 44)
 	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	end_sub = _label("", Vector2(0, 205), Vector2(750, 60), end_panel, 20)
+	# 表情表示（end_label の下。中央配置。end_panel の中央付近に大きめに）
+	end_face = TextureRect.new()
+	end_face.position = Vector2(0, 145)
+	end_face.size = Vector2(750, 280)
+	end_face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	end_face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	end_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	end_face.modulate.a = 0.0
+	end_panel.add_child(end_face)
+	end_sub = _label("", Vector2(0, 440), Vector2(750, 60), end_panel, 20)
 	end_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	end_sub.modulate = Color(0.8, 0.84, 0.9)
-	retry_btn = _button("もう一度  (R)", Vector2(275, 280), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
+	retry_btn = _button("もう一度  (R)", Vector2(275, 510), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
 	retry_btn.pressed.connect(_after_end)
 	_build_pause_panel()
 	_build_title_screen()
@@ -1134,6 +1145,13 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 	end_label.modulate = color
 	end_panel.visible = true
 	end_panel.modulate.a = 0.0
+	# 結果画面の表情（end_label の下）
+	if new_state == State.SAVED:
+		end_face.texture = react_tex.get("saved", react_tex.get("happy"))
+		end_face.modulate = Color(0.85, 1.0, 0.9, 0.0)
+	else:
+		end_face.texture = react_tex.get("failed", react_tex.get("terror"))
+		end_face.modulate = Color(1.0, 0.75, 0.75, 0.0)
 	if new_state == State.FAILED:
 		# 襲いかかり中は result 画面のフェードを遅らせる（lunge 完了 + 0.5 秒待ってから 0.5 秒で出す）
 		lunge = 0.0
@@ -1141,8 +1159,11 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 		var tt := create_tween()
 		tt.tween_interval(lunge_time + 0.5)
 		tt.tween_property(end_panel, "modulate:a", 1.0, 0.5)
+		tt.parallel().tween_property(end_face, "modulate:a", 1.0, 0.5)
 	else:
-		create_tween().tween_property(end_panel, "modulate:a", 1.0, 0.5)
+		var tt2 := create_tween()
+		tt2.tween_property(end_panel, "modulate:a", 1.0, 0.5)
+		tt2.parallel().tween_property(end_face, "modulate:a", 1.0, 0.5)
 	end_sub.text = "%02d:%02d   誤警告 %d回" % [int(t) / 60, int(t) % 60, false_alarms]
 	if use_phrases:
 		end_sub.text += "   信頼 %d%%" % int(belief * 100.0)
@@ -1229,7 +1250,7 @@ func _process(delta: float) -> void:
 	if paused:
 		if shot_mode:
 			shot_frame += 1
-			if shot_frame == 130:
+			if shot_frame == 210:
 				_save("shot_g_pause.png")
 				get_tree().quit()
 		return
@@ -1422,7 +1443,8 @@ func _process(delta: float) -> void:
 
 func _shot_step() -> void:
 	shot_frame += 1
-	var plan := {10: ["shot_a_t02.png", 2.0], 20: ["shot_f_lure.png", 34.0], 40: ["shot_b_t45.png", 45.0], 70: ["shot_e_t60.png", 60.0], 100: ["shot_c_t85.png", 85.0]}
+	# 撮影の t は 70（むずかしい difficulty でも fail_at=78.2 を超えない）
+	var plan := {10: ["shot_a_t02.png", 2.0], 20: ["shot_f_lure.png", 34.0], 40: ["shot_b_t45.png", 45.0], 70: ["shot_e_t60.png", 60.0], 100: ["shot_c_t85.png", 70.0]}
 	for f in plan:
 		if shot_frame == f - 1:
 			t = plan[f][1]
@@ -1436,9 +1458,21 @@ func _shot_step() -> void:
 	if shot_frame == 105:
 		_set_mark(ghost_box.get_center())
 		_on_warn(1)
-	if shot_frame == 125:
+	if shot_frame == 199:
+		# 救出の終盤を確実に撮る。フレーム 199 で組み立て、フレーム 201 で save（描画反映後）
+		state = State.SAVED
+		end_label.text = "救出成功"
+		end_label.modulate = Color(0.6, 1.0, 0.7)
+		end_panel.visible = true
+		end_panel.modulate.a = 1.0
+		end_face.texture = react_tex.get("saved", react_tex.get("happy"))
+		end_face.modulate = Color(0.85, 1.0, 0.9, 1.0)
+		end_sub.text = "01:10   誤警告 0回   信頼 25%"
+	if shot_frame == 201:
 		_save("shot_d_saved.png")
-	if shot_frame == 126:
+	if shot_frame == 202:
+		_set_paused(true)
+	if shot_frame == 201:
 		_set_paused(true)   # 一時停止画面の撮影（停止中は _process の先頭で数える）
 
 

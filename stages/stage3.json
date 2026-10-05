@@ -7,7 +7,9 @@
     "ghost": "res://assets/stages/stage3/ghost_overlay.png",
     "uneasy": "res://assets/stages/stage3/react_uneasy.png",
     "scared": "res://assets/stages/stage3/react_scared.png",
-    "terror": "res://assets/stages/stage3/react_terror.png"
+    "terror": "res://assets/stages/stage3/react_terror.png",
+    "saved": "res://assets/stages/stage3/react_saved.png",
+    "failed": "res://assets/stages/stage3/react_failed.png"
   },
   "ghost_box": [
     90,
