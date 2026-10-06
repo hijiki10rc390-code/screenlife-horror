@@ -29,87 +29,87 @@
   ],
   "ghost_curve": [
     [
-      0,
+      0.0,
       0
     ],
     [
-      20,
+      34.3,
       0
     ],
     [
-      32,
+      54.9,
       0.1
     ],
     [
-      55,
+      94.3,
       0.18
     ],
     [
-      75,
+      128.6,
       0.55
     ],
     [
-      95,
+      168,
       1.0
     ]
   ],
   "ghost_path": [
     [
-      28,
+      48.0,
       0,
       0,
       1.0
     ],
     [
-      70,
+      120.0,
       -25,
       0,
       1.0
     ],
     [
-      95,
+      162.9,
       -80,
       10,
       1.05
     ]
   ],
-  "fail_at": 105,
-  "uneasy_at": 48,
+  "fail_at": 180,
+  "uneasy_at": 82.3,
   "creaks": [
-    30,
-    63
+    51.4,
+    108.0
   ],
   "timeline": [
     [
-      2,
+      3.4,
       "ごめん、夜遅くに通話して。"
     ],
     [
-      9,
+      15.4,
       "なんか今日、家の中が静かで..."
     ],
     [
-      16,
+      27.4,
       "今日ずっと家にいたんだけど、なんか落ち着かなくて。"
     ],
     [
-      24,
+      41.1,
       "さっき玄関の鍵、ちゃんと閉めたよね。うん、閉めた。"
     ],
     [
-      38,
+      65.1,
       "...今、廊下のほうで足音しなかった？"
     ],
     [
-      48,
+      82.3,
       "あ、気にしないで！ 続きしゃべろ"
     ],
     [
-      58,
+      99.4,
       "窓、開けてないよね...？"
     ],
     [
-      70,
+      120.0,
       "...ねえ、今ちょっと寒くない？"
     ]
   ],
@@ -155,63 +155,168 @@
   "scenes": [
     {
       "id": "intro",
-      "at": 5,
+      "at": 8.6,
       "text": "ねー聞いて聞いて！今日ね、ちょっとヘマしちゃって...",
       "wait_choice": true,
       "choices": [
-        {"text": "えっ、なに、なに？", "chat": "えっ、なに、なに？", "effect": {"belief": 0.05}, "next_scene": "warm"},
-        {"text": "あとで聞かせて", "chat": "ごめん、あとでね", "effect": {"belief": -0.04}, "next_scene": "distant"}
+        {
+          "text": "えっ、なに、なに？",
+          "chat": "えっ、なに、なに？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "warm"
+        },
+        {
+          "text": "あとで聞かせて",
+          "chat": "ごめん、あとでね",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "distant"
+        }
       ]
     },
     {
       "id": "warm",
-      "at": 19,
+      "at": 32.6,
       "text": "やっぱ聞いてくれる？ ねー、ありがと。今日さ、上司に怒られてさ〜",
       "wait_choice": true,
       "choices": [
-        {"text": "えー、それはきついね", "chat": "えー、それはきついね", "effect": {"belief": 0.05}, "next_scene": "after_work"},
-        {"text": "大丈夫だった？", "chat": "大丈夫だった？", "effect": {"belief": 0.04}, "next_scene": "after_work"}
+        {
+          "text": "えー、それはきついね",
+          "chat": "えー、それはきついね",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "after_work"
+        },
+        {
+          "text": "大丈夫だった？",
+          "chat": "大丈夫だった？",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "after_work"
+        }
       ]
     },
     {
       "id": "distant",
-      "at": 19,
+      "at": 32.6,
       "text": "...うん、わかってないかも...って、まあいいや。",
       "wait_choice": true,
       "choices": [
-        {"text": "ごめん、聞くよ", "chat": "ごめんね、聞くよ。", "effect": {"belief": 0.03}, "next_scene": "after_work"},
-        {"text": "うん", "chat": "うん。", "effect": {"belief": -0.02}, "next_scene": "after_work"}
+        {
+          "text": "ごめん、聞くよ",
+          "chat": "ごめんね、聞くよ。",
+          "effect": {
+            "belief": 0.03
+          },
+          "next_scene": "after_work"
+        },
+        {
+          "text": "うん",
+          "chat": "うん。",
+          "effect": {
+            "belief": -0.02
+          },
+          "next_scene": "after_work"
+        }
       ]
     },
     {
       "id": "after_work",
-      "at": 33,
+      "at": 56.6,
       "text": "...ねえ、なんか今日、家の中がヘンな感じがするんだよな",
       "wait_choice": true,
       "choices": [
-        {"text": "どしたの？", "chat": "どしたの？", "effect": {"belief": 0.04}, "next_scene": "ghost_nervous"},
-        {"text": "気にしすぎじゃない？", "chat": "気にしすぎじゃない？", "effect": {"belief": -0.03}, "next_scene": "ghost_nervous"}
+        {
+          "text": "どしたの？",
+          "chat": "どしたの？",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "ghost_nervous"
+        },
+        {
+          "text": "気にしすぎじゃない？",
+          "chat": "気にしすぎじゃない？",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "ghost_nervous"
+        }
       ]
     },
     {
       "id": "ghost_nervous",
-      "at": 53,
+      "at": 90.9,
       "text": "あの人...部屋にいるって言い切れない... おかしいかな...？",
       "wait_choice": true,
       "choices": [
-        {"text": "おかしくないよ、信じるよ", "chat": "おかしくないよ。私は信じるよ。", "effect": {"belief": 0.07}, "next_scene": "end"},
-        {"text": "大丈夫だって", "chat": "大丈夫だって。", "effect": {"belief": -0.04}, "next_scene": "end"}
+        {
+          "text": "おかしくないよ、信じるよ",
+          "chat": "おかしくないよ。私は信じるよ。",
+          "effect": {
+            "belief": 0.07
+          },
+          "next_scene": "end"
+        },
+        {
+          "text": "大丈夫だって",
+          "chat": "大丈夫だって。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "end"
+        }
       ]
     },
     {
       "id": "end",
-      "at": 75,
+      "at": 128.6,
       "text": "...ねえ、何か見えない？ 私だけ？",
       "wait_choice": true,
       "choices": [
-        {"text": "見える、ちゃんと見えるよ", "chat": "見える、ちゃんと見えるよ。信じて。", "effect": {"belief": 0.08}},
-        {"text": "誰かいるかも", "chat": "誰かいるかも。気をつけて。", "effect": {"belief": 0.05}}
+        {
+          "text": "見える、ちゃんと見えるよ",
+          "chat": "見える、ちゃんと見えるよ。信じて。",
+          "effect": {
+            "belief": 0.08
+          }
+        },
+        {
+          "text": "誰かいるかも",
+          "chat": "誰かいるかも。気をつけて。",
+          "effect": {
+            "belief": 0.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent_warning",
+      "at": 145,
+      "text": "...お願い、早く逃げて！",
+      "wait_choice": true,
+      "choices": [
+        {
+          "text": "今すぐ逃げて",
+          "chat": "今すぐ逃げて！",
+          "effect": {
+            "belief": 0.1
+          }
+        },
+        {
+          "text": "信じてる",
+          "chat": "信じてる。必ず逃げて。",
+          "effect": {
+            "belief": 0.08
+          }
+        }
       ]
     }
-  ]
+  ],
+  "relief": []
 }

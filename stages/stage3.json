@@ -29,97 +29,97 @@
   ],
   "ghost_curve": [
     [
-      0,
+      0.0,
       0
     ],
     [
-      18,
+      37.5,
       0
     ],
     [
-      28,
+      58.3,
       0.12
     ],
     [
-      48,
+      100.0,
       0.28
     ],
     [
-      66,
+      137.5,
       0.65
     ],
     [
-      84,
+      188,
       1.0
     ]
   ],
   "ghost_path": [
     [
-      25,
+      52.1,
       0,
       0,
       1.0
     ],
     [
-      60,
+      125.0,
       50,
       0,
       1.0
     ],
     [
-      84,
+      175.0,
       140,
       12,
       1.05
     ]
   ],
-  "fail_at": 96,
-  "uneasy_at": 42,
+  "fail_at": 200,
+  "uneasy_at": 87.5,
   "creaks": [
-    26,
-    58
+    54.2,
+    120.8
   ],
   "relief": [
     [
-      50,
-      54
+      104.2,
+      112.5
     ],
     [
-      72,
-      75
+      150.0,
+      156.2
     ]
   ],
   "timeline": [
     [
-      2,
+      4.2,
       "みんなこんばんは〜、今日もゆるっと始めるよ"
     ],
     [
-      10,
+      20.8,
       "コメントありがとう！ 見てくれてる人、結構いるね"
     ],
     [
-      20,
+      41.7,
       "今日はこのゲームの続きやるね"
     ],
     [
-      34,
+      70.8,
       "なんか部屋寒いなあ。エアコン切ったのに"
     ],
     [
-      51,
+      106.3,
       "あれ？ 今、何か映ってなかった？"
     ],
     [
-      64,
+      133.3,
       "...ちょっと静かだね。みんなどうしたの"
     ],
     [
-      73,
+      152.1,
       "…気のせいだよね、うん。"
     ],
     [
-      78,
+      162.5,
       "あれ、カメラの映り変かな"
     ]
   ],
@@ -181,52 +181,142 @@
   "scenes": [
     {
       "id": "hello",
-      "at": 3,
+      "at": 6.2,
       "text": "みんな〜！こんばんは〜！今日来てくれてありがと〜！",
       "wait_choice": true,
       "choices": [
-        {"text": "こんばんは！", "chat": "こんばんは！", "effect": {"belief": 0.04}, "next_scene": "chat_topic"},
-        {"text": "今日もよろしくね", "chat": "今日もよろしくね。", "effect": {"belief": 0.03}, "next_scene": "chat_topic"}
+        {
+          "text": "こんばんは！",
+          "chat": "こんばんは！",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "chat_topic"
+        },
+        {
+          "text": "今日もよろしくね",
+          "chat": "今日もよろしくね。",
+          "effect": {
+            "belief": 0.03
+          },
+          "next_scene": "chat_topic"
+        }
       ]
     },
     {
       "id": "chat_topic",
-      "at": 17,
+      "at": 35.4,
       "text": "えっとね、今日何しようかな〜... みんな、何かリクエストある？",
       "wait_choice": true,
       "choices": [
-        {"text": "そのままの雰囲気で", "chat": "そのままの雰囲気でいこう。", "effect": {"belief": 0.05}, "next_scene": "about_viewer"},
-        {"text": "近況でも聞かせて", "chat": "近況でも聞かせて。", "effect": {"belief": 0.04}, "next_scene": "about_viewer"}
+        {
+          "text": "そのままの雰囲気で",
+          "chat": "そのままの雰囲気でいこう。",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "about_viewer"
+        },
+        {
+          "text": "近況でも聞かせて",
+          "chat": "近況でも聞かせて。",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "about_viewer"
+        }
       ]
     },
     {
       "id": "about_viewer",
-      "at": 31,
+      "at": 64.6,
       "text": "...ねえ、みんな。ちょっと聞いてくれる？ なんか、変なんだけど...",
       "wait_choice": true,
       "choices": [
-        {"text": "どしたの？", "chat": "どしたの？", "effect": {"belief": 0.06}, "next_scene": "feel_anxious"},
-        {"text": "大丈夫？", "chat": "大丈夫？", "effect": {"belief": 0.05}, "next_scene": "feel_anxious"}
+        {
+          "text": "どしたの？",
+          "chat": "どしたの？",
+          "effect": {
+            "belief": 0.06
+          },
+          "next_scene": "feel_anxious"
+        },
+        {
+          "text": "大丈夫？",
+          "chat": "大丈夫？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "feel_anxious"
+        }
       ]
     },
     {
       "id": "feel_anxious",
-      "at": 53,
+      "at": 110.4,
       "text": "やだやだ...ちょっと部屋の電気ちらついてない？ 気のせい？",
       "wait_choice": true,
       "choices": [
-        {"text": "気のせいじゃない", "chat": "気のせいじゃない。気をつけて。", "effect": {"belief": 0.07}, "next_scene": "ending"},
-        {"text": "ちょっと待って", "chat": "ちょっと待って。確認するね。", "effect": {"belief": -0.02}, "next_scene": "ending"}
+        {
+          "text": "気のせいじゃない",
+          "chat": "気のせいじゃない。気をつけて。",
+          "effect": {
+            "belief": 0.07
+          },
+          "next_scene": "ending"
+        },
+        {
+          "text": "ちょっと待って",
+          "chat": "ちょっと待って。確認するね。",
+          "effect": {
+            "belief": -0.02
+          },
+          "next_scene": "ending"
+        }
       ]
     },
     {
       "id": "ending",
-      "at": 74,
+      "at": 154.2,
       "text": "みんな...ありがとう。今日も、ここにいてくれて...本当にありがとう。",
       "wait_choice": true,
       "choices": [
-        {"text": "絶対に気をつけて", "chat": "絶対に気をつけて！", "effect": {"belief": 0.07}},
-        {"text": "今すぐ配信終了して", "chat": "今すぐ配信終了して！", "effect": {"belief": 0.05}}
+        {
+          "text": "絶対に気をつけて",
+          "chat": "絶対に気をつけて！",
+          "effect": {
+            "belief": 0.07
+          }
+        },
+        {
+          "text": "今すぐ配信終了して",
+          "chat": "今すぐ配信終了して！",
+          "effect": {
+            "belief": 0.05
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent_warning",
+      "at": 165,
+      "text": "...お願い、早く逃げて！",
+      "wait_choice": true,
+      "choices": [
+        {
+          "text": "今すぐ逃げて",
+          "chat": "今すぐ逃げて！",
+          "effect": {
+            "belief": 0.1
+          }
+        },
+        {
+          "text": "信じてる",
+          "chat": "信じてる。必ず逃げて。",
+          "effect": {
+            "belief": 0.08
+          }
+        }
       ]
     }
   ]

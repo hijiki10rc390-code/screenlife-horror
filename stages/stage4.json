@@ -28,35 +28,104 @@
     560
   ],
   "ghost_curve": [
-    [0, 0],
-    [25, 0],
-    [40, 0.1],
-    [65, 0.2],
-    [90, 0.6],
-    [110, 1.0]
+    [
+      0.0,
+      0
+    ],
+    [
+      42.3,
+      0
+    ],
+    [
+      67.7,
+      0.1
+    ],
+    [
+      110.0,
+      0.2
+    ],
+    [
+      152.3,
+      0.6
+    ],
+    [
+      208,
+      1.0
+    ]
   ],
   "ghost_path": [
-    [30, 0, 0, 1.0],
-    [85, 30, 0, 1.0],
-    [115, -90, 10, 1.05]
+    [
+      50.8,
+      0,
+      0,
+      1.0
+    ],
+    [
+      143.8,
+      30,
+      0,
+      1.0
+    ],
+    [
+      194.6,
+      -90,
+      10,
+      1.05
+    ]
   ],
-  "fail_at": 130,
-  "uneasy_at": 55,
-  "creaks": [28, 70],
+  "fail_at": 220,
+  "uneasy_at": 93.1,
+  "creaks": [
+    47.4,
+    118.5
+  ],
   "relief": [
-    [50, 54],
-    [80, 85]
+    [
+      84.6,
+      91.4
+    ],
+    [
+      135.4,
+      143.8
+    ]
   ],
   "timeline": [
-    [2, "やあ、夜中に悪いな。"],
-    [10, "ゲームしてたんだけど、ちょっと集中できなくて。"],
-    [18, "なんか、背後のほうが...変なんだよね。"],
-    [30, "気のせいだと思いたいんだけど。"],
-    [45, "...ねえ、ちょっと見ててくれる？"],
-    [60, "あの扉、ずっと閉まってるはずなのに..."],
-    [75, "...やっぱ、変だ。"],
-    [95, "...誰かいる。"],
-    [115, "...逃げたほうが...いい？"]
+    [
+      3.4,
+      "やあ、夜中に悪いな。"
+    ],
+    [
+      16.9,
+      "ゲームしてたんだけど、ちょっと集中できなくて。"
+    ],
+    [
+      30.5,
+      "なんか、背後のほうが...変なんだよね。"
+    ],
+    [
+      50.8,
+      "気のせいだと思いたいんだけど。"
+    ],
+    [
+      76.2,
+      "...ねえ、ちょっと見ててくれる？"
+    ],
+    [
+      101.5,
+      "あの扉、ずっと閉まってるはずなのに..."
+    ],
+    [
+      126.9,
+      "...やっぱ、変だ。"
+    ],
+    [
+      160.8,
+      "...誰かいる。"
+    ],
+    [
+      194.6,
+      "...逃げたほうが...いい？"
+    ]
   ],
   "idle": [
     "うん、そうかもね。",
@@ -83,69 +152,182 @@
   },
   "trust_lost_line": "...もういいや。切る。",
   "timeout_line": "...きゃっ...!!",
-  "ghost_scale": [0.95, 1.08],
-  "ghost_pivot": [200, 440],
-  "ghost_face": [195, 60],
+  "ghost_scale": [
+    0.95,
+    1.08
+  ],
+  "ghost_pivot": [
+    200,
+    440
+  ],
+  "ghost_face": [
+    195,
+    60
+  ],
   "belief_start": 0.4,
   "scenes": [
     {
       "id": "hello",
-      "at": 5,
+      "at": 8.5,
       "text": "やあ、起きてた？ ちょっと話を聞いてもらいたくて。",
       "wait_choice": true,
       "choices": [
-        {"text": "もちろん、聞くよ", "chat": "もちろん、聞くよ。", "effect": {"belief": 0.05}, "next_scene": "warm_open"},
-        {"text": "後でね", "chat": "後でね。", "effect": {"belief": -0.04}, "next_scene": "cold_open"}
+        {
+          "text": "もちろん、聞くよ",
+          "chat": "もちろん、聞くよ。",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "warm_open"
+        },
+        {
+          "text": "後でね",
+          "chat": "後でね。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "cold_open"
+        }
       ]
     },
     {
       "id": "warm_open",
-      "at": 22,
+      "at": 37.2,
       "text": "...ありがと。実はさ、今日ちょっと怖いなと思ってて。",
       "wait_choice": true,
       "choices": [
-        {"text": "何が怖いの？", "chat": "何が怖いの？", "effect": {"belief": 0.06}, "next_scene": "about_room"},
-        {"text": "落ち着いて話して", "chat": "落ち着いて話して。", "effect": {"belief": 0.04}, "next_scene": "about_room"}
+        {
+          "text": "何が怖いの？",
+          "chat": "何が怖いの？",
+          "effect": {
+            "belief": 0.06
+          },
+          "next_scene": "about_room"
+        },
+        {
+          "text": "落ち着いて話して",
+          "chat": "落ち着いて話して。",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "about_room"
+        }
       ]
     },
     {
       "id": "cold_open",
-      "at": 22,
+      "at": 37.2,
       "text": "...うん、そうだよね。ごめん、こんな時間に。",
       "wait_choice": true,
       "choices": [
-        {"text": "いや、話して", "chat": "いや、話して。", "effect": {"belief": 0.05}, "next_scene": "about_room"},
-        {"text": "大丈夫？", "chat": "大丈夫？", "effect": {"belief": -0.02}, "next_scene": "about_room"}
+        {
+          "text": "いや、話して",
+          "chat": "いや、話して。",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "about_room"
+        },
+        {
+          "text": "大丈夫？",
+          "chat": "大丈夫？",
+          "effect": {
+            "belief": -0.02
+          },
+          "next_scene": "about_room"
+        }
       ]
     },
     {
       "id": "about_room",
-      "at": 42,
+      "at": 71.1,
       "text": "あの扉、ずっと閉まってるはずなのに...さっき、開いてるような音がした。",
       "wait_choice": true,
       "choices": [
-        {"text": "確認した？", "chat": "確認した？", "effect": {"belief": 0.05}, "next_scene": "trust_check"},
-        {"text": "気のせいじゃない？", "chat": "気のせいじゃない？", "effect": {"belief": -0.05}, "next_scene": "trust_check"}
+        {
+          "text": "確認した？",
+          "chat": "確認した？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "trust_check"
+        },
+        {
+          "text": "気のせいじゃない？",
+          "chat": "気のせいじゃない？",
+          "effect": {
+            "belief": -0.05
+          },
+          "next_scene": "trust_check"
+        }
       ]
     },
     {
       "id": "trust_check",
-      "at": 70,
+      "at": 118.5,
       "text": "...ねえ、もし本当に何かいたら、信じてくれる？",
       "wait_choice": true,
       "choices": [
-        {"text": "もちろん、信じる", "chat": "もちろん、信じる。", "effect": {"belief": 0.08}, "next_scene": "ending"},
-        {"text": "落ち着いて", "chat": "落ち着いて考えて。", "effect": {"belief": -0.04}, "next_scene": "ending"}
+        {
+          "text": "もちろん、信じる",
+          "chat": "もちろん、信じる。",
+          "effect": {
+            "belief": 0.08
+          },
+          "next_scene": "ending"
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて考えて。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "ending"
+        }
       ]
     },
     {
       "id": "ending",
-      "at": 95,
+      "at": 160.8,
       "text": "...ありがとう。今、すごく安心した。",
       "wait_choice": true,
       "choices": [
-        {"text": "絶対に逃げて", "chat": "絶対に逃げて！", "effect": {"belief": 0.07}},
-        {"text": "今すぐ外へ", "chat": "今すぐ外へ！", "effect": {"belief": 0.06}}
+        {
+          "text": "絶対に逃げて",
+          "chat": "絶対に逃げて！",
+          "effect": {
+            "belief": 0.07
+          }
+        },
+        {
+          "text": "今すぐ外へ",
+          "chat": "今すぐ外へ！",
+          "effect": {
+            "belief": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent_warning",
+      "at": 185,
+      "text": "...お願い、早く逃げて！",
+      "wait_choice": true,
+      "choices": [
+        {
+          "text": "今すぐ逃げて",
+          "chat": "今すぐ逃げて！",
+          "effect": {
+            "belief": 0.1
+          }
+        },
+        {
+          "text": "信じてる",
+          "chat": "信じてる。必ず逃げて。",
+          "effect": {
+            "belief": 0.08
+          }
+        }
       ]
     }
   ]

@@ -28,35 +28,104 @@
     560
   ],
   "ghost_curve": [
-    [0, 0],
-    [20, 0],
-    [32, 0.1],
-    [55, 0.2],
-    [85, 0.55],
-    [110, 1.0]
+    [
+      0.0,
+      0
+    ],
+    [
+      35.2,
+      0
+    ],
+    [
+      56.3,
+      0.1
+    ],
+    [
+      96.8,
+      0.2
+    ],
+    [
+      149.6,
+      0.55
+    ],
+    [
+      208,
+      1.0
+    ]
   ],
   "ghost_path": [
-    [30, 0, 0, 1.0],
-    [80, 25, 0, 1.0],
-    [110, -85, 10, 1.05]
+    [
+      52.8,
+      0,
+      0,
+      1.0
+    ],
+    [
+      140.8,
+      25,
+      0,
+      1.0
+    ],
+    [
+      193.6,
+      -85,
+      10,
+      1.05
+    ]
   ],
-  "fail_at": 125,
-  "uneasy_at": 48,
-  "creaks": [25, 68],
+  "fail_at": 220,
+  "uneasy_at": 84.5,
+  "creaks": [
+    44.0,
+    119.7
+  ],
   "relief": [
-    [50, 55],
-    [80, 84]
+    [
+      88.0,
+      96.8
+    ],
+    [
+      140.8,
+      147.8
+    ]
   ],
   "timeline": [
-    [2, "おつかれー、今クライアントワーク中。"],
-    [10, "今日はさ、ずっとイラストを描いてたんだけど..."],
-    [18, "なんか、部屋がね...変なんだよね。"],
-    [32, "あれ、いつも通るのに...ちょっと違う感じがする。"],
-    [50, "...ねえ、見えてる？"],
-    [62, "あの扉、ずっと閉まってるはずなのに。"],
-    [80, "...誰かいる気がする。"],
-    [95, "...ね、信じてくれる？"],
-    [115, "...逃げたほうがいい？"]
+    [
+      3.5,
+      "おつかれー、今クライアントワーク中。"
+    ],
+    [
+      17.6,
+      "今日はさ、ずっとイラストを描いてたんだけど..."
+    ],
+    [
+      31.7,
+      "なんか、部屋がね...変なんだよね。"
+    ],
+    [
+      56.3,
+      "あれ、いつも通るのに...ちょっと違う感じがする。"
+    ],
+    [
+      88.0,
+      "...ねえ、見えてる？"
+    ],
+    [
+      109.1,
+      "あの扉、ずっと閉まってるはずなのに。"
+    ],
+    [
+      140.8,
+      "...誰かいる気がする。"
+    ],
+    [
+      167.2,
+      "...ね、信じてくれる？"
+    ],
+    [
+      202.4,
+      "...逃げたほうがいい？"
+    ]
   ],
   "idle": [
     "うん、そうかもね。",
@@ -83,59 +152,158 @@
   },
   "trust_lost_line": "...もういいや。切る。",
   "timeout_line": "...きゃっ...!!",
-  "ghost_scale": [0.96, 1.07],
-  "ghost_pivot": [180, 440],
-  "ghost_face": [190, 60],
+  "ghost_scale": [
+    0.96,
+    1.07
+  ],
+  "ghost_pivot": [
+    180,
+    440
+  ],
+  "ghost_face": [
+    190,
+    60
+  ],
   "belief_start": 0.4,
   "scenes": [
     {
       "id": "hello",
-      "at": 5,
+      "at": 8.8,
       "text": "...あの、今日ね、ちょっと怖い思いしてて...",
       "wait_choice": true,
       "choices": [
-        {"text": "もちろん聞くよ", "chat": "もちろん聞くよ。", "effect": {"belief": 0.05}, "next_scene": "warm_open"},
-        {"text": "大丈夫？", "chat": "大丈夫？", "effect": {"belief": 0.03}, "next_scene": "warm_open"}
+        {
+          "text": "もちろん聞くよ",
+          "chat": "もちろん聞くよ。",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "warm_open"
+        },
+        {
+          "text": "大丈夫？",
+          "chat": "大丈夫？",
+          "effect": {
+            "belief": 0.03
+          },
+          "next_scene": "warm_open"
+        }
       ]
     },
     {
       "id": "warm_open",
-      "at": 24,
+      "at": 42.2,
       "text": "...ありがと。実は今日、ずっと部屋の感じが変なんだよね...",
       "wait_choice": true,
       "choices": [
-        {"text": "何が怖いの？", "chat": "何が怖いの？", "effect": {"belief": 0.05}, "next_scene": "about_room"},
-        {"text": "ゆっくり話して", "chat": "ゆっくり話して。", "effect": {"belief": 0.04}, "next_scene": "about_room"}
+        {
+          "text": "何が怖いの？",
+          "chat": "何が怖いの？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "about_room"
+        },
+        {
+          "text": "ゆっくり話して",
+          "chat": "ゆっくり話して。",
+          "effect": {
+            "belief": 0.04
+          },
+          "next_scene": "about_room"
+        }
       ]
     },
     {
       "id": "about_room",
-      "at": 45,
+      "at": 79.2,
       "text": "あの扉、ずっと閉まってるはずなのに...さっき、開いたかもしれない音がした。",
       "wait_choice": true,
       "choices": [
-        {"text": "確認した？", "chat": "確認した？", "effect": {"belief": 0.05}, "next_scene": "trust_check"},
-        {"text": "気のせいじゃない？", "chat": "気のせいじゃない？", "effect": {"belief": -0.04}, "next_scene": "trust_check"}
+        {
+          "text": "確認した？",
+          "chat": "確認した？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "trust_check"
+        },
+        {
+          "text": "気のせいじゃない？",
+          "chat": "気のせいじゃない？",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "trust_check"
+        }
       ]
     },
     {
       "id": "trust_check",
-      "at": 72,
+      "at": 126.7,
       "text": "...ねえ、もし本当に何かいたら、信じてくれる？",
       "wait_choice": true,
       "choices": [
-        {"text": "もちろん、信じる", "chat": "もちろん、信じる。", "effect": {"belief": 0.08}, "next_scene": "ending"},
-        {"text": "落ち着いて", "chat": "落ち着いて考えて。", "effect": {"belief": -0.03}, "next_scene": "ending"}
+        {
+          "text": "もちろん、信じる",
+          "chat": "もちろん、信じる。",
+          "effect": {
+            "belief": 0.08
+          },
+          "next_scene": "ending"
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて考えて。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "ending"
+        }
       ]
     },
     {
       "id": "ending",
-      "at": 95,
+      "at": 167.2,
       "text": "...ありがとう。今、すごく安心した。",
       "wait_choice": true,
       "choices": [
-        {"text": "絶対に逃げて", "chat": "絶対に逃げて！", "effect": {"belief": 0.07}},
-        {"text": "今すぐ外へ", "chat": "今すぐ外へ！", "effect": {"belief": 0.06}}
+        {
+          "text": "絶対に逃げて",
+          "chat": "絶対に逃げて！",
+          "effect": {
+            "belief": 0.07
+          }
+        },
+        {
+          "text": "今すぐ外へ",
+          "chat": "今すぐ外へ！",
+          "effect": {
+            "belief": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent_warning",
+      "at": 185,
+      "text": "...お願い、早く逃げて！",
+      "wait_choice": true,
+      "choices": [
+        {
+          "text": "今すぐ逃げて",
+          "chat": "今すぐ逃げて！",
+          "effect": {
+            "belief": 0.1
+          }
+        },
+        {
+          "text": "信じてる",
+          "chat": "信じてる。必ず逃げて。",
+          "effect": {
+            "belief": 0.08
+          }
+        }
       ]
     }
   ]

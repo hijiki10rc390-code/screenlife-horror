@@ -109,12 +109,15 @@ func _initialize() -> void:
 	check("時間切れで失敗", m.state == m.State.FAILED)
 	m.queue_free()
 
-	# 6. 人影の濃さの時間割
+	# 6. 人影の濃さの時間割（stage1 前提。fail_at 拡大後の最大到達時刻は ghost_curve 末尾から取得）
 	m = await fresh()
+	var stage1_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))
+	var stage1_curve: Array = stage1_data.get("ghost_curve", [])
+	var stage1_max_t: float = float(stage1_curve[-1][0])
 	check("0秒は濃さ0", m._ghost_alpha_at(0.0) == 0.0)
 	check("20秒までは濃さ0", m._ghost_alpha_at(20.0) == 0.0)
-	check("95秒で最大", m._ghost_alpha_at(95.0) == 1.0)
-	check("途中は単調増加", m._ghost_alpha_at(40.0) < m._ghost_alpha_at(60.0))
+	check("%d秒で最大" % int(stage1_max_t), m._ghost_alpha_at(stage1_max_t) == 1.0)
+	check("途中は単調増加", m._ghost_alpha_at(stage1_max_t * 0.4) < m._ghost_alpha_at(stage1_max_t * 0.6))
 	m.queue_free()
 
 	# 7. ステージ: 設定が読め、素材が存在し、救出で次へ進む
@@ -146,7 +149,10 @@ func _initialize() -> void:
 	S.difficulty = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 100.0)   # stage9 の人影が見える時刻
+	# stage9 の ghost_curve 末尾時刻 - 15 秒（人影が濃く、信頼が低くても救出できる時刻）
+	var stage9_p: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage9.json"))
+	var stage9_max_t: float = float(stage9_p["ghost_curve"][-1][0])
+	at(m, stage9_max_t - 5.0)
 	rescue(m)
 	check("最後のステージを救出 → 最初へ戻る", m._next_stage_no() == 0 and not m._has_next_stage())
 	m.queue_free()
@@ -200,7 +206,11 @@ func _initialize() -> void:
 	m.queue_free()
 	m = await fresh()
 	m._start_call()
-	at(m, 65.0)   # 人影のちらつき（0.7〜1.0倍）の影響が小さい時刻。緩和の時間帯を避ける
+	# 人影のちらつき（0.7〜1.0倍）の影響が小さい時刻。緩和の時間帯を避け、ghost_alpha が十分高い時刻
+	# 难度 2（むずかしい）でも fail_at 内になるよう、ghost_curve 末尾-25 秒付近（人影は濃く緩和外）
+	var stage2_data_early: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage2.json"))
+	var stage2_max_t: float = float(stage2_data_early["ghost_curve"][-1][0])
+	at(m, stage2_max_t - 25.0)  # 168 - 25 = 143. fail_at=153 なので余裕あり
 	m._set_mark(m.ghost_box_now().get_center())
 	m._on_warn(1)
 	check("「逃げて！」なら信じてもらえる", m.state == m.State.SAVED)
@@ -245,7 +255,10 @@ func _initialize() -> void:
 	check("次の時間帯は lure1", m._react_target() == "lure1")
 	m.t = m.lures[0]["to"] + 1.0
 	check("時間帯の外はかわいい表情（プラン 13 修正）", m._react_target() == "kawaii")
-	m.t = 75.0   # 人影が濃い（0.4以上）ときは、仕草より怯えが優先。緩和の時間帯を避ける
+	# 人影が濃い（0.4以上）ときは、仕草より怯えが優先。緩和の時間帯を避ける
+	# stage1 の ghost_curve 末尾時刻 - 30 秒（人影が濃く、緩和外）
+	var s1_curve_max: float = float(JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))["ghost_curve"][-1][0])
+	m.t = s1_curve_max - 30.0
 	check("人影が濃いと怯えた表情", m._react_target() == "scared")
 	m.queue_free()
 	S.stage_no = 0
@@ -308,10 +321,12 @@ func _initialize() -> void:
 	S.stage_no = 0
 
 	# 14. 映像の乱れと「演出を弱める」
-	S.difficulty = 1   # 既定 difficulty 2（fail_at=89.25）だと at(90.0) が fail してしまうので、ふつうで実行
+	S.difficulty = 1   # difficulty 2（fail_at=153）だと fail するので、ふつう（fail_at=171）で実行
 	m = await fresh()
 	m._start_call()
-	at(m, 90.0)
+	# 人影が濃い時刻（ghost_curve 末尾 0.7 倍以降）
+	var s1_glitch_t: float = float(JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))["ghost_curve"][-1][0]) * 0.95
+	at(m, s1_glitch_t)
 	check("人影が濃いと映像が乱れる", float(m.cam_mat.get_shader_parameter("glitch")) > 0.3)
 	at(m, 5.0)
 	check("人影がないときは乱れない", float(m.cam_mat.get_shader_parameter("glitch")) == 0.0)
@@ -353,7 +368,11 @@ func _initialize() -> void:
 	check("練習ステージは合図の設定を持つ", m.onboarding and m.cue_first_seen)
 	at(m, 5.0)
 	check("人影が見える前は合図なし", not m.seen_cue_played)
-	at(m, 45.0)
+	# stage1 の ghost_curve から「最初に見える時刻」を取得（fail_at 拡大で変動）
+	var stage1_q_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))
+	var stage1_curve_data: Array = stage1_q_data["ghost_curve"]
+	var stage1_seen_t: float = stage1_curve_data[2][0] + 2.0  # 3 番目のキーの少し後（alpha > SEEN_THRESHOLD）
+	at(m, stage1_seen_t)
 	check("人影が見え始めると合図とヒント", m.seen_cue_played and m.hint_label.text.contains("背後の暗がり"))
 	m.queue_free()
 	S.stage_no = 1
@@ -423,18 +442,21 @@ func _initialize() -> void:
 	S.stage_no = 1
 	m = await fresh()
 	check("疑り深い相手は緩和の時間帯を持つ", m.relief.size() == 2)
-	check("緩和の外（30 秒）は係数 1", m._relief_factor(30.0) == 1.0)
-	check("緩和の時間帯の真ん中（43 秒）は係数 0", m._relief_factor(43.0) == 0.0)
-	var r_40_6: float = m._relief_factor(40.6)
-	check("緩和の境目の 0.4 秒手前（40.6 秒）は 0 と 1 の間", r_40_6 > 0.0 and r_40_6 < 1.0)
+	var relief_mid: float = (m.relief[0][0] + m.relief[0][1]) / 2.0  # 最初の緩和の真ん中
+	# 境目のフェードウィンドウ内（最初の開始の 0.4 秒手前 = 緩和開始 79.2〜80 秒のランプ部分）
+	var relief_fade_in: float = m.relief[0][0] - 0.4
+	check("緩和の外（最初の開始より 30 秒前）は係数 1", m._relief_factor(m.relief[0][0] - 30.0) == 1.0)
+	check("緩和の時間帯の真ん中は係数 0", m._relief_factor(relief_mid) == 0.0)
+	var r_fade: float = m._relief_factor(relief_fade_in)
+	check("緩和開始の 0.4 秒手前は 0 と 1 の間（ランプ）", r_fade > 0.0 and r_fade < 1.0)
 	m.queue_free()
 	S.stage_no = 0
 
 	# 人影の濃さは、緩和で実際に 0 になる（時間割どおりなら 0 より大きい）
 	S.stage_no = 1
 	m = await fresh()
-	check("緩和の時間帯でも時間割の濃さは 0 より大きい", m._curve_alpha(43.0) > 0.0)
-	check("人影の実際の濃さは、緩和中は 0", m._ghost_alpha_at(43.0) == 0.0)
+	check("緩和の時間帯でも時間割の濃さは 0 より大きい", m._curve_alpha(relief_mid) > 0.0)
+	check("人影の実際の濃さは、緩和中は 0", m._ghost_alpha_at(relief_mid) == 0.0)
 	m.queue_free()
 	S.stage_no = 0
 
@@ -454,7 +476,7 @@ func _initialize() -> void:
 	S.stage_no = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 43.0)
+	at(m, relief_mid)
 	m._set_mark(m.ghost_box_now().get_center())
 	m._on_warn(1)
 	check("緩和中の警告は誤警告扱いしない", m.false_alarms == 0)
@@ -468,7 +490,8 @@ func _initialize() -> void:
 	S.stage_no = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 46.0)
+	# 緩和の終了の少し後（境目から 1.0 秒後 = 完全に出た）
+	at(m, m.relief[0][1] + 1.0)
 	check("緩和の時間帯を抜けたら creak を鳴らす（relief_idx が 1 以上）", m.relief_idx >= 1)
 	m.queue_free()
 	S.stage_no = 0
@@ -477,7 +500,8 @@ func _initialize() -> void:
 	S.stage_no = 2
 	m = await fresh()
 	m._start_call()
-	at(m, 52.0)
+	var stage3_relief_mid: float = (m.relief[0][0] + m.relief[0][1]) / 2.0
+	at(m, stage3_relief_mid)
 	m._on_comment(0)
 	check("配信の緩和中のコメントも誤警告扱いしない", m.false_alarms == 0)
 	check("配信の緩和中はプレイ継続", m.state == m.State.PLAYING)
@@ -567,8 +591,8 @@ func _initialize() -> void:
 		check("難易度%d: max_false_alarms（%d/%d/%d）" % [d, m.max_false_alarms, m.false_alarm_lock, m.fail_at],
 				m.max_false_alarms == [4, 2, 2][d])
 		check("難易度%d: false_alarm_lock" % d, m.false_alarm_lock == [3.0, 4.0, 5.0][d])
-		# stage1 の fail_at は 105。倍率 1.10 / 0.95 / 0.85 → 115.5 / 99.75 / 89.25
-		var want_fail: float = [115.5, 99.75, 89.25][d]
+		# stage1 の fail_at は 180。倍率 1.10 / 0.95 / 0.85 → 198 / 171 / 153
+		var want_fail: float = [198.0, 171.0, 153.0][d]
 		check("難易度%d: fail_at" % d, absf(m.fail_at - want_fail) < 0.001)
 		m.queue_free()
 	S.stage_no = 0
@@ -577,7 +601,7 @@ func _initialize() -> void:
 	S.difficulty = 1
 	S.stage_no = 0
 	m = await fresh()
-	check("ふつう: fail_at は 99.75（= 105 × 0.95）", absf(m.fail_at - 99.75) < 0.001)
+	check("ふつう: fail_at は 171（= 180 × 0.95）", absf(m.fail_at - 171.0) < 0.001)
 	check("ふつう: max_false_alarms == 2", m.max_false_alarms == 2)
 	m.queue_free()
 	S.stage_no = 0
@@ -676,12 +700,24 @@ func _initialize() -> void:
 	S.stage_no = 0
 	m = await fresh()
 	m._start_call()
-	check("ghost_offset_at(28) は最初のキーの (0, 0)", m.ghost_offset_at(28.0) == Vector2(0, 0))
-	check("ghost_offset_at(70) はキー値の (-25, 0)", m.ghost_offset_at(70.0) == Vector2(-25, 0))
-	check("ghost_offset_at(95) はキー値の (-80, 10)", m.ghost_offset_at(95.0) == Vector2(-80, 10))
-	check("ghost_mult_at(95) は 1.05", absf(m.ghost_mult_at(95.0) - 1.05) < 0.0001)
+	# stage1 の ghost_path キーを JSON から取得（fail_at 拡大で変動するため）
+	var stage1_p_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))
+	var stage1_ghost_path: Array = stage1_p_data.get("ghost_path", [])
+	var path_k1: Array = stage1_ghost_path[0]
+	var path_k2: Array = stage1_ghost_path[1]
+	var path_k3: Array = stage1_ghost_path[2]
+	check("ghost_offset_at 最初のキー以前は最初の値",
+		m.ghost_offset_at(path_k1[0] - 1.0) == Vector2(0, 0))
+	# キーの値そのもの（time == b[0]）を確認。smoothstep(1.0)=1.0 で lerp(a, b, 1) = b
+	check("ghost_offset_at 2番目のキーの値はキー値",
+		m.ghost_offset_at(path_k2[0]) == Vector2(float(path_k2[1]), float(path_k2[2])))
+	check("ghost_offset_at 最後のキーの値はキー値",
+		m.ghost_offset_at(path_k3[0]) == Vector2(float(path_k3[1]), float(path_k3[2])))
+	check("ghost_mult_at 最後のキーの値は最後の倍率",
+		absf(m.ghost_mult_at(path_k3[0]) - float(path_k3[3])) < 0.0001)
 	check("キーの外（0 秒）は最初の値", m.ghost_offset_at(0.0) == Vector2(0, 0))
-	check("キーの外（200 秒）は最後の値", m.ghost_offset_at(200.0) == Vector2(-80, 10))
+	check("キーの外（fail_at + 100）は最後の値",
+		m.ghost_offset_at(m.fail_at + 100.0) == Vector2(float(path_k3[1]), float(path_k3[2])))
 	# ghost_path が無い設定は (0, 0) と 1.0（empty にしたら従来どおり）
 	m.ghost_path = []
 	check("ghost_path が空のとき ghost_offset_at は (0, 0)", m.ghost_offset_at(60.0) == Vector2(0, 0))
@@ -693,14 +729,14 @@ func _initialize() -> void:
 	S.stage_no = 0
 	m = await fresh()
 	m._start_call()
-	at(m, 95.0)
-	check("ghost_box_now(t=95).position は ghost_box.position + Vector2(-80, 10)",
-		m.ghost_box_now().position == m.ghost_box.position + Vector2(-80, 10))
+	at(m, float(path_k3[0]))
+	check("ghost_box_now.position は ghost_box.position + Vector2(float(path_k3[1]), float(path_k3[2]))",
+		m.ghost_box_now().position == m.ghost_box.position + Vector2(float(path_k3[1]), float(path_k3[2])))
 	# ghost_box_now は時刻で動く
-	var box_at_95: Rect2 = m.ghost_box_now()
+	var box_at_late: Rect2 = m.ghost_box_now()
 	at(m, 0.0)
 	var box_at_0: Rect2 = m.ghost_box_now()
-	check("ghost_box_now は時刻で動く（t=0 と t=95 で位置が違う）", box_at_95.position != box_at_0.position)
+	check("ghost_box_now は時刻で動く（t=0 と t=最後で位置が違う）", box_at_late.position != box_at_0.position)
 	m.queue_free()
 	S.stage_no = 0
 
@@ -790,7 +826,7 @@ func _initialize() -> void:
 	S.stage_no = 0
 	m = await fresh()
 	m._start_call()
-	at(m, 30.0)   # 最初の creak の直後
+	at(m, m.creaks[0] + 0.5)   # 最初の creak の直後（stage1）
 	check("照明: creak 直後のフレームで dim > 0",
 		float(m.cam_mat.get_shader_parameter("dim")) > 0.0)
 	m.queue_free()
@@ -841,11 +877,14 @@ func _initialize() -> void:
 	S.stage_no = 0
 
 	# 25. 計画06: stage2（use_phrases）クリック警告
-	# 「逃げて！」(selected_phrase=1) を選んでクリック → 救出（relief [66, 70] を避けるため t=72 を使用）
+	# 「逃げて！」(selected_phrase=1) を選んでクリック → 救出
+	# ghost_curve 末尾 - 25 秒（人影が濃い・緩和外・fail_at=153 内）
 	S.stage_no = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 72.0)
+	var stage2_p_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage2.json"))
+	var stage2_max_t_late: float = float(stage2_p_data["ghost_curve"][-1][0])
+	at(m, stage2_max_t_late - 25.0)
 	m._select_phrase(1)
 	m._on_video_click(m.ghost_box_now().get_center())
 	check("stage2・selected_phrase=1 で中心クリック → 救出成功", m.state == m.State.SAVED)
@@ -853,11 +892,12 @@ func _initialize() -> void:
 	S.stage_no = 0
 
 	# stage2: selected_phrase=0（「後ろ見て！」=弱）では、信頼だけでは救出にならない
-	# （belief_start=0.3、話しかけなし、t=65 で alpha≈0.667 → score≈0.93 < 1.0）
+	# stage2 の 2 番目の relief 直前（alpha が中程度＝救出に足りない）の時刻を使う
+	# 時刻 120: alpha ≈ 0.586, score（phrase=0）= 0.869 < 1.0、score（phrase=1）= 1.069 >= 1.0
 	S.stage_no = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 65.0)
+	at(m, 120.0)
 	m._select_phrase(0)
 	m._on_video_click(m.ghost_box_now().get_center())
 	check("stage2・selected_phrase=0 では救出にならずPLAYING継続",

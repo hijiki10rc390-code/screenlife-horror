@@ -34,6 +34,12 @@ func tick(m: Control, seconds: float) -> void:
 
 
 func _initialize() -> void:
+	# stage1 のシーン時刻を JSON から取得（fail_at の拡大で変動するため）
+	var stage1_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))
+	var stage1_scenes: Array = stage1_data.get("scenes", [])
+	var stage1_intro_at: float = float(stage1_scenes[0]["at"]) if stage1_scenes.size() > 0 else 5.0
+	var stage1_warm_at: float = float(stage1_scenes[1]["at"]) if stage1_scenes.size() > 1 else 19.0
+
 	# 1. stage1 に scenes が読み込まれる
 	var m: Control = await fresh(0)
 	check("stage1: scenes が読める", m.scenes.size() >= 4)
@@ -42,10 +48,10 @@ func _initialize() -> void:
 	check("stage1: 初期は _scene_idx が 0", m._scene_idx == 0)
 	m.queue_free()
 
-	# 2. intro (at=5) 到達で _waiting_choice が立つ
+	# 2. intro 到達で _waiting_choice が立つ
 	m = await fresh(0)
 	m._start_call()
-	m._process(5.5)   # 5 秒 + 0.5
+	m._process(stage1_intro_at + 0.5)   # intro at + 0.5 秒
 	check("stage1: intro 到達で _waiting_choice == true", m._waiting_choice)
 	check("stage1: _current_scene.id は intro", m._current_scene.get("id", "") == "intro")
 	check("stage1: 選択肢ボタンが 2 個表示される", m._scene_btns.size() == 2)
@@ -55,7 +61,7 @@ func _initialize() -> void:
 	m = await fresh(0)
 	m._start_call()
 	m.belief = 0.5   # テスト用: belief_start=1.0 だと +0.05 がクランプで反映されないので 0.5 から始める
-	m._process(5.5)
+	m._process(stage1_intro_at + 0.5)
 	var belief_before: float = m.belief
 	m._on_scene_choice(0)   # "うん、なに？" で +0.05
 	check("stage1: 選択肢押下で _waiting_choice が降りる", not m._waiting_choice)
@@ -66,9 +72,9 @@ func _initialize() -> void:
 	# 4. 選択肢を押すと次のシーンへ遷移する（next_scene = "warm"）
 	m = await fresh(0)
 	m._start_call()
-	m._process(5.5)
+	m._process(stage1_intro_at + 0.5)
 	m._on_scene_choice(0)   # warm へ遷移
-	tick(m, 20.0)           # warm (at=19) 到達
+	tick(m, stage1_warm_at - stage1_intro_at + 5.0)   # warm (at=warm_at) 到達まで
 	check("stage1: next_scene で warm に遷移してシーン発火",
 		m._current_scene.get("id", "") == "warm" or m._waiting_choice)
 	m.queue_free()
@@ -76,9 +82,9 @@ func _initialize() -> void:
 	# 5. distant を選んだ場合も同じ after_work に遷移する
 	m = await fresh(0)
 	m._start_call()
-	m._process(5.5)
+	m._process(stage1_intro_at + 0.5)
 	m._on_scene_choice(1)   # distant へ遷移
-	tick(m, 20.0)
+	tick(m, stage1_warm_at - stage1_intro_at + 5.0)
 	check("stage1: distant 選択で after_work に遷移",
 		m._current_scene.get("id", "") == "after_work" or m._waiting_choice)
 	m.queue_free()
@@ -87,7 +93,7 @@ func _initialize() -> void:
 	m = await fresh(0)
 	m._start_call()
 	m.belief = 0.97
-	m._process(5.5)
+	m._process(stage1_intro_at + 0.5)
 	m._on_scene_choice(0)   # +0.05 → 1.02 になるはずだがクランプで 1.0
 	check("stage1: belief が 1.0 でクランプされる", m.belief == 1.0)
 	m.queue_free()
@@ -96,7 +102,7 @@ func _initialize() -> void:
 	m = await fresh(0)
 	m._start_call()
 	m.belief = 0.02
-	m._process(5.5)
+	m._process(stage1_intro_at + 0.5)
 	m._on_scene_choice(1)   # -0.04 → -0.02 になるはずだがクランプで 0.0
 	check("stage1: belief が 0.0 でクランプされる", m.belief == 0.0)
 	m.queue_free()
@@ -140,81 +146,49 @@ func _initialize() -> void:
 	# 11. _scene_idx は時刻順に進行する
 	m = await fresh(0)
 	m._start_call()
-	tick(m, 6.0)
-	check("stage1: intro (at=5) 通過後 _scene_idx は 1", m._scene_idx == 1)
+	tick(m, stage1_intro_at + 1.0)
+	check("stage1: intro 通過後 _scene_idx は 1", m._scene_idx == 1)
 	# intro の選択肢を解除してシーン進行を再開させる
 	m._waiting_choice = false
-	tick(m, 14.0)   # warm (at=19) 到達
-	check("stage1: warm (at=19) 到達後 _scene_idx は 2", m._scene_idx == 2)
+	tick(m, stage1_warm_at - stage1_intro_at + 1.0)   # warm 到達まで
+	check("stage1: warm 到達後 _scene_idx は 2", m._scene_idx == 2)
 	m.queue_free()
 
-	# 12. 全 7 ステージで scenes が動く（Phase 3 で全展開）
-	m = await fresh(0)
-	check("stage1: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage1: intro 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
+	# 12. 全 9 ステージで scenes が動く（Phase 3 で全展開）
+	# 各ステージの最初の scene.at を JSON から取得して動的にテストする
+	for stage_idx in 9:
+		m = await fresh(stage_idx)
+		var stage_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage%d.json" % (stage_idx + 1)))
+		var stage_scenes: Array = stage_data.get("scenes", [])
+		var first_scene_at: float = float(stage_scenes[0]["at"]) if stage_scenes.size() > 0 else 5.0
+		check("ステージ%d: scenes が読める" % (stage_idx + 1), m.scenes.size() >= 4)
+		m._start_call()
+		m._process(first_scene_at + 0.5)
+		check("ステージ%d: hello 到達で _waiting_choice" % (stage_idx + 1), m._waiting_choice)
+		m.queue_free()
 
+	# 2.5: stage2 特有: 選択肢で belief が +0.06 以上になる（greeting 通過後）
 	m = await fresh(1)
+	var stage2_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage2.json"))
+	var stage2_greeting_at: float = float(stage2_data["scenes"][0]["at"])
 	check("stage2: scenes が読める", m.scenes.size() >= 4)
 	m._start_call()
-	m._process(5.5)
+	m._process(stage2_greeting_at + 0.5)
 	check("stage2: greeting 到達で _waiting_choice", m._waiting_choice)
 	m._on_scene_choice(0)
-	# belief_start=0.3 + difficulty 補正(= -0.05) → 0.25。+0.06 で 0.31 以上になる
 	check("stage2: 選択肢で belief +0.06", m.belief >= 0.30)
 	m.queue_free()
 
+	# 2.6: stage3 特有: 選択肢で belief が +0.04（1.0 でクランプ）
 	m = await fresh(2)
+	var stage3_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage3.json"))
+	var stage3_hello_at: float = float(stage3_data["scenes"][0]["at"])
 	check("stage3: scenes が読める", m.scenes.size() >= 4)
 	m._start_call()
-	m._process(3.5)
+	m._process(stage3_hello_at + 0.5)
 	check("stage3: hello 到達で _waiting_choice", m._waiting_choice)
 	m._on_scene_choice(0)
-	check("stage3: 選択肢で belief +0.04", m.belief >= 1.0)   # 1.0 でクランプ
-	m.queue_free()
-
-	m = await fresh(3)
-	check("stage4: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage4: hello 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
-
-	m = await fresh(4)
-	check("stage5: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage5: hello 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
-
-	m = await fresh(5)
-	check("stage6: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage6: hello 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
-
-	m = await fresh(6)
-	check("stage7: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage7: hello 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
-
-	m = await fresh(7)
-	check("stage8: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage8: hello 到達で _waiting_choice", m._waiting_choice)
-	m.queue_free()
-
-	m = await fresh(8)
-	check("stage9: scenes が読める", m.scenes.size() >= 4)
-	m._start_call()
-	m._process(5.5)
-	check("stage9: hello 到達で _waiting_choice", m._waiting_choice)
+	check("stage3: 選択肢で belief +0.04", m.belief >= 1.0)
 	m.queue_free()
 
 	print("FAIL COUNT: %d" % fails)

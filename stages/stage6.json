@@ -28,34 +28,100 @@
     560
   ],
   "ghost_curve": [
-    [0, 0],
-    [20, 0],
-    [32, 0.1],
-    [55, 0.18],
-    [80, 0.6],
-    [105, 1.0]
+    [
+      0.0,
+      0
+    ],
+    [
+      33.3,
+      0
+    ],
+    [
+      53.3,
+      0.1
+    ],
+    [
+      91.7,
+      0.18
+    ],
+    [
+      133.3,
+      0.6
+    ],
+    [
+      188,
+      1.0
+    ]
   ],
   "ghost_path": [
-    [30, 0, 0, 1.0],
-    [80, -20, 0, 1.0],
-    [110, -80, 10, 1.05]
+    [
+      50.0,
+      0,
+      0,
+      1.0
+    ],
+    [
+      133.3,
+      -20,
+      0,
+      1.0
+    ],
+    [
+      183.3,
+      -80,
+      10,
+      1.05
+    ]
   ],
-  "fail_at": 120,
-  "uneasy_at": 48,
-  "creaks": [28, 70],
+  "fail_at": 200,
+  "uneasy_at": 80.0,
+  "creaks": [
+    46.7,
+    116.7
+  ],
   "relief": [
-    [50, 54],
-    [78, 82]
+    [
+      83.3,
+      90.0
+    ],
+    [
+      130.0,
+      136.7
+    ]
   ],
   "timeline": [
-    [2, "あの...今いい？ちょっと話したいことがあって。"],
-    [10, "今日ね、なんか...ずっと変な感じがしてた。"],
-    [18, "さっきから、視線を感じるんだよね..."],
-    [32, "いや、気のせいだと思いたいんだけど。"],
-    [50, "...ねえ、ちょっとだけ怖くなってきちゃって。"],
-    [65, "この家、ずっとなんか...変。"],
-    [85, "...誰か、来てる？"],
-    [100, "...ねえ、信じてくれる？"]
+    [
+      3.3,
+      "あの...今いい？ちょっと話したいことがあって。"
+    ],
+    [
+      16.7,
+      "今日ね、なんか...ずっと変な感じがしてた。"
+    ],
+    [
+      30.0,
+      "さっきから、視線を感じるんだよね..."
+    ],
+    [
+      53.3,
+      "いや、気のせいだと思いたいんだけど。"
+    ],
+    [
+      83.3,
+      "...ねえ、ちょっとだけ怖くなってきちゃって。"
+    ],
+    [
+      108.3,
+      "この家、ずっとなんか...変。"
+    ],
+    [
+      141.7,
+      "...誰か、来てる？"
+    ],
+    [
+      166.7,
+      "...ねえ、信じてくれる？"
+    ]
   ],
   "idle": [
     "うん、そうかも。",
@@ -82,59 +148,158 @@
   },
   "trust_lost_line": "...もういいや。切る。",
   "timeout_line": "...きゃっ...!!",
-  "ghost_scale": [0.95, 1.07],
-  "ghost_pivot": [420, 440],
-  "ghost_face": [430, 60],
+  "ghost_scale": [
+    0.95,
+    1.07
+  ],
+  "ghost_pivot": [
+    420,
+    440
+  ],
+  "ghost_face": [
+    430,
+    60
+  ],
   "belief_start": 0.5,
   "scenes": [
     {
       "id": "hello",
-      "at": 5,
+      "at": 8.3,
       "text": "...あの、今日ね、ちょっとだけ怖くなっちゃって...",
       "wait_choice": true,
       "choices": [
-        {"text": "何があったの？", "chat": "何があったの？", "effect": {"belief": 0.05}, "next_scene": "warm_open"},
-        {"text": "落ち着いて", "chat": "落ち着いて話して。", "effect": {"belief": 0.03}, "next_scene": "warm_open"}
+        {
+          "text": "何があったの？",
+          "chat": "何があったの？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "warm_open"
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて話して。",
+          "effect": {
+            "belief": 0.03
+          },
+          "next_scene": "warm_open"
+        }
       ]
     },
     {
       "id": "warm_open",
-      "at": 24,
+      "at": 40.0,
       "text": "...ありがと。実はさ、今日ずっと視線を感じるんだよね...",
       "wait_choice": true,
       "choices": [
-        {"text": "どこから？", "chat": "どこから？", "effect": {"belief": 0.05}, "next_scene": "about_room"},
-        {"text": "気にしすぎかも", "chat": "気にしすぎかもよ。", "effect": {"belief": -0.03}, "next_scene": "about_room"}
+        {
+          "text": "どこから？",
+          "chat": "どこから？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "about_room"
+        },
+        {
+          "text": "気にしすぎかも",
+          "chat": "気にしすぎかもよ。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "about_room"
+        }
       ]
     },
     {
       "id": "about_room",
-      "at": 45,
+      "at": 75.0,
       "text": "この家、ずっとなんか変。さっき、廊下のほうで音がした。",
       "wait_choice": true,
       "choices": [
-        {"text": "確認した？", "chat": "確認した？", "effect": {"belief": 0.05}, "next_scene": "trust_check"},
-        {"text": "気のせいじゃない？", "chat": "気のせいじゃない？", "effect": {"belief": -0.04}, "next_scene": "trust_check"}
+        {
+          "text": "確認した？",
+          "chat": "確認した？",
+          "effect": {
+            "belief": 0.05
+          },
+          "next_scene": "trust_check"
+        },
+        {
+          "text": "気のせいじゃない？",
+          "chat": "気のせいじゃない？",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "trust_check"
+        }
       ]
     },
     {
       "id": "trust_check",
-      "at": 72,
+      "at": 120.0,
       "text": "...ねえ、もし本当に何かいたら、信じてくれる？",
       "wait_choice": true,
       "choices": [
-        {"text": "もちろん、信じる", "chat": "もちろん、信じる。", "effect": {"belief": 0.08}, "next_scene": "ending"},
-        {"text": "落ち着いて", "chat": "落ち着いて考えて。", "effect": {"belief": -0.03}, "next_scene": "ending"}
+        {
+          "text": "もちろん、信じる",
+          "chat": "もちろん、信じる。",
+          "effect": {
+            "belief": 0.08
+          },
+          "next_scene": "ending"
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて考えて。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "ending"
+        }
       ]
     },
     {
       "id": "ending",
-      "at": 95,
+      "at": 158.3,
       "text": "...ありがとう。今、すごく安心した。",
       "wait_choice": true,
       "choices": [
-        {"text": "絶対に逃げて", "chat": "絶対に逃げて！", "effect": {"belief": 0.07}},
-        {"text": "今すぐ外へ", "chat": "今すぐ外へ！", "effect": {"belief": 0.06}}
+        {
+          "text": "絶対に逃げて",
+          "chat": "絶対に逃げて！",
+          "effect": {
+            "belief": 0.07
+          }
+        },
+        {
+          "text": "今すぐ外へ",
+          "chat": "今すぐ外へ！",
+          "effect": {
+            "belief": 0.06
+          }
+        }
+      ]
+    },
+    {
+      "id": "urgent_warning",
+      "at": 165,
+      "text": "...お願い、早く逃げて！",
+      "wait_choice": true,
+      "choices": [
+        {
+          "text": "今すぐ逃げて",
+          "chat": "今すぐ逃げて！",
+          "effect": {
+            "belief": 0.1
+          }
+        },
+        {
+          "text": "信じてる",
+          "chat": "信じてる。必ず逃げて。",
+          "effect": {
+            "belief": 0.08
+          }
+        }
       ]
     }
   ]
