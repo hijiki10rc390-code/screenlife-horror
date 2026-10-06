@@ -1,0 +1,18 @@
+{
+  "id": "stage5_kawaii",
+  "step": "faces",
+  "base_image": "assets/stages/stage5/base.png",
+  "subject": "pretty adult japanese woman, 26 years old, round soft face, smooth skin, short black bob hair, curvy figure, full bust, white headset with microphone, white t-shirt",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "lure_box": [320, 40, 770, 420],
+  "body_box": [320, 40, 770, 420],
+  "faces": [
+    {
+      "name": "kawaii",
+      "seeds": [80, 81, 82],
+      "strength": 0.6,
+      "prompt": "kawaii cute smile, eyes bright and friendly, slight head tilt, casual relaxed"
+    }
+  ]
+}

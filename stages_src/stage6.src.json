@@ -1,0 +1,126 @@
+{
+  "id": "stage6",
+  "base_image": "outputs/stages_build/stage6/chosen_base.png",
+  "base_prompt": "dark night webcam photo, grainy, medium shot: pretty adult japanese woman, 24 years old, round soft face, smooth skin, light-brown hair in loose side ponytail, curvy figure, full bust, white headset with microphone, knit sweater, sitting at a desk facing the camera, laptop, open dark doorway behind her",
+  "base_neg": "bright, daylight, sofa, white wall, living room, cartoon, anime, text, watermark, neon sign, saturated colors, close-up, thin face, hollow cheeks, wrinkles, nasolabial folds, tired eyes, dark circles, harsh shadows on face, aged, middle-aged, childlike, twin tails, ribbon, flash photography, wide angle distortion",
+  "base_seeds": [
+    21000,
+    21001,
+    21002,
+    21003,
+    21004,
+    21005,
+    21006,
+    21007
+  ],
+  "style": "dark night webcam photo, grainy, underexposed",
+  "ghost_box": [
+    380,
+    0,
+    520,
+    560
+  ],
+  "ghost_prompt": "a tall thin pale figure standing perfectly still in the dark doorway, long black hair covering the face, white dress, unsettling, barely visible",
+  "ghost_neg": "text, watermark, cartoon, anime, bright, colorful",
+  "ghost_seeds": [
+    7,
+    8,
+    9
+  ],
+  "subject": "a pretty adult japanese woman, 24 years old, round soft face, smooth skin, light-brown hair in loose side ponytail, curvy figure, full bust, white headset with microphone, knit sweater",
+  "pronoun": "her",
+  "body_box": [
+    340,
+    40,
+    790,
+    576
+  ],
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "react_seed": 90,
+  "overlay": {
+    "ghost_box": [
+      150,
+      0,
+      400,
+      560
+    ],
+    "body_box": [
+      350,
+      50,
+      780,
+      570
+    ],
+    "lure_box": [
+      330,
+      10,
+      810,
+      570
+    ],
+    "feather": 16
+  },
+  "figure_prompt": "full body photo of a pale thin woman in a long white dress, long black hair covering her face, standing perfectly still, facing the camera, in total darkness, black background, creepy, low light, grainy",
+  "figure_neg": "bright background, colorful, cartoon, anime, text, watermark, smile, gore, blood, nude, child",
+  "figure_seeds": [
+    33,
+    34,
+    35,
+    36
+  ],
+  "figure_place": [
+    160,
+    0,
+    370,
+    540
+  ],
+  "lure_box": [
+    320,
+    0,
+    820,
+    576
+  ],
+  "lures": [
+    {
+      "name": "lean",
+      "prompt": "leaning forward toward the camera with a playful smile, resting her chin on her hand",
+      "strength": 0.7
+    },
+    {
+      "name": "stretch",
+      "prompt": "stretching both arms above her head with a relaxed smile, yawning slightly",
+      "strength": 0.7
+    }
+  ],
+  "figure_clip_y": 340,
+  "faces": [
+    {
+      "name": "smile",
+      "seeds": [90, 91],
+      "strength": 0.65,
+      "prompt": "warm cheerful smile looking at the camera, relaxed and friendly"
+    },
+    {
+      "name": "fear",
+      "seeds": [90, 91],
+      "strength": 0.72,
+      "prompt": "frightened, wide eyes and parted lips, shoulders tense, looking toward something behind her"
+    },
+    {
+      "name": "despair",
+      "seeds": [90, 91, 92],
+      "strength": 0.75,
+      "prompt": "worried and anxious expression, lips trembling, head slightly lowered, dark mood"
+    },
+    {
+      "name": "happy",
+      "seeds": [90, 91, 92],
+      "strength": 0.72,
+      "prompt": "beaming smile with eyes curved in joy, one hand waving at the camera, relieved and happy"
+    },
+    {
+      "name": "worry",
+      "seeds": [90],
+      "strength": 0.7,
+      "prompt": "worried expression with raised eyebrows, concerned look, biting her lip slightly"
+    }
+  ]
+}

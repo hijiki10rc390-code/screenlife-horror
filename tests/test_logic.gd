@@ -142,11 +142,11 @@ func _initialize() -> void:
 	m._on_warn()
 	check("ステージ1を救出 → 次はステージ2", m.state == m.State.SAVED and m._next_stage_no() == 1)
 	m.queue_free()
-	S.stage_no = 3   # stage4（最後のステージ、通話モード）
+	S.stage_no = 5   # stage6（最後のステージ、通話モード）
 	S.difficulty = 1
 	m = await fresh()
 	m._start_call()
-	at(m, 100.0)   # stage4 の人影が見える時刻（ghost_curve [90, 0.6] を通る）
+	at(m, 100.0)   # stage6 の人影が見える時刻（ghost_curve [80, 0.6] を通る）
 	rescue(m)
 	check("最後のステージを救出 → 最初へ戻る", m._next_stage_no() == 0 and not m._has_next_stage())
 	m.queue_free()

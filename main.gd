@@ -30,7 +30,7 @@ const DIFFICULTY_TABLE := [
 ]
 
 # ステージの設定ファイル（画像・人影の範囲・時間割・台詞）。順番に遊ぶ
-const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json"]
+const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json", "res://stages/stage5.json", "res://stages/stage6.json"]
 static var stage_no := 0           # 今のステージ。画面の再読み込みをまたいで保持する
 static var difficulty := 2         # 画面の再読み込みをまたいで保持する。設定にも保存される（既定: むずかしい）
 
@@ -1249,6 +1249,24 @@ func _char_style(who: String) -> Dictionary:
 					"text_color": "#dde8e0",
 					"outline_color": "#3a5048",
 					"stamp": ["👍", "✨", "(^_^)", "(>ω<)"]
+				}
+			"美咲":
+				# 美咲: 26歳デザイナー・落ち着き。紫寄りに
+				return {
+					"name_color": "#c8a8d8",
+					"bubble_color": "#231f2a",
+					"text_color": "#e8ddf0",
+					"outline_color": "#483a50",
+					"stamp": ["💜", "✨", "(/_\\)", "(>ω<)"]
+				}
+			"結衣":
+				# 結衣: 24歳学生・好奇心旺盛。暖色系で
+				return {
+					"name_color": "#e8b8b0",
+					"bubble_color": "#2a201f",
+					"text_color": "#f0d8d2",
+					"outline_color": "#504038",
+					"stamp": ["🌟", "✨", "(^_^)", "(>ω<)"]
 				}
 			_:
 				# デフォルト（後方互換）
