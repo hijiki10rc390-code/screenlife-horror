@@ -137,6 +137,35 @@
 
 衣装差分の生成は `build_stage.py` に `outfit` 工程を追加する形で対応（2026-10-06 実装、画像生成済み）。
 
+### 衣装選択の UI 統合（2026-10-06 完了）
+
+タイトル画面に衣装選択セクションを追加（**デフォルト / パジャマ / パーカー** の 3 ボタン）。
+
+- 選択した衣装は `user://settings.cfg` の `[visual] outfit` に保存
+- 次回起動時に復元
+- 衣装画像は全パターン事前ロード（`_build_scene_viewport` で `outfit_layers` を作成）
+- 切替は表示の on/off だけなので高速
+
+**実装場所**:
+- `main.gd:_build_title_screen()` に衣装セクション追加
+- `main.gd:_set_outfit(name)` で表示切替 + 設定保存
+- `main.gd:_refresh_outfit_btns()` で選択中ボタンを明るく
+- `main.gd:_build_scene_viewport()` で全衣装レイヤーを初期化
+
+**assets/stages/ への衣装画像配置**:
+- `outfit_pajamas.png` (各ステージ)
+- `outfit_hoodie.png` (各ステージ)
+- `.import` ファイルは自動生成
+
+**stages/*.json への追加**:
+```json
+"outfits": {
+  "default": "res://assets/.../base.png",
+  "pajamas":  "res://assets/.../outfit_pajamas.png",
+  "hoodie":   "res://assets/.../outfit_hoodie.png"
+}
+```
+
 ### 衣装画像の生成結果（2026-10-06）
 
 `build_stage.py outfit` 工程で、3 ステージ × 2 衣装（pajamas / hoodie）× 3 seeds = **18 枚** を生成。すべて `outputs/stages_build/<stage>_outfits/` に保存：
