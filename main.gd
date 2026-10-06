@@ -836,8 +836,12 @@ func _build_title_screen() -> void:
 	var sub := _label("（仮題）画面の向こうの異変に、いちばん早く気づけ", Vector2(0, 232), Vector2(1280, 30), title_screen, 20)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.modulate = Color(0.7, 0.75, 0.85)
+	# 遊び方の要約（diegetic 風のメッセージ）
+	var intro := _label("通話・配信の画面の向こうで何が起きているか——\n背後の異変に気づいて、彼女を守ってあげて。", Vector2(0, 268), Vector2(1280, 50), title_screen, 18)
+	intro.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	intro.modulate = Color(0.78, 0.78, 0.85)
 	# 難易度ボタン（サブタイトルと「はじめから」のあいだ）。見出し + 横並び 3 つ
-	_label("難しさ", Vector2(0, 270), Vector2(1280, 28), title_screen, 18).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_label("難しさ", Vector2(0, 322), Vector2(1280, 28), title_screen, 18).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var diff_w := 120
 	var diff_h := 40
 	var diff_gap := 10
@@ -845,22 +849,22 @@ func _build_title_screen() -> void:
 	var diff_x := (1280 - diff_total) / 2          # 450。中央寄せ
 	diff_btns.clear()
 	for i in 3:
-		var b := _button(DIFFICULTY_NAMES[i], Vector2(diff_x + i * (diff_w + diff_gap), 305), Vector2(diff_w, diff_h), Color(0.2, 0.22, 0.28), title_screen)
+		var b := _button(DIFFICULTY_NAMES[i], Vector2(diff_x + i * (diff_w + diff_gap), 355), Vector2(diff_w, diff_h), Color(0.2, 0.22, 0.28), title_screen)
 		b.pressed.connect(_on_difficulty_pressed.bind(i))
 		diff_btns.append(b)
 	_refresh_diff_btns()
-	var y := 370   # 難易度ボタンを入れたので、「はじめから」以下を 40 下にずらす
+	var y := 415   # 説明文と難易度ボタンが追加されたので位置調整
 	var start := _button("はじめから", Vector2(500, y), Vector2(280, 56), Color(0.15, 0.45, 0.25), title_screen)
 	start.pressed.connect(_title_start.bind(0))
 	if reached > 0:
-		var cont := _button("つづきから（ステージ%d）  (Enter)" % (reached + 1), Vector2(450, y + 70), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
+		var cont := _button("つづきから（ステージ%d）  (Enter)" % (reached + 1), Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
 		cont.pressed.connect(_title_start.bind(reached))
 		for i in reached + 1:
-			var b := _button("ステージ%d" % (i + 1), Vector2(450 + i * 130, y + 140), Vector2(120, 44), Color(0.2, 0.22, 0.28), title_screen)
+			var b := _button("ステージ%d" % (i + 1), Vector2(450 + i * 130, y + 130), Vector2(120, 44), Color(0.2, 0.22, 0.28), title_screen)
 			b.pressed.connect(_title_start.bind(i))
-	var quit_btn := _button("終了", Vector2(560, y + 210), Vector2(160, 44), Color(0.3, 0.14, 0.14), title_screen)
+	var quit_btn := _button("終了", Vector2(560, y + 196), Vector2(160, 44), Color(0.3, 0.14, 0.14), title_screen)
 	quit_btn.pressed.connect(get_tree().quit)
-	_label("Esc: 一時停止・音量　1・2・3: 伝え方　クリック: 危険を警告　F11: 全画面", Vector2(0, 680), Vector2(1280, 30), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_label("Esc: 一時停止・音量　1・2・3: 伝え方　クリック: 危険を警告　F11: 全画面", Vector2(0, 690), Vector2(1280, 30), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 
 func _on_difficulty_pressed(d: int) -> void:
