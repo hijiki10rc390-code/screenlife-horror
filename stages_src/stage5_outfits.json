@@ -1,0 +1,22 @@
+{
+  "id": "stage5_outfits",
+  "base_image": "assets/stages/stage5/base.png",
+  "subject": "a pretty adult japanese woman, 26 years old, round soft face, smooth skin, medium light-brown hair, curvy figure, full bust, white gaming headset with microphone, simple knit top",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "body_box": [280, 40, 720, 576],
+  "outfits": [
+    {
+      "name": "pajamas",
+      "prompt": "wearing a soft oversized lavender-purple long-sleeve cotton pajama shirt with crew neckline, matching pajama pants",
+      "seeds": [60, 61, 62],
+      "strength": 0.5
+    },
+    {
+      "name": "hoodie",
+      "prompt": "wearing an oversized dusty-rose hoodie with the sleeves pulled over her hands, dark leggings, relaxed casual",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    }
+  ]
+}

@@ -10,7 +10,16 @@
     "terror": "res://assets/stages/stage9/react_terror.png",
     "saved": "res://assets/stages/stage9/react_saved.png",
     "failed": "res://assets/stages/stage9/react_failed.png",
-    "kawaii": "res://assets/stages/stage9/react_kawaii.png"
+    "kawaii": "res://assets/stages/stage9/react_kawaii.png",
+    "outfits": {
+      "default": "res://assets/stages/stage9/base.png",
+      "pajamas": "res://assets/stages/stage9/outfit_pajamas.png",
+      "hoodie": "res://assets/stages/stage9/outfit_hoodie.png"
+    },
+    "outfit_expressions": {
+      "pajamas": "res://assets/stages/stage9/outfit_sleepy.png",
+      "hoodie": "res://assets/stages/stage9/outfit_casual.png"
+    }
   },
   "ghost_box": [
     100,

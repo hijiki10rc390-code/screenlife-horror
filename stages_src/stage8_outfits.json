@@ -1,0 +1,22 @@
+{
+  "id": "stage8_outfits",
+  "base_image": "assets/stages/stage8/base.png",
+  "subject": "a handsome adult japanese man, 22 years old, gentle face, short brown hair, white gaming headset with microphone, dark hoodie",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "body_box": [280, 40, 720, 576],
+  "outfits": [
+    {
+      "name": "pajamas",
+      "prompt": "wearing a soft oversized navy cotton pajama shirt with crew neck, dark pajama pants, casual relaxed look",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    },
+    {
+      "name": "hoodie",
+      "prompt": "wearing an oversized heather-blue hoodie with the hood down and sleeves slightly pushed up, dark sweatpants, casual cozy",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    }
+  ]
+}

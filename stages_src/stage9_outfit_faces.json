@@ -1,0 +1,18 @@
+{
+  "id": "stage9_outfit_faces",
+  "step": "faces",
+  "base_image": "assets/stages/stage9/outfit_pajamas.png",
+  "subject": "handsome adult japanese man, 21 years old, gentle face, medium-length messy dark-brown hair, one ear piercing, small silver hoop, wearing soft oversized dark-plum cotton pajama shirt with crew neck",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression, cozy relaxed atmosphere",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "lure_box": [280, 40, 720, 420],
+  "body_box": [280, 40, 720, 420],
+  "faces": [
+    {
+      "name": "sleepy_smile",
+      "seeds": [200, 201, 202],
+      "strength": 0.6,
+      "prompt": "sleepy gentle smile, eyes half-lidded and soft, looking drowsy and relaxed, cozy pajama atmosphere, warm sleepy expression"
+    }
+  ]
+}

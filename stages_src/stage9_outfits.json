@@ -1,0 +1,22 @@
+{
+  "id": "stage9_outfits",
+  "base_image": "assets/stages/stage9/base.png",
+  "subject": "a handsome adult japanese man, 21 years old, gentle face, medium-length messy dark-brown hair, one ear piercing, small silver hoop, black band t-shirt",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "body_box": [280, 40, 720, 576],
+  "outfits": [
+    {
+      "name": "pajamas",
+      "prompt": "wearing a soft oversized dark-plum cotton pajama shirt with crew neck, matching dark pajama pants, casual relaxed look",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    },
+    {
+      "name": "hoodie",
+      "prompt": "wearing an oversized deep-aubergine hoodie with the hood down and sleeves slightly pushed up, dark sweatpants, casual cozy",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    }
+  ]
+}

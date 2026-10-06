@@ -1,0 +1,18 @@
+{
+  "id": "stage8_hoodie_faces",
+  "step": "faces",
+  "base_image": "assets/stages/stage8/outfit_hoodie.png",
+  "subject": "handsome adult japanese man, 22 years old, gentle face, short brown hair, white gaming headset with microphone, wearing oversized heather-blue hoodie with sleeves slightly pushed up",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression, casual cozy atmosphere",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "lure_box": [280, 40, 720, 420],
+  "body_box": [280, 40, 720, 420],
+  "faces": [
+    {
+      "name": "casual_smile",
+      "seeds": [220, 221, 222],
+      "strength": 0.6,
+      "prompt": "casual relaxed smile, comfortable and at ease, slightly tilted head, natural friendly expression, casual cozy hoodie atmosphere"
+    }
+  ]
+}

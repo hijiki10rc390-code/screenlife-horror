@@ -1,0 +1,18 @@
+{
+  "id": "stage5_outfit_faces",
+  "step": "faces",
+  "base_image": "assets/stages/stage5/outfit_pajamas.png",
+  "subject": "pretty adult japanese woman, 26 years old, round soft face, smooth skin, medium light-brown hair, curvy figure, full bust, white gaming headset with microphone, wearing soft oversized lavender-purple long-sleeve cotton pajama shirt",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol, cozy sleepy atmosphere",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "lure_box": [280, 40, 720, 420],
+  "body_box": [280, 40, 720, 420],
+  "faces": [
+    {
+      "name": "sleepy_smile",
+      "seeds": [200, 201, 202],
+      "strength": 0.6,
+      "prompt": "sleepy gentle smile, eyes half-lidded and soft, looking drowsy and relaxed, cozy pajama atmosphere, warm sleepy expression"
+    }
+  ]
+}
