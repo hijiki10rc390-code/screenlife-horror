@@ -1197,10 +1197,10 @@ func _say(who: String, text: String) -> void:
 	var heart := "[color=#ff8db0]💗[/color]  " if is_friend and belief >= TRUST_HIGH - TRUST_EPS else ""
 	# outline= で視認性を上げる（暗い背景に薄いチャットが溶ける問題を緩和）
 	# indent= で左寄せ時に余白を作って「吹き出し感」を出す
-	var indent := "[indent=12]" if is_friend else "[indent=12]"
-	var end_indent := "[/indent]"
-	var line := "%s%s[bgcolor=%s][outline_color=%s][color=%s]%s[/color]%s  %s[/outline_color][color=%s]%s[/color]  [color=#888]%s[/color][/bgcolor]%s%s\n\n" % [
-		align_tag, indent, bubble_color, outline_color, name_color, who, deco, heart, text_color, text, time_str, end_indent, end_tag
+	var indent := ""  # 吹き出しの余白（BBCode [indent] はうまく動かないため不使用）
+	var end_indent := ""
+	var line := "%s[bgcolor=%s][outline_color=%s][color=%s]%s[/color]%s  %s[/outline_color][color=%s]%s[/color]  [color=#888]%s[/color][/bgcolor]%s%s\n\n" % [
+		align_tag, bubble_color, outline_color, name_color, who, deco, heart, text_color, text, time_str, end_indent, end_tag
 	]
 	chat_log.append_text(line)
 	if is_friend:
