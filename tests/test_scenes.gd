@@ -156,7 +156,7 @@ func _initialize() -> void:
 
 	# 12. 全 9 ステージで scenes が動く（Phase 3 で全展開）
 	# 各ステージの最初の scene.at を JSON から取得して動的にテストする
-	for stage_idx in 9:
+	for stage_idx in 10:
 		m = await fresh(stage_idx)
 		var stage_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage%d.json" % (stage_idx + 1)))
 		var stage_scenes: Array = stage_data.get("scenes", [])

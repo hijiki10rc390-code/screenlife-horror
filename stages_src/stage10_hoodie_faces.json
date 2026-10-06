@@ -1,0 +1,18 @@
+{
+  "id": "stage10_hoodie_faces",
+  "step": "faces",
+  "base_image": "assets/stages/stage10/outfit_hoodie.png",
+  "subject": "pretty adult japanese woman, 23 years old, round soft face, smooth skin, medium-length black hair pulled back in low ponytail, kind mature eyes, white nurse uniform with stethoscope, wearing oversized forest-green hoodie with sleeves pulled over hands",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol, casual relaxed atmosphere",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "lure_box": [280, 40, 720, 420],
+  "body_box": [280, 40, 720, 420],
+  "faces": [
+    {
+      "name": "casual_smile",
+      "seeds": [220, 221, 222],
+      "strength": 0.6,
+      "prompt": "casual relaxed mature smile, comfortable and at ease, slightly tilted head, natural friendly expression, casual cozy hoodie atmosphere"
+    }
+  ]
+}

@@ -30,7 +30,7 @@ const DIFFICULTY_TABLE := [
 ]
 
 # ステージの設定ファイル（画像・人影の範囲・時間割・台詞）。順番に遊ぶ
-const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json", "res://stages/stage5.json", "res://stages/stage6.json", "res://stages/stage7.json", "res://stages/stage8.json", "res://stages/stage9.json"]
+const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json", "res://stages/stage5.json", "res://stages/stage6.json", "res://stages/stage7.json", "res://stages/stage8.json", "res://stages/stage9.json", "res://stages/stage10.json"]
 static var stage_no := 0           # 今のステージ。画面の再読み込みをまたいで保持する
 static var difficulty := 2         # 画面の再読み込みをまたいで保持する。設定にも保存される（既定: むずかしい）
 
@@ -1298,6 +1298,15 @@ func _char_style(who: String) -> Dictionary:
 					"text_color": "#e8e0f0",
 					"outline_color": "#403848",
 					"stamp": ["💜", "✨", "(/_\\)", "(>ω<)"]
+				}
+			"凛":
+				# 凛: 23歳看護師・落ち着いた大人の雰囲気・ティール寄りに
+				return {
+					"name_color": "#a8d0c8",
+					"bubble_color": "#1f2a2a",
+					"text_color": "#d8e8e8",
+					"outline_color": "#384848",
+					"stamp": ["🍀", "✨", "(:3", "(>ω<)"]
 				}
 			_:
 				# デフォルト（後方互換）

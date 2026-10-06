@@ -1,0 +1,22 @@
+{
+  "id": "stage10_outfits",
+  "base_image": "assets/stages/stage10/base.png",
+  "subject": "a pretty adult japanese woman, 23 years old, round soft face, smooth skin, medium-length black hair pulled back in low ponytail, kind mature eyes, white nurse uniform with stethoscope",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "body_box": [280, 40, 720, 576],
+  "outfits": [
+    {
+      "name": "pajamas",
+      "prompt": "wearing a soft oversized teal long-sleeve cotton pajama shirt with crew neck, matching dark teal pajama pants",
+      "seeds": [60, 61, 62],
+      "strength": 0.5
+    },
+    {
+      "name": "hoodie",
+      "prompt": "wearing an oversized forest-green hoodie with sleeves pulled over her hands, dark leggings, mature casual cozy",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    }
+  ]
+}

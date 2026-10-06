@@ -130,8 +130,8 @@ func _initialize() -> void:
 	m.queue_free()
 
 	# 10. 全ステージで outfit_expressions が登録されている
-	# 全 9 ステージに pajamas / hoodie の衣装専用表情がある
-	for stage_idx in 9:
+	# 全 10 ステージに pajamas / hoodie の衣装専用表情がある
+	for stage_idx in 10:
 		m = await fresh(stage_idx)
 		var assets: Dictionary = m.assets
 		check("ステージ%d: outfit_expressions がある" % (stage_idx + 1),
@@ -139,7 +139,7 @@ func _initialize() -> void:
 		m.queue_free()
 
 	# 11. 全ステージ × 衣装切替で kawaii 表情が変わる
-	for stage_idx in 9:
+	for stage_idx in 10:
 		m = await fresh(stage_idx)
 		m.max_trust_reached = 0.85
 		var before: Texture = m.react_tex["kawaii"]

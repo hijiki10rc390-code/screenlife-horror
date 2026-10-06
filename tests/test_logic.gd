@@ -145,14 +145,14 @@ func _initialize() -> void:
 	m._on_warn()
 	check("ステージ1を救出 → 次はステージ2", m.state == m.State.SAVED and m._next_stage_no() == 1)
 	m.queue_free()
-	S.stage_no = 8   # stage9（最後のステージ、通話モード）
+	S.stage_no = 9   # stage10（最後のステージ、通話モード）
 	S.difficulty = 1
 	m = await fresh()
 	m._start_call()
-	# stage9 の ghost_curve 末尾時刻 - 15 秒（人影が濃く、信頼が低くても救出できる時刻）
-	var stage9_p: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage9.json"))
-	var stage9_max_t: float = float(stage9_p["ghost_curve"][-1][0])
-	at(m, stage9_max_t - 5.0)
+	# stage10 の ghost_curve 末尾時刻 - 15 秒（人影が濃く、信頼が低くても救出できる時刻）
+	var stage10_p: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage10.json"))
+	var stage10_max_t: float = float(stage10_p["ghost_curve"][-1][0])
+	at(m, stage10_max_t - 5.0)
 	rescue(m)
 	check("最後のステージを救出 → 最初へ戻る", m._next_stage_no() == 0 and not m._has_next_stage())
 	m.queue_free()
@@ -194,9 +194,9 @@ func _initialize() -> void:
 	m = await fresh()
 	m.total_rescues = SD2.STAGE_FILES.size() - 1
 	m._start_call()
-	var stage9_q_data_e: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage9.json"))
-	var stage9_max_t_e: float = float(stage9_q_data_e["ghost_curve"][-1][0])
-	at(m, stage9_max_t_e - 25.0)
+	var stage10_q_data_e: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage10.json"))
+	var stage10_max_t_e: float = float(stage10_q_data_e["ghost_curve"][-1][0])
+	at(m, stage10_max_t_e - 25.0)
 	rescue(m)
 	check("全クリア: end_label に「全員救出！ クリア！」",
 		m.end_label.text.contains("全員救出"))
