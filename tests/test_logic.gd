@@ -1087,6 +1087,22 @@ func _initialize() -> void:
 	check("plan15・_char_style の戻り値型が Dictionary（型注釈確認）", typeof(_test) == TYPE_DICTIONARY)
 	m.queue_free()
 
+	# plan17: 段階的エンディング（saved_lines）
+	# belief の高さで分岐することを確認
+	S.stage_no = 0   # stage1
+	m = await fresh()
+	m.belief = 0.9
+	var high_line: String = m._saved_line_for(m.belief)
+	check("plan17・belief=0.9 で high_belief が返る", "信じて" in high_line or "大好き" in high_line)
+	m.belief = 0.5
+	var mid_line: String = m._saved_line_for(m.belief)
+	check("plan17・belief=0.5 で mid_belief が返る",
+		"外に出る" in mid_line or "やだ" in mid_line or mid_line == m.saved_line)
+	m.belief = 0.2
+	var low_line: String = m._saved_line_for(m.belief)
+	check("plan17・belief=0.2 で low_belief が返る", "疑ってる" in low_line or "疑い" in low_line or "信じきれ" in low_line)
+	m.queue_free()
+
 	# plan16: 衣装選択のテスト
 	for si in 3:
 		S.stage_no = si

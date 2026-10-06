@@ -1325,6 +1325,19 @@ func _ghost_alpha_at(time: float) -> float:
 	return _curve_alpha(time) * _relief_factor(time)
 
 
+# saved_lines: 安心度で分岐する ending を選択する
+# 満足度の高低で高/中/低の saved_lines を返す。無い場合は saved_line にフォールバック
+func _saved_line_for(belief: float) -> String:
+	var lines: Dictionary = stage_d.get("saved_lines", {})
+	if belief >= 0.7 and lines.has("high_belief"):
+		return lines["high_belief"]
+	if belief < 0.4 and lines.has("low_belief"):
+		return lines["low_belief"]
+	if lines.has("mid_belief"):
+		return lines["mid_belief"]
+	return saved_line
+
+
 # 人影が「映った」と扱われる最初の時刻（秒）。緩和を含めない時間割の濃さで判定する
 func _first_seen_time() -> float:
 	var x := 0.0
@@ -1636,7 +1649,7 @@ func _on_warn(phrase := 0) -> void:
 			_say(friend, doubt_lines.pick_random())
 			hint_label.text = "信頼が足りなかった。話しかけて信頼をためるか、「逃げて！」で強く伝えよう。"
 			return
-		_say(friend, saved_line)
+		_say(friend, _saved_line_for(belief))
 		_finish(State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
 		return
 	false_alarms += 1
@@ -1685,7 +1698,7 @@ func _on_comment(i: int, pos: Variant = null) -> void:
 		warn_times.append(t)
 		warn_times = warn_times.filter(func(x: float) -> bool: return t - x <= warn_window)
 		if warn_times.size() >= need_warnings:
-			_say(friend, saved_line)
+			_say(friend, _saved_line_for(belief))
 			_finish(State.SAVED, "配信者に伝わった", Color(0.6, 1.0, 0.7))
 		else:
 			_say(friend, miss_wrong.pick_random())
