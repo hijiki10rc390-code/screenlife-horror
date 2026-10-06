@@ -30,7 +30,7 @@ const DIFFICULTY_TABLE := [
 ]
 
 # ステージの設定ファイル（画像・人影の範囲・時間割・台詞）。順番に遊ぶ
-const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json", "res://stages/stage5.json", "res://stages/stage6.json", "res://stages/stage7.json"]
+const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json", "res://stages/stage5.json", "res://stages/stage6.json", "res://stages/stage7.json", "res://stages/stage8.json"]
 static var stage_no := 0           # 今のステージ。画面の再読み込みをまたいで保持する
 static var difficulty := 2         # 画面の再読み込みをまたいで保持する。設定にも保存される（既定: むずかしい）
 
@@ -1276,6 +1276,15 @@ func _char_style(who: String) -> Dictionary:
 					"text_color": "#d8e8e0",
 					"outline_color": "#385040",
 					"stamp": ["💚", "✨", "(/_\\)", "(>ω<)"]
+				}
+			"海":
+				# 海: 22歳プログラマー・夜更かし。ブルー寄りに
+				return {
+					"name_color": "#a8c0e0",
+					"bubble_color": "#1f2228",
+					"text_color": "#dde0e8",
+					"outline_color": "#384858",
+					"stamp": ["👍", "✨", "(^_^)", "(>ω<)"]
 				}
 			_:
 				# デフォルト（後方互換）

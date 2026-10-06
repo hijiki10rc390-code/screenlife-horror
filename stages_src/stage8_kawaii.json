@@ -1,0 +1,18 @@
+{
+  "id": "stage8_kawaii",
+  "step": "faces",
+  "base_image": "assets/stages/stage8/base.png",
+  "subject": "a handsome adult japanese man, 22 years old, gentle face, short brown hair, white gaming headset with microphone, dark hoodie",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, friendly casual expression",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "lure_box": [280, 40, 720, 420],
+  "body_box": [280, 40, 720, 420],
+  "faces": [
+    {
+      "name": "kawaii",
+      "seeds": [140, 141, 142],
+      "strength": 0.6,
+      "prompt": "kawaii cute smile, eyes bright and friendly, slight head tilt, casual relaxed"
+    }
+  ]
+}

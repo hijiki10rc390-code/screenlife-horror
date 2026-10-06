@@ -22,6 +22,13 @@ func fresh() -> Control:
 	m.persist = false     # 実際の設定・進行を書き換えない（テスト用）
 	root.add_child(m)
 	await process_frame   # _ready が走るのを待つ
+	# scenes が _waiting_choice を立てて _on_warn をブロックするのを防ぐため、
+	# test_logic と同じく scenes を空にする（scenes のテストは test_scenes.gd に分離）
+	m.scenes = []
+	m._scene_idx = 0
+	m._waiting_choice = false
+	m._hide_scene_buttons()
+	m.lock_left = 0.0
 	return m
 
 
@@ -205,7 +212,8 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
-	# 4. 連続クリア: ステージ 0 → 1 → 2 を名人ボットで順にクリア。最後のステージは 0 に戻る
+	# 4. 連続クリア: ステージ 0 → 1 → (最後) を名人ボットで順にクリア。最後のステージは 0 に戻る
+	var last_stage_no: int = S.STAGE_FILES.size() - 1
 	S.stage_no = 0
 	m = await fresh()
 	m._start_call()
@@ -223,10 +231,11 @@ func _initialize() -> void:
 	S.stage_no = m._next_stage_no()
 	m.queue_free()
 
+	S.stage_no = last_stage_no
 	m = await fresh()
 	m._start_call()
-	var ok2: bool = await play_master(m)
-	check("連続クリア: ステージ2救出", ok2)
+	var okL: bool = await play_master(m)
+	check("連続クリア: 最後のステージ（%d）救出" % (last_stage_no + 1), okL)
 	check("連続クリア: 最後のステージの次は0", m._next_stage_no() == 0)
 	S.stage_no = 0
 	m.queue_free()

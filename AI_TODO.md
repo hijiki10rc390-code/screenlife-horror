@@ -79,6 +79,25 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-06 19:xx — stage8（海・プログラマー）を追加（plan 20 続き）+ test_playthrough 修正
+  - stages_src/stage8.src.json: 22歳日本人男性・茶髪・ダークパーカー・コードエディタ
+    base seeds 23000-23007、figure seeds 41-44、lure（lean/stretch）、faces 5 種
+  - stages_src/stage8_kawaii.json: kawaii 表情 seeds 140-142
+  - stages/stage8.json: friend = "海", belief_start = 0.4
+    scenes 5 個、saved_lines 3 種類、fail_at = 128秒
+    ghost_box [120, 0, 290, 560]、ghost_curve [0,0]→[22,0]→[35,0.1]→[58,0.2]→[88,0.55]→[112,1.0]
+    trust_lost_line / timeout_line あり
+  - assets/stages/stage8/: base / ghost（figure_41）/ react_uneasy・scared・terror・kawaii・saved・failed / lure_lean・stretch + .import
+    kawaii は `tools/apply_strong_fear.py` で person_overlay を適用（seed 140 採用）
+    saved / failed は stage2 から流用（共通リアクション）
+  - main.gd: STAGE_FILES に stage8.json を追加、_char_style に "海"（ブルー系）
+  - tests/test_scenes.gd: stage8 の scenes テスト追加
+  - tests/test_logic.gd: 最終ステージを stage8（stage_no=7）に変更
+  - tests/test_outfit_unlock.gd: ループ範囲を 8 ステージに拡大
+  - tests/test_playthrough.gd: `fresh()` で scenes を空にする（test_logic と同じ方式。これがないと use_phrases=true のステージで _waiting_choice が永久に立って _on_warn がブロックされる。stage8 追加以前から存在していた不具合）、連続クリアテストを「最後のステージ」基準に変更
+  - 合計テスト: 434 OK / 0 NG（test_logic 258 + test_scenes 39 + test_outfit_unlock 46 + test_playthrough 91）
+  - メモ: キャラ名「海」は仮。ユーザー確認後に変更可能
+
 - 2026-10-06 12:xx — 衣装アンロックの全ステージ展開
   - stages_src/stage1_outfit_faces.json, stage1_hoodie_faces.json, stage3_outfit_faces.json, stage3_hoodie_faces.json: 衣装用表情の生成設定を追加
   - assets/stages/stage1/outfit_sleepy.png, outfit_casual.png: stage1 用衣装専用表情（build_stage.py faces で生成、sleepy_smile_200 / casual_smile_220 採用）
