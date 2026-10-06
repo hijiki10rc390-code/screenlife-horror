@@ -988,10 +988,10 @@ func _say(who: String, text: String) -> void:
 	if is_friend and belief >= 0.6 - TRUST_EPS:
 		# 信頼度が高いとき、キャラごとに違うハート・スタンプを添える
 		deco = "  [color=#ff8db0]" + cs["stamp"][randi() % cs["stamp"].size()] + "[/color]"
-	var name_color := cs["name_color"]
-	var bubble_color := cs["bubble_color"]
-	var text_color := cs["text_color"]
-	var outline_color := cs["outline_color"]
+	var name_color: String = cs["name_color"]
+	var bubble_color: String = cs["bubble_color"]
+	var text_color: String = cs["text_color"]
+	var outline_color: String = cs["outline_color"]
 	var align_tag := "" if is_friend else "[right]"
 	var end_tag := "" if is_friend else "[/right]"
 	var tm := int(t)
