@@ -1,0 +1,18 @@
+{
+  "id": "stage3_strong_fear_v4",
+  "step": "faces",
+  "base_image": "assets/stages/stage3/base.png",
+  "subject": "pretty adult japanese woman, 24 years old, round soft face, smooth skin, medium light-brown hair, curvy figure, full bust, white headset with microphone, sporty camisole top",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol, stream webcam setup",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles, smile, smiling, happy, laughing, teeth showing, grin",
+  "lure_box": [340, 40, 790, 420],
+  "body_box": [340, 40, 790, 420],
+  "faces": [
+    {
+      "name": "terror_v4",
+      "seeds": [100, 101, 102, 103, 104],
+      "strength": 0.92,
+      "prompt": "horrified screaming face, mouth wide open showing terror scream, eyes wide with fear and panic, eyebrows raised high, hands raised covering face in panic, hair disheveled, pale skin, dramatic intense expression of absolute terror, NOT smiling NOT happy NOT laughing"
+    }
+  ]
+}
