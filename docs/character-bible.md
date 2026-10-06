@@ -135,7 +135,39 @@
 | パーカー（オーバーサイズ） | 配信 | 冬 | stage3 専用 |
 | 部屋着（スウェット） | 通話 | 冬 | stage1/2 用 |
 
-衣装差分の生成は `build_stage.py` に `outfit` 工程を追加する形で対応（2026-10-06 未実装）。
+衣装差分の生成は `build_stage.py` に `outfit` 工程を追加する形で対応（2026-10-06 実装、画像生成済み）。
+
+### 衣装画像の生成結果（2026-10-06）
+
+`build_stage.py outfit` 工程で、3 ステージ × 2 衣装（pajamas / hoodie）× 3 seeds = **18 枚** を生成。すべて `outputs/stages_build/<stage>_outfits/` に保存：
+
+| ステージ | キャラ | 衣装 | ファイル例 |
+|---|---|---|---|
+| stage1_outfits | Mika | pajamas | `outfit_pajamas_60/61/62.png` |
+| stage1_outfits | Mika | hoodie | `outfit_hoodie_60/61/62.png` |
+| stage2_outfits | Aoi | pajamas | `outfit_pajamas_60/61/62.png` |
+| stage2_outfits | Aoi | hoodie | `outfit_hoodie_60/61/62.png` |
+| stage3_outfits | ゆめ | pajamas | `outfit_pajamas_60/61/62.png` |
+| stage3_outfits | ゆめ | hoodie | `outfit_hoodie_60/61/62.png` |
+
+プロンプトの例（Aoi のパジャマ）:
+```
+a pretty adult japanese woman, 23 years old, round soft face, smooth skin,
+long light-brown hair, curvy figure, full bust, white headset with microphone,
+camisole top with lace trim, wearing a soft oversized cream-colored long-sleeve
+cotton pajama shirt with delicate lace trim at the collar, matching pajama
+pants, dark night webcam photo, grainy, medium shot, soft warm light on face,
+kawaii idol
+```
+
+インペイント強度: 0.5-0.55（顔が変わらないように控えめ）。
+
+### lunge figure 配置の修正（2026-10-06）
+
+襲いかかり時に ghost がキャラの顔に重なる問題を修正：
+- `tools/align_lunge_overlay.py` を新設
+- 既存の lunge figure (832x1216) を 1024x576 canvas に配置する際、`ghost_face` 座標を基準に顔の x/y を一致させる
+- 3 ステージすべてで再生成し、`assets/stages/<id>/ghost_overlay.png` を更新
 
 ---
 
