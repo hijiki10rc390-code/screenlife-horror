@@ -79,6 +79,15 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-07 朝まで自律開発: stage9 追加 / fail_at 拡張 / 衣装展開 / エンディングルート分岐
+  - stage9（蒼・映像制作・21歳）を生成・追加（plan 20 続き）
+  - 全 9 ステージの fail_at を 180-230 秒に延長（1.7-2.1 倍）
+  - 衣装アンロックを stage4-9 まで展開（男性 3 人 / 女性 3 人）
+  - エンディングのルート分岐: 累計救出数で「初救出！」「全員救出！クリア！」などの段階メッセージ
+  - test_playthrough 修正（scenes が _on_warn をブロックしていた pre-existing 不具合）
+  - tests を fail_at 拡張に対応（JSON から動的に値を取得）
+  - 合計テスト: 459 OK / 0 NG（test_logic 267 + test_scenes 45 + test_outfit_unlock 46 + test_playthrough 101）
+
 - 2026-10-06 19:xx — stage8（海・プログラマー）を追加（plan 20 続き）+ test_playthrough 修正
   - stages_src/stage8.src.json: 22歳日本人男性・茶髪・ダークパーカー・コードエディタ
     base seeds 23000-23007、figure seeds 41-44、lure（lean/stretch）、faces 5 種
