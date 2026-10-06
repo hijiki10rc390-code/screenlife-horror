@@ -115,6 +115,14 @@ var stutter_next := 0.0        # 次のコマ落ちを起こせるまでの秒�
 var lunge := 0.0               # 失敗の瞬間の襲いかかり（0→1）。0 のとき非アクティブ
 var dim_left := 0.0            # きしみに合わせた暗転の残り秒数（0 のとき非アクティブ）
 
+# --- 計画: 会話シーン（scenes）と選択肢 ---
+var scenes := []                # ステージ JSON の scenes 配列（[{id, at, text, condition, wait_choice, choices, ...}, ...]）
+var _scene_idx := 0             # 次に処理する scenes のインデックス
+var _waiting_choice := false    # プレイヤーの選択待ち
+var _current_scene := {}        # 進行中の scene dict
+var _scene_btns: Array[Button] = []   # 選択肢ボタン（chat_log の右に並ぶ）
+const SCENE_MAX_JUMPS := 32     # シーン連鎖の最大回数（循環参照対策）
+
 var shot_mode := false
 var shot_frame := 0
 
@@ -1109,6 +1117,39 @@ func _load_stage() -> void:
 	belief = belief_start
 	doubt_lines = d.get("doubt", ["...またそうやって脅かす。", "え、ほんとに？ いたずらじゃなくて？"])
 	use_phrases = mode != "stream" and belief_start < 1.0
+	# scenes: 会話シーン配列。バリデーション付きで読み込み
+	scenes = []
+	_scene_idx = 0
+	_waiting_choice = false
+	_current_scene = {}
+	var raw_scenes: Array = d.get("scenes", [])
+	var scene_ids := {}
+	for s in raw_scenes:
+		var sd: Dictionary = s
+		if not sd.has("id") or not sd.has("at"):
+			push_error("scenes に id / at が無いエントリがあります: " + str(sd))
+			continue
+		if scene_ids.has(sd["id"]):
+			push_error("scenes に id 重複: " + str(sd["id"]))
+			continue
+		scene_ids[sd["id"]] = true
+		scenes.append(sd)
+	# next_scene の参照先検証
+	var id_set := {}
+	for sd in scenes:
+		id_set[sd["id"]] = true
+	for i in scenes.size():
+		var sd: Dictionary = scenes[i]
+		var cs: Array = sd.get("choices", [])
+		for j in cs.size():
+			var ch: Dictionary = cs[j]
+			var nxt: String = ch.get("next_scene", "")
+			if nxt != "" and not id_set.has(nxt):
+				push_error("scenes[%s].choices[%d].next_scene が存在しない: %s" % [sd["id"], j, nxt])
+				ch["next_scene"] = ""
+				cs[j] = ch
+		sd["choices"] = cs
+		scenes[i] = sd
 	stage_d = d
 
 
@@ -1367,6 +1408,162 @@ func _set_mark(scene_pos: Vector2) -> void:
 	create_tween().tween_property(marker, "modulate:a", 0.0, 0.25).set_delay(0.4)
 
 
+# --- 計画: 会話シーン（scenes）と選択肢 ---
+
+# scenes の at 到達を確認し、新しいシーンを開始する。
+# _process から毎フレーム呼ばれるほか、テストからも直接呼んでよい。
+func _scene_pulse() -> void:
+	if _waiting_choice:
+		return
+	var jumps := 0
+	while _scene_idx < scenes.size() and t >= float(scenes[_scene_idx]["at"]):
+		if _waiting_choice:
+			break   # _start_scene で wait_choice が入ったら、次のシーンは保留
+		var s: Dictionary = scenes[_scene_idx]
+		_scene_idx += 1
+		if not _check_condition(s.get("condition", "")):
+			continue
+		_start_scene(s)
+		jumps += 1
+		if jumps >= SCENE_MAX_JUMPS:
+			push_error("scenes の連鎖が %d 回到達。上限を超えました。" % SCENE_MAX_JUMPS)
+			break
+
+
+# シーンを開始する。wait_choice なら選択肢 UI を出してプレイヤーの選択を待つ。
+# auto_next_sec が指定されているシナリオは待たずに次のシーンへ進む（演出用）。
+func _start_scene(scene: Dictionary) -> void:
+	_current_scene = scene
+	var text: String = scene.get("text", "")
+	if text != "":
+		_say(friend, text)
+	if scene.get("wait_choice", false):
+		var cs: Array = scene.get("choices", [])
+		if cs.size() == 0:
+			return
+		_waiting_choice = true
+		_show_scene_buttons(cs)
+		# 選択肢待ち中は _on_warn を lock_left で実質ブロック
+		lock_left = maxf(lock_left, 999.0)
+	else:
+		# 自動進行：auto_next_sec でタイムラインを進めずに次の scene を待つ
+		# 現状は _process で _scene_idx が次の at を処理する
+		pass
+
+
+# 構造化 condition を評価する。空文字 / 未指定は true。
+# 形式: {"var": "belief", "op": ">=", "value": 0.5}
+# または省略時は true。
+func _check_condition(cond) -> bool:
+	if cond == null:
+		return true
+	if cond is String:
+		return (cond as String) == ""
+	if cond is Dictionary:
+		var c: Dictionary = cond
+		if c.has("var") and c.has("op"):
+			var var_name: String = c["var"]
+			var op: String = c["op"]
+			var val = c.get("value", null)
+			var actual = _get_var(var_name)
+			match op:
+				">=":
+					return actual >= val
+				">":
+					return actual > val
+				"<=":
+					return actual <= val
+				"<":
+					return actual < val
+				"==":
+					return actual == val
+				"!=":
+					return actual != val
+			push_error("未知の比較演算子: " + op)
+			return false
+	push_error("condition の形式が不正: " + str(cond))
+	return false
+
+
+# condition で参照する変数を取り出す。未知変数は push_error して 0。
+func _get_var(name: String):
+	match name:
+		"belief": return belief
+		"t": return t
+		"false_alarms": return false_alarms
+		"max_trust_reached": return max_trust_reached
+	push_error("未知の condition 変数: " + name)
+	return 0
+
+
+# プレイヤーがシーンの選択肢を選んだとき呼ばれる。
+func _on_scene_choice(choice_idx: int) -> void:
+	if not _waiting_choice:
+		return
+	var cs: Array = _current_scene.get("choices", [])
+	if choice_idx < 0 or choice_idx >= cs.size():
+		return
+	var ch: Dictionary = cs[choice_idx]
+	# プレイヤーの発言
+	var chat: String = ch.get("chat", ch.get("text", ""))
+	if chat != "":
+		_say("あなた", chat)
+	# 効果（belief など）をクランプして反映
+	var eff: Dictionary = ch.get("effect", {})
+	for k in eff.keys():
+		var v = eff[k]
+		match k:
+			"belief":
+				belief = clampf(belief + float(v), 0.0, 1.0)
+			_:
+				push_error("未知の effect キー: " + str(k))
+	# 選択肢 UI を消す
+	_waiting_choice = false
+	_hide_scene_buttons()
+	lock_left = 0.0   # ロック解除（_start_scene で立てた 999.0 を戻す）
+	# next_scene への遷移
+	var nxt: String = ch.get("next_scene", "")
+	if nxt == "":
+		_current_scene = {}
+		return
+	# next_scene を探す。_scene_idx から先頭方向に走査（連鎖が自然な順序になっている前提）
+	for i in scenes.size():
+		if scenes[i]["id"] == nxt:
+			_scene_idx = i
+			_current_scene = {}
+			return
+	push_error("next_scene が見つからない: " + nxt)
+	_current_scene = {}
+
+
+# 選択肢ボタンを画面に出す。
+func _show_scene_buttons(choices: Array) -> void:
+	_hide_scene_buttons()
+	var n := choices.size()
+	if n == 0:
+		return
+	# チャット欄の右側（VIDEO_POS + VIDEO_SIZE の下）に縦並び
+	var start_y := VIDEO_POS.y + VIDEO_SIZE.y - 32.0 - float(n) * 60.0
+	for i in n:
+		var ch: Dictionary = choices[i]
+		var b := Button.new()
+		b.text = ch.get("text", "...")
+		b.custom_minimum_size = Vector2(220.0, 50.0)
+		b.position = Vector2(VIDEO_POS.x + VIDEO_SIZE.x + 12.0, start_y + i * 56.0)
+		b.modulate = Color(0.95, 0.95, 1.0)
+		b.pressed.connect(_on_scene_choice.bind(i))
+		add_child(b)
+		_scene_btns.append(b)
+
+
+# 選択肢ボタンを消す。
+func _hide_scene_buttons() -> void:
+	for b in _scene_btns:
+		if is_instance_valid(b):
+			b.queue_free()
+	_scene_btns.clear()
+
+
 func _on_talk() -> void:
 	if state != State.PLAYING or mode == "stream" or talk_left > 0.0:
 		return
@@ -1497,6 +1694,10 @@ func _say_viewer(text: String) -> void:
 
 func _finish(new_state: State, message: String, color: Color) -> void:
 	state = new_state
+	# シーン進行中の UI を片付ける
+	if _waiting_choice:
+		_waiting_choice = false
+		_hide_scene_buttons()
 	end_label.text = message
 	end_label.modulate = color
 	end_panel.visible = true
@@ -1631,6 +1832,7 @@ func _process(delta: float) -> void:
 	if state == State.PLAYING:
 		lock_left = maxf(0.0, lock_left - delta)
 		talk_left = maxf(0.0, talk_left - delta)
+		_scene_pulse()
 		while timeline_idx < timeline.size() and t >= timeline[timeline_idx][0]:
 			_say(friend, timeline[timeline_idx][1])
 			timeline_idx += 1

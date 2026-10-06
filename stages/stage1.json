@@ -146,5 +146,67 @@
   "ghost_face": [
     621,
     194
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "at": 5,
+      "text": "ねー聞いて聞いて！今日ね、ちょっとヘマしちゃって...",
+      "wait_choice": true,
+      "choices": [
+        {"text": "えっ、なに、なに？", "chat": "えっ、なに、なに？", "effect": {"belief": 0.05}, "next_scene": "warm"},
+        {"text": "あとで聞かせて", "chat": "ごめん、あとでね", "effect": {"belief": -0.04}, "next_scene": "distant"}
+      ]
+    },
+    {
+      "id": "warm",
+      "at": 19,
+      "text": "やっぱ聞いてくれる？ ねー、ありがと。今日さ、上司に怒られてさ〜",
+      "wait_choice": true,
+      "choices": [
+        {"text": "えー、それはきついね", "chat": "えー、それはきついね", "effect": {"belief": 0.05}, "next_scene": "after_work"},
+        {"text": "大丈夫だった？", "chat": "大丈夫だった？", "effect": {"belief": 0.04}, "next_scene": "after_work"}
+      ]
+    },
+    {
+      "id": "distant",
+      "at": 19,
+      "text": "...うん、わかってないかも...って、まあいいや。",
+      "wait_choice": true,
+      "choices": [
+        {"text": "ごめん、聞くよ", "chat": "ごめんね、聞くよ。", "effect": {"belief": 0.03}, "next_scene": "after_work"},
+        {"text": "うん", "chat": "うん。", "effect": {"belief": -0.02}, "next_scene": "after_work"}
+      ]
+    },
+    {
+      "id": "after_work",
+      "at": 33,
+      "text": "...ねえ、なんか今日、家の中がヘンな感じがするんだよな",
+      "wait_choice": true,
+      "choices": [
+        {"text": "どしたの？", "chat": "どしたの？", "effect": {"belief": 0.04}, "next_scene": "ghost_nervous"},
+        {"text": "気にしすぎじゃない？", "chat": "気にしすぎじゃない？", "effect": {"belief": -0.03}, "next_scene": "ghost_nervous"}
+      ]
+    },
+    {
+      "id": "ghost_nervous",
+      "at": 53,
+      "text": "あの人...部屋にいるって言い切れない... おかしいかな...？",
+      "wait_choice": true,
+      "choices": [
+        {"text": "おかしくないよ、信じるよ", "chat": "おかしくないよ。私は信じるよ。", "effect": {"belief": 0.07}, "next_scene": "end"},
+        {"text": "大丈夫だって", "chat": "大丈夫だって。", "effect": {"belief": -0.04}, "next_scene": "end"}
+      ]
+    },
+    {
+      "id": "end",
+      "at": 75,
+      "text": "...ねえ、何か見えない？ 私だけ？",
+      "wait_choice": true,
+      "choices": [
+        {"text": "見える、ちゃんと見えるよ", "chat": "見える、ちゃんと見えるよ。信じて。", "effect": {"belief": 0.08}},
+        {"text": "誰かいるかも", "chat": "誰かいるかも。気をつけて。", "effect": {"belief": 0.05}}
+      ]
+    }
   ]
 }

@@ -19,6 +19,13 @@ func fresh() -> Control:
 	m.persist = false     # テストでは、ユーザーの実際の設定・進行を書き換えない
 	root.add_child(m)
 	await process_frame   # _ready（画面の部品づくり）が走るのを待つ
+	# scenes が _waiting_choice を立てて _on_warn をブロックするのを防ぐため、
+	# test_logic では scenes を空にして無視する（scenes のテストは test_scenes.gd に分離）
+	m.scenes = []
+	m._scene_idx = 0
+	m._waiting_choice = false
+	m._hide_scene_buttons()
+	m.lock_left = 0.0
 	return m
 
 
@@ -1089,6 +1096,8 @@ func _initialize() -> void:
 		check("plan16・stage%d: outfit_layers が全衣装分ある" % (si + 1),
 			m.outfit_layers.size() == m.outfits.size())
 		check("plan16・stage%d: 現在衣装は default" % (si + 1), m.current_outfit == "default")
+		# 衣装アンロックを前提にする（max_trust_reached を最大に）
+		m.max_trust_reached = 0.85
 		# 衣装切替
 		m._set_outfit("pajamas")
 		check("plan16・stage%d: _set_outfit('pajamas') で current_outfit が pajamas" % (si + 1), m.current_outfit == "pajamas")
@@ -1103,6 +1112,7 @@ func _initialize() -> void:
 	# plan16: 設定ファイルに保存されることのテスト
 	S.stage_no = 1
 	m = await fresh()
+	m.max_trust_reached = 0.85
 	m._set_outfit("hoodie")
 	# 設定ファイルが作成されているはず（persist=true のまま確認）
 	check("plan16・設定保存: current_outfit が hoodie に切り替わった", m.current_outfit == "hoodie")
