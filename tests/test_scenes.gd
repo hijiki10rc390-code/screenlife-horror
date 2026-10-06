@@ -148,7 +148,7 @@ func _initialize() -> void:
 	check("stage1: warm (at=19) 到達後 _scene_idx は 2", m._scene_idx == 2)
 	m.queue_free()
 
-	# 12. 全 6 ステージで scenes が動く（Phase 3 で全展開）
+	# 12. 全 7 ステージで scenes が動く（Phase 3 で全展開）
 	m = await fresh(0)
 	check("stage1: scenes が読める", m.scenes.size() >= 4)
 	m._start_call()
@@ -194,6 +194,13 @@ func _initialize() -> void:
 	m._start_call()
 	m._process(5.5)
 	check("stage6: hello 到達で _waiting_choice", m._waiting_choice)
+	m.queue_free()
+
+	m = await fresh(6)
+	check("stage7: scenes が読める", m.scenes.size() >= 4)
+	m._start_call()
+	m._process(5.5)
+	check("stage7: hello 到達で _waiting_choice", m._waiting_choice)
 	m.queue_free()
 
 	print("FAIL COUNT: %d" % fails)
