@@ -13,9 +13,9 @@ func check(name: String, cond: bool) -> void:
 
 
 # main.tscn を読み込んで実機と同じように走らせる。テスト用の設定（保存しない）に切り替える
-func fresh() -> Control:
+func fresh(stage_no: int = 1) -> Control:
 	var S: GDScript = load("res://main.gd")
-	S.stage_no = 1      # stage2（outfit_expressions がある唯一のステージ）
+	S.stage_no = stage_no
 	S.title_done = true
 	var m: Control = load("res://main.tscn").instantiate()
 	m.persist = false   # 設定の永続化は行わない
@@ -128,6 +128,34 @@ func _initialize() -> void:
 	m._refresh_outfit_btns()
 	check("信頼 0.85: hoodie ボタンも enabled", not m.outfit_btn_hoodie.disabled)
 	m.queue_free()
+
+	# 10. 全ステージで outfit_expressions が登録されている
+	# stage1 / stage2 / stage3 すべてに pajamas / hoodie の衣装専用表情がある
+	for stage_idx in 3:
+		m = await fresh(stage_idx)
+		var assets: Dictionary = m.assets
+		check("ステージ%d: outfit_expressions がある" % (stage_idx + 1),
+			assets.has("outfit_expressions") and assets["outfit_expressions"].has("pajamas") and assets["outfit_expressions"].has("hoodie"))
+		m.queue_free()
+
+	# 11. 全ステージ × 衣装切替で kawaii 表情が変わる
+	for stage_idx in 3:
+		m = await fresh(stage_idx)
+		m.max_trust_reached = 0.85
+		var before: Texture = m.react_tex["kawaii"]
+		m._set_outfit("pajamas")
+		var pajamas_kawaii: Texture = m.react_tex["kawaii"]
+		m._set_outfit("hoodie")
+		var hoodie_kawaii: Texture = m.react_tex["kawaii"]
+		m._set_outfit("default")
+		var default_kawaii: Texture = m.react_tex["kawaii"]
+		check("ステージ%d: pajamas 切替で kawaii 表情が変わる" % (stage_idx + 1),
+			before != pajamas_kawaii)
+		check("ステージ%d: hoodie 切替で kawaii 表情がさらに変わる" % (stage_idx + 1),
+			pajamas_kawaii != hoodie_kawaii and hoodie_kawaii != before)
+		check("ステージ%d: default に戻すと kawaii 表情が元に戻る" % (stage_idx + 1),
+			default_kawaii == before)
+		m.queue_free()
 
 	print("FAIL COUNT: %d" % fails)
 	if fails > 0:

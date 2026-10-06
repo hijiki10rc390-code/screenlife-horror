@@ -1,0 +1,24 @@
+{
+  "id": "stage1_hoodie_faces",
+  "step": "faces",
+  "base_image": "assets/scene/outfit_hoodie.png",
+  "subject": "pretty adult japanese woman, 24 years old, round soft face, smooth skin, light-brown ponytail hair, curvy figure, full bust, cat-ear headset with microphone, wearing an oversized gray zip-up hoodie with the sleeves pulled over her hands",
+  "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol, casual relaxed atmosphere",
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "lure_box": [200, 60, 760, 420],
+  "body_box": [200, 60, 760, 420],
+  "faces": [
+    {
+      "name": "casual_smile",
+      "seeds": [220, 221, 222],
+      "strength": 0.6,
+      "prompt": "casual relaxed smile, comfortable and at ease, slightly tilted head, natural friendly expression, casual cozy hoodie atmosphere"
+    },
+    {
+      "name": "snuggle_warm",
+      "seeds": [230, 231, 232],
+      "strength": 0.55,
+      "prompt": "snuggling into the hoodie sleeves, warm and comfy expression, slightly blushing cheeks, comfortable and warm, casual cozy"
+    }
+  ]
+}

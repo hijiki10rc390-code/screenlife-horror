@@ -188,6 +188,18 @@
 
 **生成設定**: `stages_src/stage2_outfit_faces.json` / `stages_src/stage2_hoodie_faces.json`（`build_stage.py faces` で処理）
 
+### 衣装専用表情の全ステージ展開（2026-10-06）
+
+`outfit_expressions` を stage1 / stage3 にも追加し、衣装アンロック機能を全ステージで使えるようにした。
+
+| ステージ | キャラ | pajamas 表情 | hoodie 表情 | 設定ファイル |
+|---|---|---|---|---|
+| stage1 | Mika | `outfit_sleepy.png` | `outfit_casual.png` | `stages_src/stage1_outfit_faces.json` / `stage1_hoodie_faces.json` |
+| stage2 | Aoi | `outfit_sleepy.png` | `outfit_casual.png` | `stages_src/stage2_outfit_faces.json` / `stage2_hoodie_faces.json` |
+| stage3 | ゆめ | `outfit_sleepy.png` | `outfit_casual.png` | `stages_src/stage3_outfit_faces.json` / `stage3_hoodie_faces.json` |
+
+各表情は `build_stage.py faces` で `sleepy_smile_200/201/202` × 2 種類、`casual_smile_220/221/222` × 2 種類を生成し、seed 200 / 220 を採用（3 候補から 1 枚選ぶ基準は「最初の seed が一貫している」） — 03 実装ならステージ固有の表情差分生成を検討
+
 ### 衣装画像の生成結果（2026-10-06）
 
 `build_stage.py outfit` 工程で、3 ステージ × 2 衣装（pajamas / hoodie）× 3 seeds = **18 枚** を生成。すべて `outputs/stages_build/<stage>_outfits/` に保存：

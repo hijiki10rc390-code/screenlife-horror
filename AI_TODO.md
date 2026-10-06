@@ -79,6 +79,15 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-06 12:xx — 衣装アンロックの全ステージ展開
+  - stages_src/stage1_outfit_faces.json, stage1_hoodie_faces.json, stage3_outfit_faces.json, stage3_hoodie_faces.json: 衣装用表情の生成設定を追加
+  - assets/stages/stage1/outfit_sleepy.png, outfit_casual.png: stage1 用衣装専用表情（build_stage.py faces で生成、sleepy_smile_200 / casual_smile_220 採用）
+  - assets/stages/stage3/outfit_sleepy.png, outfit_casual.png: stage3 用衣装専用表情
+  - stages/stage1.json, stages/stage3.json: outfit_expressions 追加（pajamas → outfit_sleepy.png、hoodie → outfit_casual.png）
+  - tests/test_outfit_unlock.gd: 全ステージ × 衣装切替のテストを追加（12 件追加、合計 36 件）
+  - テスト: test_outfit_unlock 36 OK / test_logic 193 OK（test_playthrough は権限ブロックで未実行、別途要確認）
+  - Web デプロイ + tools/deploy_web.sh の WSL 対応修正（a8a8c5d）も反映済み
+
 - 2026-10-06 10:xx — 衣装アンロックと衣装専用表情（plan 16 続き）
   - main.gd: `max_trust_reached` / `OUTFIT_UNLOCK_PAJAMAS (0.6)` / `OUTFIT_UNLOCK_HOODIE (0.85)` を追加。`_is_outfit_unlocked` / `_outfit_was_unlocked` / `_refresh_outfit_btns` のロック表示
   - `_finish` 内で belief が `max_trust_reached` を超えたら更新。新規アンロック時に end_sub に「○○解放！」表示
