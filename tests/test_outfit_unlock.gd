@@ -131,8 +131,8 @@ func _initialize() -> void:
 
 	# 10. 全ステージで outfit_expressions が登録されている
 	# stage1 / stage2 / stage3 すべてに pajamas / hoodie の衣装専用表情がある
-	# stage4 / stage5 / stage6 / stage7 は衣装差分なし
-	for stage_idx in 8:
+	# stage4 / stage5 / stage6 / stage7 / stage8 は衣装差分なし
+	for stage_idx in 9:
 		m = await fresh(stage_idx)
 		var assets: Dictionary = m.assets
 		if stage_idx >= 3:
@@ -144,7 +144,7 @@ func _initialize() -> void:
 		m.queue_free()
 
 	# 11. 全ステージ × 衣装切替で kawaii 表情が変わる
-	for stage_idx in 8:
+	for stage_idx in 9:
 		m = await fresh(stage_idx)
 		m.max_trust_reached = 0.85
 		if stage_idx >= 3:

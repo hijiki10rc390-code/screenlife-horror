@@ -210,6 +210,13 @@ func _initialize() -> void:
 	check("stage8: hello 到達で _waiting_choice", m._waiting_choice)
 	m.queue_free()
 
+	m = await fresh(8)
+	check("stage9: scenes が読める", m.scenes.size() >= 4)
+	m._start_call()
+	m._process(5.5)
+	check("stage9: hello 到達で _waiting_choice", m._waiting_choice)
+	m.queue_free()
+
 	print("FAIL COUNT: %d" % fails)
 	if fails > 0:
 		quit(1)

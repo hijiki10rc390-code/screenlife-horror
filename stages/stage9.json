@@ -1,0 +1,133 @@
+{
+  "id": "stage9",
+  "friend": "蒼",
+  "placeholder": false,
+  "assets": {
+    "base": "res://assets/stages/stage9/base.png",
+    "ghost": "res://assets/stages/stage9/ghost_overlay.png",
+    "uneasy": "res://assets/stages/stage9/react_uneasy.png",
+    "scared": "res://assets/stages/stage9/react_scared.png",
+    "terror": "res://assets/stages/stage9/react_terror.png",
+    "saved": "res://assets/stages/stage9/react_saved.png",
+    "failed": "res://assets/stages/stage9/react_failed.png",
+    "kawaii": "res://assets/stages/stage9/react_kawaii.png"
+  },
+  "ghost_box": [
+    100,
+    0,
+    280,
+    560
+  ],
+  "ghost_curve": [
+    [0, 0],
+    [20, 0],
+    [32, 0.1],
+    [55, 0.2],
+    [85, 0.55],
+    [110, 1.0]
+  ],
+  "ghost_path": [
+    [30, 0, 0, 1.0],
+    [82, 25, 0, 1.0],
+    [112, -85, 10, 1.05]
+  ],
+  "fail_at": 125,
+  "uneasy_at": 48,
+  "creaks": [26, 67],
+  "relief": [
+    [50, 54],
+    [80, 84]
+  ],
+  "timeline": [
+    [2, "ごめん、編集途中だったんで。"],
+    [10, "今日ずっと映像作ってたんだけど..."],
+    [18, "なんか、背後のギター立てのほう...変なんだよね。"],
+    [32, "さっきから、勝手に動いてる気がする。"],
+    [48, "...ねえ、ちょっとだけ怖いんだよね。"],
+    [62, "この部屋、ずっとなんかおかしい。"],
+    [80, "...誰か、来てる？"],
+    [98, "...信じてくれる？"],
+    [115, "...逃げたほうがいい？"]
+  ],
+  "idle": [
+    "うん、そうかもね。",
+    "ちょっと休憩する。",
+    "お茶淹れよっか。",
+    "ありがと。",
+    "また後でね。",
+    "そっちは？"
+  ],
+  "miss_unseen": [
+    "...？ 何もないけど。",
+    "え、何もいないよ？",
+    "ちょっと不安になるからやめて。"
+  ],
+  "miss_wrong": [
+    "...そこ？ 何もないよ。",
+    "違うほうじゃない？"
+  ],
+  "saved_line": "...うそ、いたの...!? ありがとう、逃げる...！",
+  "saved_lines": {
+    "high_belief": "...ちゃんと信じてくれたんだ...！ ...あのね、お前、最高に信頼できるやつだよ。ありがとう。",
+    "mid_belief": "...うそ、いたの...!? ありがとう、逃げる...！",
+    "low_belief": "...えっ、いたの...？ ...まだちょっと信じきれないけど...ありがとな。"
+  },
+  "trust_lost_line": "...もういいや。切る。",
+  "timeout_line": "...きゃっ...!!",
+  "ghost_scale": [0.96, 1.07],
+  "ghost_pivot": [200, 440],
+  "ghost_face": [195, 60],
+  "belief_start": 0.4,
+  "scenes": [
+    {
+      "id": "hello",
+      "at": 5,
+      "text": "...あの、今日さ、ちょっと怖い思いしてて。",
+      "wait_choice": true,
+      "choices": [
+        {"text": "もちろん聞くよ", "chat": "もちろん聞くよ。", "effect": {"belief": 0.05}, "next_scene": "warm_open"},
+        {"text": "大丈夫？", "chat": "大丈夫？", "effect": {"belief": 0.03}, "next_scene": "warm_open"}
+      ]
+    },
+    {
+      "id": "warm_open",
+      "at": 23,
+      "text": "...ありがと。実はさ、部屋がちょっとおかしいんだよね...",
+      "wait_choice": true,
+      "choices": [
+        {"text": "何が怖いの？", "chat": "何が怖いの？", "effect": {"belief": 0.05}, "next_scene": "about_room"},
+        {"text": "ゆっくり話して", "chat": "ゆっくり話して。", "effect": {"belief": 0.04}, "next_scene": "about_room"}
+      ]
+    },
+    {
+      "id": "about_room",
+      "at": 44,
+      "text": "さっきから、背後のギター立てが勝手に動いてる気がする。音もしたし。",
+      "wait_choice": true,
+      "choices": [
+        {"text": "確認した？", "chat": "確認した？", "effect": {"belief": 0.05}, "next_scene": "trust_check"},
+        {"text": "気のせいじゃない？", "chat": "気のせいじゃない？", "effect": {"belief": -0.04}, "next_scene": "trust_check"}
+      ]
+    },
+    {
+      "id": "trust_check",
+      "at": 72,
+      "text": "...ねえ、もし本当に何かいたら、信じてくれる？",
+      "wait_choice": true,
+      "choices": [
+        {"text": "もちろん、信じる", "chat": "もちろん、信じる。", "effect": {"belief": 0.08}, "next_scene": "ending"},
+        {"text": "落ち着いて", "chat": "落ち着いて考えて。", "effect": {"belief": -0.03}, "next_scene": "ending"}
+      ]
+    },
+    {
+      "id": "ending",
+      "at": 96,
+      "text": "...ありがとう。今、すごく安心した。",
+      "wait_choice": true,
+      "choices": [
+        {"text": "絶対に逃げて", "chat": "絶対に逃げて！", "effect": {"belief": 0.07}},
+        {"text": "今すぐ外へ", "chat": "今すぐ外へ！", "effect": {"belief": 0.06}}
+      ]
+    }
+  ]
+}
