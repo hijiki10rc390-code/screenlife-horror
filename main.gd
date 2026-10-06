@@ -474,7 +474,24 @@ func _refresh_call_bars() -> void:
 
 
 func _build_ui(vp: SubViewport) -> void:
-	# --- 計画 08: 背景（壁紙のグラデーション） ---
+	# _build_ui は _ready から呼ばれる。各セクションは下のサブ関数で構築する
+	_build_wallpaper()
+	_build_taskbar()
+	_build_main_window()
+	_build_video_overlay(vp)
+	_build_hint_and_chat()
+	_build_action_buttons()
+	_build_marker()
+	_build_flash()
+	_build_trust_bar()
+	_build_call_panel()
+	_build_end_panel()
+	_build_pause_panel()
+	_build_title_screen()
+
+
+# 背景の縦グラデーション壁紙（計画 08）
+func _build_wallpaper() -> void:
 	wallpaper = TextureRect.new()
 	wallpaper.position = Vector2.ZERO
 	wallpaper.size = Vector2(1280, 720)
@@ -488,7 +505,9 @@ func _build_ui(vp: SubViewport) -> void:
 	wallpaper.texture = wtex
 	add_child(wallpaper)
 
-	# --- タスクバー（下の帯） ---
+
+# タスクバー（下の帯。時計・Wi-Fi・バッテリーのアイコン）
+func _build_taskbar() -> void:
 	taskbar = _panel(Vector2(0, 680), Vector2(1280, 40), Color(0.06, 0.07, 0.10, 0.95))
 	var tbar_clock_label := _label("", Vector2(20, 8), Vector2(120, 24), taskbar, 16)
 	tbar_clock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -502,11 +521,13 @@ func _build_ui(vp: SubViewport) -> void:
 	sysicons.draw.connect(_draw_sysicons_on.bind(sysicons))
 	taskbar.add_child(sysicons)
 
-	# --- メインウィンドウの影（暗い矩形を 1〜2 px ずらす） ---
-	win_shadow = _panel(Vector2(54, 46), Vector2(790, 620), Color(0, 0, 0, 0.45))
 
+# メインウィンドウ（影・背景・タイトルバー・赤黄緑の点・相手名・LIVE/通話バー）
+func _build_main_window() -> void:
+	# メインウィンドウの影（暗い矩形を 1〜2 px ずらす）
+	win_shadow = _panel(Vector2(54, 46), Vector2(790, 620), Color(0, 0, 0, 0.45))
 	var win := _panel(Vector2(50, 40), Vector2(790, 620), Color(0.15, 0.16, 0.19))
-	# タイトルバー（メインウィンドウの頭）。通話時間と赤黄緑の点
+	# タイトルバー（メインウィンドウの頭）
 	win_titlebar = _panel(Vector2(50, 40), Vector2(790, 32), Color(0.10, 0.11, 0.14))
 	# 通話/配信アプリ風の 3 つの点（左に並べる）。押せない（描画のみ）
 	var dot_x := 66
@@ -528,7 +549,6 @@ func _build_ui(vp: SubViewport) -> void:
 		live_badge.add_theme_color_override("font_color", Color(1.0, 0.5, 0.5))
 		live_badge.add_theme_constant_override("outline_size", 1)
 		live_badge.add_theme_color_override("font_outline_color", Color(0.2, 0.0, 0.0, 0.8))
-		# _process で modulate の alpha を点滅させる
 	else:
 		# 通話品質の縦線バー（5 本）。音量や ghost alpha に応じて点灯
 		call_bars.clear()
@@ -541,31 +561,18 @@ func _build_ui(vp: SubViewport) -> void:
 			bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			add_child(bar)
 			call_bars.append(bar)
-	# メインウィンドウのヘッダを最背面に置く（先に影・背景・タスクバーがある）
-	# タイトルバーは win より手前に表示
-	# ※ 通話/配信のラベルは self に add したので win より手前。win はこの時点で最背面
-	# 元のコード: timer_label = _label("00:00", Vector2(330, 8), Vector2(100, 26), win)
-	# win のヘッダは表示しないので timer_label は win 内の 8 ではなく win の下端付近に置く
-	# ただし timer_label は win 内に追加されるので win の座標系。win.position = (50, 40), win.size = (790, 620)
-	# win のヘッダは win の上端 32px。timer_label は win の中身に置きたい（通話時間表示）
-	# 元の timer_label 位置は (330, 8) で win のヘッダ内。今回は (330, 8) を維持して、win のヘッダに重ねる
-	# ただし win のヘッダ色とは別（win_color）で表示される点に注意。timer_label を self に add して
-	# 座標を (50+330, 40+8) = (380, 48) に変更する
-	# → win 内に timer_label を入れると win のヘッダと重なり、タイトルバーの表示と被る
-	# そこで timer_label は self に add して、ヘッダの内側に重ねる
-	# 元のコードが timer_label を win 内に置いているのは、win の枠内に見せるため。だがヘッダと被る。
-	# 実用上、self に置いた方がレンダリング順で上になる（self の add 順は _build_ui 内のこの順）
-	# タイトルバーや win よりも後に timer_label/status_label を add すれば手前に表示される
-	# 元のコードでは timer_label が win 内にあるが、ヘッダを後から描画している関係で OK だった。
-	# ここではヘッダ実装を優先するため、timer_label と status_label を self に移し、Y を 48 にする
+	# 通話時間 / 状態表示のラベル
 	timer_label = _label("00:00", Vector2(380, 48), Vector2(100, 26), self, 18)
 	timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	timer_label.modulate = Color(0.7, 0.8, 0.9)
 	status_label = _label("", Vector2(500, 48), Vector2(200, 26), self, 18)
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 
+
+# 映像の本体・枠・REC ラベル・顔オーバーレイ
+func _build_video_overlay(vp: SubViewport) -> void:
 	video = TextureRect.new()
-	video.expand_mode = TextureRect.EXPAND_IGNORE_SIZE   # 先に指定しないと、画像サイズより小さくできない
+	video.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	video.stretch_mode = TextureRect.STRETCH_SCALE
 	video.texture = vp.get_texture()
 	video.position = VIDEO_POS
@@ -580,7 +587,7 @@ func _build_ui(vp: SubViewport) -> void:
 	add_child(video)
 
 	# 映像の枠（角丸）と ● REC ラベル。video は矩形なので枠は外側に別レイヤで描く
-	var video_frame := PanelContainer.new()   # 枠を描くための親（子は空で OK、panel スタイルだけ使う）
+	var video_frame := PanelContainer.new()
 	video_frame.position = VIDEO_POS - Vector2(2, 2)
 	video_frame.size = VIDEO_SIZE + Vector2(4, 4)
 	video_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -603,8 +610,11 @@ func _build_ui(vp: SubViewport) -> void:
 	face_overlay.visible = false
 	add_child(face_overlay)
 
+
+# ヒント表示とチャット欄
+func _build_hint_and_chat() -> void:
 	hint_label = _label("", Vector2(70, 510), Vector2(750, 40), self, 16)
-	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART   # 長いヒントは2行に折り返す
+	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint_label.modulate = Color(0.65, 0.7, 0.78)
 
 	var chat := _panel(Vector2(860, 40), Vector2(370, 620), Color(0.15, 0.16, 0.19))
@@ -620,6 +630,9 @@ func _build_ui(vp: SubViewport) -> void:
 	typing_label.modulate = Color(0.72, 0.76, 0.84)
 	typing_label.visible = false
 
+
+# アクションボタン（話しかけ・警告・3つ目・4つ目）。ステージ別で配置・表示を切替
+func _build_action_buttons() -> void:
 	talk_btn = _button("話しかける  (Enter)", Vector2(70, 552), Vector2(200, 56), Color(0.2, 0.22, 0.28))
 	talk_btn.pressed.connect(_on_talk)
 	warn_btn = _button("警告する  (Space)", Vector2(290, 552), Vector2(200, 56), Color(0.45, 0.16, 0.16))
@@ -629,7 +642,6 @@ func _build_ui(vp: SubViewport) -> void:
 	fourth_btn = _button("", Vector2(630, 552), Vector2(150, 56), Color(0.45, 0.16, 0.16))
 	fourth_btn.visible = false
 	# stage1（伝え方が 1 つ）: 警告は映像クリックで出すので、画面下の警告ボタンは出さない
-	# stage2/3 は下の分岐で act_btns を選ぶ。stage1 の初期値は空のまま
 	if not use_phrases and mode != "stream":
 		warn_btn.visible = false
 		third_btn.visible = false
@@ -637,7 +649,7 @@ func _build_ui(vp: SubViewport) -> void:
 		act_btns = []
 	if use_phrases:   # 疑う相手: 話しかけて信頼をためつつ、伝え方を選んで警告する
 		talk_btn.size = Vector2(150, 56)
-		talk_btn.text = "話しかける"   # 幅が狭いので、キーの案内（Enter）は省く
+		talk_btn.text = "話しかける"
 		warn_btn.position = Vector2(244, 552)
 		warn_btn.size = Vector2(160, 56)
 		third_btn.position = Vector2(414, 552)
@@ -663,10 +675,13 @@ func _build_ui(vp: SubViewport) -> void:
 			b.pressed.connect(_select_phrase.bind(i))
 		_update_phrase_btns()
 
+	# ロックアウトのラベル（誤警告後のカウントダウン）
 	lock_label = _label("", Vector2(70, 614), Vector2(710, 24), self, 15)
 	lock_label.modulate = Color(1.0, 0.82, 0.45)
 
-	# 指した場所の目印
+
+# 指した場所の目印（赤い十字）
+func _build_marker() -> void:
 	marker = Control.new()
 	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	marker.visible = false
@@ -678,30 +693,37 @@ func _build_ui(vp: SubViewport) -> void:
 		marker.draw_line(Vector2(0, 16), Vector2(0, 36), Color(1.0, 0.35, 0.3, 0.95), 2.5))
 	add_child(marker)
 
-	# 画面の点滅（失敗・救出）
+
+# 画面の点滅（失敗・救出時のフラッシュ）
+func _build_flash() -> void:
 	flash = _panel(VIDEO_POS, VIDEO_SIZE, Color(1, 0, 0, 0))
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# 信頼ゲージ（疑う相手だけ。タイトルバーと映像のあいだに細い横棒を出す）
-	if use_phrases:
-		var bar_pos := Vector2(VIDEO_POS.x, VIDEO_POS.y - 8)
-		var bar_size := Vector2(VIDEO_SIZE.x, 5)
-		_panel(bar_pos, bar_size, Color(0.1, 0.1, 0.14))   # 背景（保持しない）
-		trust_bar_fill = ColorRect.new()
-		trust_bar_fill.position = bar_pos
-		trust_bar_fill.size = Vector2(0, bar_size.y)   # 初期は空。_process で目標値に追従させる
-		trust_bar_fill.color = Color(0.75, 0.3, 0.3)
-		add_child(trust_bar_fill)
-		# 信頼度の % 表示（ゲージ右側）
-		trust_bar_label = Label.new()
-		trust_bar_label.position = Vector2(bar_pos.x + bar_size.x - 60, bar_pos.y - 22)
-		trust_bar_label.size = Vector2(56, 18)
-		trust_bar_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		trust_bar_label.add_theme_font_size_override("font_size", 14)
-		trust_bar_label.modulate = Color(0.85, 0.85, 0.95)
-		add_child(trust_bar_label)
 
-	# 開始画面（着信）
+# 信頼ゲージ（疑う相手のステージだけ。タイトルバーと映像のあいだに細い横棒）
+func _build_trust_bar() -> void:
+	if not use_phrases:
+		return
+	var bar_pos := Vector2(VIDEO_POS.x, VIDEO_POS.y - 8)
+	var bar_size := Vector2(VIDEO_SIZE.x, 5)
+	_panel(bar_pos, bar_size, Color(0.1, 0.1, 0.14))   # 背景（保持しない）
+	trust_bar_fill = ColorRect.new()
+	trust_bar_fill.position = bar_pos
+	trust_bar_fill.size = Vector2(0, bar_size.y)   # 初期は空。_process で目標値に追従させる
+	trust_bar_fill.color = Color(0.75, 0.3, 0.3)
+	add_child(trust_bar_fill)
+	# 信頼度の % 表示（ゲージ右側）
+	trust_bar_label = Label.new()
+	trust_bar_label.position = Vector2(bar_pos.x + bar_size.x - 60, bar_pos.y - 22)
+	trust_bar_label.size = Vector2(56, 18)
+	trust_bar_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	trust_bar_label.add_theme_font_size_override("font_size", 14)
+	trust_bar_label.modulate = Color(0.85, 0.85, 0.95)
+	add_child(trust_bar_label)
+
+
+# 着信画面（応答するボタン）
+func _build_call_panel() -> void:
 	title_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0.05, 0.06, 0.09, 0.96))
 	_label(friend + (" の配信" if mode == "stream" else " から着信"), Vector2(0, 120), Vector2(750, 60), title_panel, 40).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var intro := "映像の背後に、何かが映ったら——\n映像をクリックして、警告してあげて。"
@@ -715,7 +737,9 @@ func _build_ui(vp: SubViewport) -> void:
 	var answer := _button("応答する  (Enter)", Vector2(275, 300), Vector2(200, 60), Color(0.15, 0.45, 0.25), title_panel)
 	answer.pressed.connect(_start_call)
 
-	# 終了画面
+
+# 終了画面（結果の表情とリトライボタン）
+func _build_end_panel() -> void:
 	end_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0, 0, 0, 0.78))
 	end_panel.visible = false
 	# 結果画面のヘッダー帯（メッセージ背景）
@@ -736,8 +760,6 @@ func _build_ui(vp: SubViewport) -> void:
 	end_sub.modulate = Color(0.8, 0.84, 0.9)
 	retry_btn = _button("もう一度  (R)", Vector2(275, 530), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
 	retry_btn.pressed.connect(_after_end)
-	_build_pause_panel()
-	_build_title_screen()
 
 
 # --- 音（make_sounds.py で作った自作の効果音）-----------------------------------------
