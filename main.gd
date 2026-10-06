@@ -1294,8 +1294,8 @@ func _on_warn(phrase := 0) -> void:
 
 
 # 配信：警告コメントを投稿する。人影が映っている間に必要な数がそろえば、配信者が気づく
-# pos: クリック経由のとき映像内の位置。null なら従来どおり位置を問わない（テスト・ボット互換）
-func _on_comment(i: int, pos = null) -> void:
+# pos: クリック経由のとき映像内の位置（Vector2）。null なら従来どおり位置を問わない（テスト・ボット互換）
+func _on_comment(i: int, pos: Variant = null) -> void:
 	if state != State.PLAYING or lock_left > 0.0 or mode != "stream":
 		return
 	_say("あなた", warn_phrases[i])
