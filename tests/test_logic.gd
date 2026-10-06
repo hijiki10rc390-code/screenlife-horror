@@ -164,6 +164,45 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
+	# 7b. エンディングのルート分岐: 累計救出数で end_label.text が変わる
+	# stage1: ghost_curve 末尾時刻 - 25 秒（人影が濃い・緩和外・fail_at=153 内）
+	var stage1_q_data_e: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage1.json"))
+	var stage1_max_t_e: float = float(stage1_q_data_e["ghost_curve"][-1][0])
+	# 1 人目 → 「初救出！」が追加される
+	S.stage_no = 0
+	m = await fresh()
+	m.total_rescues = 0
+	m._start_call()
+	at(m, stage1_max_t_e - 25.0)
+	rescue(m)
+	check("1 人目: end_label に「初救出！」が追加 (text='%s')" % m.end_label.text,
+		m.end_label.text.contains("初救出"))
+	m.queue_free()
+	# 5 人目 → 別のメッセージ
+	S.stage_no = 0
+	m = await fresh()
+	m.total_rescues = 4
+	m._start_call()
+	at(m, stage1_max_t_e - 25.0)
+	rescue(m)
+	check("5 人目: end_label に「あなたは頼れる人ですね」",
+		m.end_label.text.contains("頼れる人"))
+	m.queue_free()
+	# 全クリア（9 ステージ）→ 全員救出
+	var SD2: GDScript = load("res://main.gd")
+	S.stage_no = SD2.STAGE_FILES.size() - 1
+	m = await fresh()
+	m.total_rescues = SD2.STAGE_FILES.size() - 1
+	m._start_call()
+	var stage9_q_data_e: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/stage9.json"))
+	var stage9_max_t_e: float = float(stage9_q_data_e["ghost_curve"][-1][0])
+	at(m, stage9_max_t_e - 25.0)
+	rescue(m)
+	check("全クリア: end_label に「全員救出！ クリア！」",
+		m.end_label.text.contains("全員救出"))
+	m.queue_free()
+	S.stage_no = 0
+
 	# 8. 配信ステージ（コメントで警告）
 	S.stage_no = 2   # stage3（配信モード）固定
 	S.difficulty = 1   # 既定 difficulty 2 だと need_warnings が 4 になり、3 回テストが成立しない

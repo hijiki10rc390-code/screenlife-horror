@@ -175,6 +175,7 @@ var outfit_btn_hoodie: Button      # 衣装選択: パーカー
 const OUTFIT_UNLOCK_PAJAMAS := 0.6   # パジャマ解放に必要な最大信頼度
 const OUTFIT_UNLOCK_HOODIE := 0.85    # パーカー解放に必要な最大信頼度
 var max_trust_reached := 0.0          # 今までに到達した最大信頼度（衣装アンロックに使用）
+var total_rescues := 0                 # 累計救出数（エンディング分岐）
 # --- 計画 08: UI の作り込み ---
 var wallpaper: Control             # デスクトップの背景（グラデーション）
 var taskbar: Control               # 下の帯（時計・Wi-Fi・バッテリー）
@@ -895,6 +896,8 @@ func _load_settings() -> void:
 			current_outfit = saved_outfit
 		# 最大信頼度（衣装アンロック）
 		max_trust_reached = float(c.get_value("progress", "max_trust", 0.0))
+		# 累計救出数（エンディング分岐）
+		total_rescues = int(c.get_value("progress", "total_rescues", 0))
 
 
 func _save_settings() -> void:
@@ -903,6 +906,7 @@ func _save_settings() -> void:
 	var c := ConfigFile.new()
 	c.set_value("progress", "reached", reached)
 	c.set_value("progress", "max_trust", max_trust_reached)
+	c.set_value("progress", "total_rescues", total_rescues)
 	c.set_value("audio", "master", vol_master)
 	c.set_value("audio", "ambient", vol_amb)
 	c.set_value("audio", "sfx", vol_sfx)
@@ -1365,6 +1369,21 @@ func _saved_line_for(belief: float) -> String:
 	return saved_line
 
 
+# 累計救出数に応じたエンディング分岐のメッセージを返す
+# 1 回目: 「ありがとう！」 / 3 回目: 「もう慣れたね」 / 5 回目: 全員知り合い感 / 9 回目: 全クリア
+func _ending_rescue_message(rescues: int) -> String:
+	var stage_total: int = STAGE_FILES.size()
+	if rescues == stage_total:
+		return "全員救出！ クリア！"
+	if rescues == 5:
+		return "5 人目！ あなたは頼れる人ですね"
+	if rescues == 3:
+		return "3 人目！ だいぶ慣れてきましたね"
+	if rescues == 1:
+		return "初救出！"
+	return ""
+
+
 # 人影が「映った」と扱われる最初の時刻（秒）。緩和を含めない時間割の濃さで判定する
 func _first_seen_time() -> float:
 	var x := 0.0
@@ -1765,6 +1784,10 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 	if _waiting_choice:
 		_waiting_choice = false
 		_hide_scene_buttons()
+	# 救出成功なら累計救出数を増やす＋保存（リプレイ性のため）
+	if new_state == State.SAVED:
+		total_rescues += 1
+		_save_settings()
 	end_label.text = message
 	end_label.modulate = color
 	end_panel.visible = true
@@ -1788,9 +1811,18 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 		var tt2 := create_tween()
 		tt2.tween_property(end_panel, "modulate:a", 1.0, 0.5)
 		tt2.parallel().tween_property(end_face, "modulate:a", 1.0, 0.5)
+	# ルート分岐: 全 9 ステージの累計救出が一定数を超えると特別なメッセージを表示
+	if new_state == State.SAVED:
+		# 累計救出数：段階的な演出
+		var rescue_msg := _ending_rescue_message(total_rescues)
+		if rescue_msg != "":
+			end_label.text += "  " + rescue_msg
 	end_sub.text = "%02d:%02d   誤警告 %d回" % [int(t) / 60, int(t) % 60, false_alarms]
 	if use_phrases:
 		end_sub.text += "   信頼 %d%%" % int(belief * 100.0)
+	# 累計救出数（リプレイ性）
+	if total_rescues > 0:
+		end_sub.text += "   通算救出 %d回" % total_rescues
 	if new_state == State.FAILED:   # 失敗の理由と、人影が映り始めた時刻を伝える（学べるように）
 		var seen_at := int(_first_seen_time())
 		if false_alarms >= max_false_alarms:
@@ -1813,7 +1845,10 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 		_save_settings()
 		retry_btn.text = "次の通話へ  (Enter)" if _has_next_stage() else "最初から  (Enter)"
 		if not _has_next_stage():
-			end_label.text = "すべての通話を救出した"
+			# 最後のステージ: 「全員救出！」のルート分岐メッセージが既についていればそのまま、
+			# ついていなければデフォルトのクリアメッセージを上書き
+			if not end_label.text.contains("全員救出"):
+				end_label.text = "すべての通話を救出した"
 	typing_label.visible = false
 	marker.visible = false
 	if new_state == State.FAILED:
