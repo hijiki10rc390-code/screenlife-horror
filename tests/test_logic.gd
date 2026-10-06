@@ -118,8 +118,8 @@ func _initialize() -> void:
 		check("ステージ%d: 設定を読めた（相手=%s）" % [i + 1, m.friend], m.friend != "" and m.timeline.size() > 0)
 		var all_exist := true
 		for k in m.assets:
-			# outfits は Dict（default/pajamas/hoodie のサブキー）なので個別にチェック
-			if k == "outfits":
+			# outfits / outfit_expressions は Dict（default/pajamas/hoodie のサブキー）なので個別にチェック
+			if k in ["outfits", "outfit_expressions"]:
 				for outfit_name in m.assets[k]:
 					all_exist = all_exist and ResourceLoader.exists(m.assets[k][outfit_name])
 			else:

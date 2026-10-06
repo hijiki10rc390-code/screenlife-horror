@@ -79,6 +79,19 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-06 10:xx — 衣装アンロックと衣装専用表情（plan 16 続き）
+  - main.gd: `max_trust_reached` / `OUTFIT_UNLOCK_PAJAMAS (0.6)` / `OUTFIT_UNLOCK_HOODIE (0.85)` を追加。`_is_outfit_unlocked` / `_outfit_was_unlocked` / `_refresh_outfit_btns` のロック表示
+  - `_finish` 内で belief が `max_trust_reached` を超えたら更新。新規アンロック時に end_sub に「○○解放！」表示
+  - `_set_outfit` で衣装専用表情（`outfit_expressions`）がある衣装は `react_tex["kawaii"]` を上書き。default に戻すと元に戻す
+  - `_save_settings` / `_load_settings` で `progress.max_trust` を永続化
+  - stages/stage2.json に `outfit_expressions` を追加（pajamas → outfit_sleepy.png / hoodie → outfit_casual.png）
+  - assets/stages/stage2/outfit_sleepy.png, outfit_casual.png を `build_stage.py outfit` 経由で生成
+  - stages_src/stage2_outfit_faces.json / stage2_hoodie_faces.json を生成設定として追加
+  - tools/deploy_web.sh: GitHub Pages への Web デプロイ手順を追加
+  - tests/test_outfit_unlock.gd: 24 件追加（閾値判定・ロック切替・表情切替・ボタン状態）
+  - tests/test_logic.gd: `outfit_expressions` を `outfits` と同じ Dict 扱いにする修正
+  - テスト合計: 181 OK / 0 NG（test_logic 121 + test_playthrough 36 + test_outfit_unlock 24）
+
 - 2026-10-06 08:xx — 全体的なクオリティアップ（plan 15）
   - docs/godot-tips.md: 2026-10 版に更新（Godot 4.7、diegetic UI、AI キャラ一貫性、ホラーペーシング研究）
   - docs/character-bible.md: 性格の三軸・キャラ別口調・よく使う言葉・表情マッピングを追加

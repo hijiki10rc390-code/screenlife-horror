@@ -166,6 +166,28 @@
 }
 ```
 
+### 衣装アンロック（2026-10-06 追加）
+
+衣装は **信頼度が一定以上に達したら解放** される方式。
+
+- `pajamas`: `max_trust_reached >= 0.6` で解放
+- `hoodie`:  `max_trust_reached >= 0.85` で解放
+- `default`: 常に解放
+- `max_trust_reached` は `_finish` 内で `belief` の最高到達点で更新し、`user://settings.cfg` の `[progress] max_trust` に保存
+- ロック中の衣装ボタンは `disabled = true` で `modulate = (0.45, 0.45, 0.45)`（暗い灰色）
+- 終了画面で新規アンロックされると「○○解放！」が表示される
+
+### 衣装専用表情（2026-10-06 追加）
+
+衣装ごとに専用の kawaii 表情を切り替える。衣装差分でキャラの世界観を保つ目的。
+
+- `stages/<id>.json` の `assets.outfit_expressions` に `pajamas` / `hoodie` 用の表情画像を指定
+- `_set_outfit(name)` で `react_tex["kawaii"]` を専用画像に差し替え。`default` に戻すと元に戻る
+- 現状は stage2 のみ（`outfit_sleepy.png` = pajamas / `outfit_casual.png` = hoodie）
+- stage1 / stage3 は未対応（衣装本体は生成済み）
+
+**生成設定**: `stages_src/stage2_outfit_faces.json` / `stages_src/stage2_hoodie_faces.json`（`build_stage.py faces` で処理）
+
 ### 衣装画像の生成結果（2026-10-06）
 
 `build_stage.py outfit` 工程で、3 ステージ × 2 衣装（pajamas / hoodie）× 3 seeds = **18 枚** を生成。すべて `outputs/stages_build/<stage>_outfits/` に保存：

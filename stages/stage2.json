@@ -15,6 +15,10 @@
       "default": "res://assets/stages/stage2/base.png",
       "pajamas": "res://assets/stages/stage2/outfit_pajamas.png",
       "hoodie": "res://assets/stages/stage2/outfit_hoodie.png"
+    },
+    "outfit_expressions": {
+      "pajamas": "res://assets/stages/stage2/outfit_sleepy.png",
+      "hoodie": "res://assets/stages/stage2/outfit_casual.png"
     }
   },
   "ghost_box": [

@@ -164,6 +164,9 @@ var diff_btns: Array[Button] = []  # タイトル画面の難易度ボタン（�
 var outfit_btn_default: Button     # 衣装選択: デフォルト
 var outfit_btn_pajamas: Button     # 衣装選択: パジャマ
 var outfit_btn_hoodie: Button      # 衣装選択: パーカー
+const OUTFIT_UNLOCK_PAJAMAS := 0.6   # パジャマ解放に必要な最大信頼度
+const OUTFIT_UNLOCK_HOODIE := 0.85    # パーカー解放に必要な最大信頼度
+var max_trust_reached := 0.0          # 今までに到達した最大信頼度（衣装アンロックに使用）
 # --- 計画 08: UI の作り込み ---
 var wallpaper: Control             # デスクトップの背景（グラデーション）
 var taskbar: Control               # 下の帯（時計・Wi-Fi・バッテリー）
@@ -247,22 +250,62 @@ func _build_scene_viewport() -> SubViewport:
 func _set_outfit(name: String) -> void:
 	if not outfit_layers.has(name):
 		return
+	# ロックされている衣装は切り替えできない
+	if not _is_outfit_unlocked(name):
+		return
 	for n in outfit_layers.keys():
 		(outfit_layers[n] as TextureRect).visible = (n == name)
 	current_outfit = name
+	# 衣装専用表情があれば kawaii 表情を置き換える。なければ元に戻す
+	if assets.has("outfit_expressions") and assets["outfit_expressions"].has(name):
+		react_tex["kawaii"] = load(assets["outfit_expressions"][name])
+	elif assets.has("kawaii"):
+		react_tex["kawaii"] = load(assets["kawaii"])
 	_refresh_outfit_btns()
 	_save_settings()
 
 
-# 衣装選択ボタンの見た目を更新（選択中を明るく）
+# 衣装選択ボタンの見た目を更新（選択中を明るく、ロック中は暗く）
 func _refresh_outfit_btns() -> void:
 	if not is_instance_valid(outfit_btn_default):
 		return
 	var btns := [outfit_btn_default, outfit_btn_pajamas, outfit_btn_hoodie]
 	var keys := ["default", "pajamas", "hoodie"]
+	var thresholds := [0.0, OUTFIT_UNLOCK_PAJAMAS, OUTFIT_UNLOCK_HOODIE]
 	for i in btns.size():
-		if is_instance_valid(btns[i]):
-			(btns[i] as Button).modulate = Color(1.4, 1.4, 1.4) if keys[i] == current_outfit else Color(1.0, 1.0, 1.0)
+		if not is_instance_valid(btns[i]):
+			continue
+		var btn: Button = btns[i]
+		var unlocked: bool = max_trust_reached >= thresholds[i]
+		if keys[i] == current_outfit:
+			btn.modulate = Color(1.4, 1.4, 1.4)
+			btn.disabled = false
+		elif unlocked:
+			btn.modulate = Color(1.0, 1.0, 1.0)
+			btn.disabled = false
+		else:
+			btn.modulate = Color(0.45, 0.45, 0.45)   # 暗い灰色（ロック）
+			btn.disabled = true
+
+
+# 衣装が既にアンロックされているか（save_settings 経由で永続化される）
+func _outfit_was_unlocked(outfit_name: String) -> bool:
+	# 過去に同じ衣装を保存したことがあれば true
+	if not persist:
+		return true   # テスト時は常にアンロック扱い
+	var c := ConfigFile.new()
+	if c.load(SETTINGS_PATH) != OK:
+		return false
+	return c.get_value("visual", "outfit", "") == outfit_name or c.get_value("progress", "max_trust", 0.0) >= (OUTFIT_UNLOCK_PAJAMAS if outfit_name == "pajamas" else OUTFIT_UNLOCK_HOODIE)
+
+
+# 衣装がアンロック可能か
+func _is_outfit_unlocked(outfit_name: String) -> bool:
+	match outfit_name:
+		"default": return true
+		"pajamas": return max_trust_reached >= OUTFIT_UNLOCK_PAJAMAS
+		"hoodie":  return max_trust_reached >= OUTFIT_UNLOCK_HOODIE
+		_: return false
 
 
 func _blank_layer() -> TextureRect:
@@ -842,6 +885,8 @@ func _load_settings() -> void:
 		var saved_outfit: String = c.get_value("visual", "outfit", "default")
 		if saved_outfit in ["default", "pajamas", "hoodie"]:
 			current_outfit = saved_outfit
+		# 最大信頼度（衣装アンロック）
+		max_trust_reached = float(c.get_value("progress", "max_trust", 0.0))
 
 
 func _save_settings() -> void:
@@ -849,6 +894,7 @@ func _save_settings() -> void:
 		return
 	var c := ConfigFile.new()
 	c.set_value("progress", "reached", reached)
+	c.set_value("progress", "max_trust", max_trust_reached)
 	c.set_value("audio", "master", vol_master)
 	c.set_value("audio", "ambient", vol_amb)
 	c.set_value("audio", "sfx", vol_sfx)
@@ -1483,6 +1529,17 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 			end_sub.text += "\n映る前や場所違いの警告は、信頼を失う。人影が映るのは約%d秒から。" % seen_at
 		else:
 			end_sub.text += "\n人影は約%d秒から映っていた。次は早めに目を凝らそう。" % seen_at
+	# 信頼度を進めていたら max_trust を更新（衣装アンロックに使う）
+	if belief > max_trust_reached:
+		max_trust_reached = belief
+		# 新しくアンロックされた衣装を通知（テキストのみ）
+		var unlocked := ""
+		if max_trust_reached >= OUTFIT_UNLOCK_PAJAMAS and not _outfit_was_unlocked("pajamas"):
+			unlocked += "パジャマ解放！ "
+		if max_trust_reached >= OUTFIT_UNLOCK_HOODIE and not _outfit_was_unlocked("hoodie"):
+			unlocked += "パーカー解放！ "
+		if unlocked != "":
+			end_sub.text += "\n" + unlocked
 	if new_state == State.SAVED:
 		reached = maxi(reached, mini(stage_no + 1, STAGE_FILES.size() - 1))
 		_save_settings()
