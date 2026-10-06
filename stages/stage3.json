@@ -10,7 +10,12 @@
     "terror": "res://assets/stages/stage3/react_terror.png",
     "saved": "res://assets/stages/stage3/react_saved.png",
     "failed": "res://assets/stages/stage3/react_failed.png",
-    "kawaii": "res://assets/stages/stage3/react_kawaii.png"
+    "kawaii": "res://assets/stages/stage3/react_kawaii.png",
+    "outfits": {
+      "default": "res://assets/stages/stage3/base.png",
+      "pajamas": "res://assets/stages/stage3/outfit_pajamas.png",
+      "hoodie": "res://assets/stages/stage3/outfit_hoodie.png"
+    }
   },
   "ghost_box": [
     90,

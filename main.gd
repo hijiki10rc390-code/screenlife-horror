@@ -37,6 +37,9 @@ static var difficulty := 2         # 画面の再読み込みをまたいで保�
 # ここから下はステージ設定から読み込む値（_load_stage）
 var friend := ""
 var assets := {}
+var outfits := {}                  # 利用可能な衣装 {"default": path, "pajamas": path, "hoodie": path}
+var current_outfit := "default"    # 現在選ばれている衣装（default / pajamas / hoodie）
+var outfit_layers := {}            # 衣装レイヤー（TextureRect）。current_outfit だけ visible
 var ghost_box := Rect2()           # 人影のいる範囲（映像内の座標）。ここを指して警告すれば正解
 var ghost_curve := []              # 人影の濃さの時間割 [秒, 濃さ]。間は直線で補間する
 var fail_at := 110.0
@@ -158,6 +161,9 @@ const SETTINGS_PATH := "user://settings.cfg"
 var viewers := 0
 var retry_btn: Button
 var diff_btns: Array[Button] = []  # タイトル画面の難易度ボタン（見た目更新に使う）
+var outfit_btn_default: Button     # 衣装選択: デフォルト
+var outfit_btn_pajamas: Button     # 衣装選択: パジャマ
+var outfit_btn_hoodie: Button      # 衣装選択: パーカー
 # --- 計画 08: UI の作り込み ---
 var wallpaper: Control             # デスクトップの背景（グラデーション）
 var taskbar: Control               # 下の帯（時計・Wi-Fi・バッテリー）
@@ -217,7 +223,13 @@ func _build_scene_viewport() -> SubViewport:
 	stage.size = Vector2(SCENE_W, SCENE_H)
 	stage.pivot_offset = stage.size / 2.0
 	vp.add_child(stage)
-	_layer(assets["base"])
+	# 衣装レイヤー: 全パターンを読み込んで、current_outfit だけ visible にする
+	# これにより衣装切替時にロード待ちが発生しない
+	outfit_layers.clear()
+	for outfit_name in outfits.keys():
+		var layer := _layer(outfits[outfit_name])
+		layer.visible = (outfit_name == current_outfit)
+		outfit_layers[outfit_name] = layer
 	for n in ["uneasy", "scared", "terror", "saved", "failed", "kawaii"]:
 		if assets.has(n):
 			react_tex[n] = load(assets[n])
@@ -231,7 +243,43 @@ func _build_scene_viewport() -> SubViewport:
 	return vp
 
 
+# 衣装を切り替える。指定された衣装の layer を visible、他を非表示にする
+func _set_outfit(name: String) -> void:
+	if not outfit_layers.has(name):
+		return
+	for n in outfit_layers.keys():
+		(outfit_layers[n] as TextureRect).visible = (n == name)
+	current_outfit = name
+	_refresh_outfit_btns()
+	_save_settings()
+
+
+# 衣装選択ボタンの見た目を更新（選択中を明るく）
+func _refresh_outfit_btns() -> void:
+	if not is_instance_valid(outfit_btn_default):
+		return
+	var btns := [outfit_btn_default, outfit_btn_pajamas, outfit_btn_hoodie]
+	var keys := ["default", "pajamas", "hoodie"]
+	for i in btns.size():
+		if is_instance_valid(btns[i]):
+			(btns[i] as Button).modulate = Color(1.4, 1.4, 1.4) if keys[i] == current_outfit else Color(1.0, 1.0, 1.0)
+
+
 func _blank_layer() -> TextureRect:
+	# 衣装レイヤーを base の代わりに使う（current_outfit の TextureRect を複製して透明に）
+	if current_outfit != "" and outfit_layers.has(current_outfit):
+		var ref := outfit_layers[current_outfit] as TextureRect
+		var tr := TextureRect.new()
+		tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tr.stretch_mode = TextureRect.STRETCH_SCALE
+		tr.texture = ref.texture
+		tr.position = ref.position
+		tr.size = ref.size
+		stage.add_child(tr)
+		tr.texture = null
+		tr.modulate.a = 0.0
+		return tr
+	# 衣装レイヤーが無い場合のフォールバック（元の実装）
 	var tr := _layer(assets["base"])
 	tr.texture = null
 	tr.modulate.a = 0.0
@@ -790,6 +838,10 @@ func _load_settings() -> void:
 		calm = c.get_value("visual", "calm", false)
 		reached = clampi(int(c.get_value("progress", "reached", 0)), 0, STAGE_FILES.size() - 1)
 		difficulty = clampi(int(c.get_value("game", "difficulty", 2)), 0, DIFFICULTY_TABLE.size() - 1)
+		# 衣装の保存値。default が無ければそのまま
+		var saved_outfit: String = c.get_value("visual", "outfit", "default")
+		if saved_outfit in ["default", "pajamas", "hoodie"]:
+			current_outfit = saved_outfit
 
 
 func _save_settings() -> void:
@@ -801,6 +853,7 @@ func _save_settings() -> void:
 	c.set_value("audio", "ambient", vol_amb)
 	c.set_value("audio", "sfx", vol_sfx)
 	c.set_value("visual", "calm", calm)
+	c.set_value("visual", "outfit", current_outfit)
 	c.set_value("game", "difficulty", difficulty)
 	c.save(SETTINGS_PATH)
 
@@ -877,7 +930,21 @@ func _build_title_screen() -> void:
 		b.pressed.connect(_on_difficulty_pressed.bind(i))
 		diff_btns.append(b)
 	_refresh_diff_btns()
-	var y := 415   # 説明文と難易度ボタンが追加されたので位置調整
+	# 衣装選択（難易度ボタンの下、「はじめから」の上）
+	_label("衣装", Vector2(0, 405), Vector2(1280, 24), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var outfit_w := 110
+	var outfit_h := 36
+	var outfit_gap := 8
+	var outfit_total := outfit_w * 3 + outfit_gap * 2
+	var outfit_x := (1280 - outfit_total) / 2
+	outfit_btn_default = _button("デフォルト", Vector2(outfit_x, 432), Vector2(outfit_w, outfit_h), Color(0.2, 0.22, 0.28), title_screen)
+	outfit_btn_pajamas = _button("パジャマ", Vector2(outfit_x + (outfit_w + outfit_gap), 432), Vector2(outfit_w, outfit_h), Color(0.2, 0.22, 0.28), title_screen)
+	outfit_btn_hoodie = _button("パーカー", Vector2(outfit_x + (outfit_w + outfit_gap) * 2, 432), Vector2(outfit_w, outfit_h), Color(0.2, 0.22, 0.28), title_screen)
+	outfit_btn_default.pressed.connect(_set_outfit.bind("default"))
+	outfit_btn_pajamas.pressed.connect(_set_outfit.bind("pajamas"))
+	outfit_btn_hoodie.pressed.connect(_set_outfit.bind("hoodie"))
+	_refresh_outfit_btns()
+	var y := 485   # 衣装選択を追加したので位置調整
 	var start := _button("はじめから", Vector2(500, y), Vector2(280, 56), Color(0.15, 0.45, 0.25), title_screen)
 	start.pressed.connect(_title_start.bind(0))
 	if reached > 0:
@@ -978,6 +1045,8 @@ func _load_stage() -> void:
 	trust_lost_line = d["trust_lost_line"]
 	timeout_line = d["timeout_line"]
 	mode = d.get("mode", "call")
+	# 衣装: stage JSON に "outfits" キーがある場合のみ。
+	outfits = d["assets"].get("outfits", {"default": d["assets"]["base"]})
 	viewer_base = d.get("viewer_base", 100)
 	chatter_lines = d.get("chatter", [])
 	warn_phrases = d.get("warn_phrases", [])

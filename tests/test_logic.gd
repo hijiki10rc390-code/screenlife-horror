@@ -118,7 +118,12 @@ func _initialize() -> void:
 		check("ステージ%d: 設定を読めた（相手=%s）" % [i + 1, m.friend], m.friend != "" and m.timeline.size() > 0)
 		var all_exist := true
 		for k in m.assets:
-			all_exist = all_exist and ResourceLoader.exists(m.assets[k])
+			# outfits は Dict（default/pajamas/hoodie のサブキー）なので個別にチェック
+			if k == "outfits":
+				for outfit_name in m.assets[k]:
+					all_exist = all_exist and ResourceLoader.exists(m.assets[k][outfit_name])
+			else:
+				all_exist = all_exist and ResourceLoader.exists(m.assets[k])
 		check("ステージ%d: 素材がすべて存在する" % (i + 1), all_exist)
 		check("ステージ%d: 台詞は時刻順" % (i + 1), _sorted(m.timeline))
 		m.queue_free()
@@ -1074,6 +1079,35 @@ func _initialize() -> void:
 	var _test: Dictionary = m._char_style(m.friend)
 	check("plan15・_char_style の戻り値型が Dictionary（型注釈確認）", typeof(_test) == TYPE_DICTIONARY)
 	m.queue_free()
+
+	# plan16: 衣装選択のテスト
+	for si in 3:
+		S.stage_no = si
+		m = await fresh()
+		check("plan16・stage%d: outfits に default/pajamas/hoodie がある" % (si + 1),
+			m.outfits.has("default") and m.outfits.has("pajamas") and m.outfits.has("hoodie"))
+		check("plan16・stage%d: outfit_layers が全衣装分ある" % (si + 1),
+			m.outfit_layers.size() == m.outfits.size())
+		check("plan16・stage%d: 現在衣装は default" % (si + 1), m.current_outfit == "default")
+		# 衣装切替
+		m._set_outfit("pajamas")
+		check("plan16・stage%d: _set_outfit('pajamas') で current_outfit が pajamas" % (si + 1), m.current_outfit == "pajamas")
+		check("plan16・stage%d: pajamas レイヤーが visible" % (si + 1), m.outfit_layers["pajamas"].visible)
+		check("plan16・stage%d: default レイヤーは invisible" % (si + 1), not m.outfit_layers["default"].visible)
+		# 戻す
+		m._set_outfit("default")
+		check("plan16・stage%d: _set_outfit('default') で元に戻る" % (si + 1), m.current_outfit == "default")
+		m.queue_free()
+	S.stage_no = 0
+
+	# plan16: 設定ファイルに保存されることのテスト
+	S.stage_no = 1
+	m = await fresh()
+	m._set_outfit("hoodie")
+	# 設定ファイルが作成されているはず（persist=true のまま確認）
+	check("plan16・設定保存: current_outfit が hoodie に切り替わった", m.current_outfit == "hoodie")
+	m.queue_free()
+	S.stage_no = 0
 
 	quit(1 if fails > 0 else 0)
 

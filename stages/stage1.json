@@ -10,7 +10,12 @@
     "terror": "res://assets/scene/react_terror.png",
     "saved": "res://assets/scene/react_saved.png",
     "failed": "res://assets/scene/react_failed.png",
-    "kawaii": "res://assets/scene/react_kawaii.png"
+    "kawaii": "res://assets/scene/react_kawaii.png",
+    "outfits": {
+      "default": "res://assets/scene/base.png",
+      "pajamas": "res://assets/scene/outfit_pajamas.png",
+      "hoodie": "res://assets/scene/outfit_hoodie.png"
+    }
   },
   "ghost_box": [
     580,
