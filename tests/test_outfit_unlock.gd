@@ -131,17 +131,27 @@ func _initialize() -> void:
 
 	# 10. 全ステージで outfit_expressions が登録されている
 	# stage1 / stage2 / stage3 すべてに pajamas / hoodie の衣装専用表情がある
-	for stage_idx in 3:
+	# stage4 は衣装差分なし
+	for stage_idx in 4:
 		m = await fresh(stage_idx)
 		var assets: Dictionary = m.assets
-		check("ステージ%d: outfit_expressions がある" % (stage_idx + 1),
-			assets.has("outfit_expressions") and assets["outfit_expressions"].has("pajamas") and assets["outfit_expressions"].has("hoodie"))
+		if stage_idx == 3:
+			check("ステージ%d: outfit_expressions は無い（衣装非対応）" % (stage_idx + 1),
+				not assets.has("outfit_expressions"))
+		else:
+			check("ステージ%d: outfit_expressions がある" % (stage_idx + 1),
+				assets.has("outfit_expressions") and assets["outfit_expressions"].has("pajamas") and assets["outfit_expressions"].has("hoodie"))
 		m.queue_free()
 
 	# 11. 全ステージ × 衣装切替で kawaii 表情が変わる
-	for stage_idx in 3:
+	for stage_idx in 4:
 		m = await fresh(stage_idx)
 		m.max_trust_reached = 0.85
+		if stage_idx == 3:
+			# stage4 は衣装非対応なのでスキップ
+			check("ステージ4: 衣装差分なし", true)
+			m.queue_free()
+			continue
 		var before: Texture = m.react_tex["kawaii"]
 		m._set_outfit("pajamas")
 		var pajamas_kawaii: Texture = m.react_tex["kawaii"]

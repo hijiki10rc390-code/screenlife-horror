@@ -30,7 +30,7 @@ const DIFFICULTY_TABLE := [
 ]
 
 # ステージの設定ファイル（画像・人影の範囲・時間割・台詞）。順番に遊ぶ
-const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json"]
+const STAGE_FILES := ["res://stages/stage1.json", "res://stages/stage2.json", "res://stages/stage3.json", "res://stages/stage4.json"]
 static var stage_no := 0           # 今のステージ。画面の再読み込みをまたいで保持する
 static var difficulty := 2         # 画面の再読み込みをまたいで保持する。設定にも保存される（既定: むずかしい）
 
@@ -1240,6 +1240,15 @@ func _char_style(who: String) -> Dictionary:
 					"text_color": "#f0e8d8",
 					"outline_color": "#705a40",
 					"stamp": ["💕", "🌸", "✨", "(≧▽≦)", "(*≧▽≦)", "(>ω<)"]
+				}
+			"蓮":
+				# 蓮: 深夜の友達・落ち着き。グリーン寄りに
+				return {
+					"name_color": "#a8d0c0",
+					"bubble_color": "#1f2a26",
+					"text_color": "#dde8e0",
+					"outline_color": "#3a5048",
+					"stamp": ["👍", "✨", "(^_^)", "(>ω<)"]
 				}
 			_:
 				# デフォルト（後方互換）

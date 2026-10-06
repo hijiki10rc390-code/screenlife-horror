@@ -1,0 +1,126 @@
+{
+  "id": "stage4",
+  "base_image": "outputs/stages_build/stage4/chosen_base.png",
+  "base_prompt": "dark night webcam photo, grainy, medium shot: handsome adult japanese man, 25 years old, gentle face, short black hair, white gaming headset with microphone, dark t-shirt, sitting at a desk facing the camera, laptop, open dark doorway behind him",
+  "base_neg": "bright, daylight, sofa, white wall, living room, cartoon, anime, text, watermark, neon sign, saturated colors, close-up, harsh shadows on face, aged, middle-aged, childlike, wide angle distortion",
+  "base_seeds": [
+    19000,
+    19001,
+    19002,
+    19003,
+    19004,
+    19005,
+    19006,
+    19007
+  ],
+  "style": "dark night webcam photo, grainy, underexposed",
+  "ghost_box": [
+    120,
+    0,
+    290,
+    560
+  ],
+  "ghost_prompt": "a tall thin pale figure standing perfectly still in the dark doorway, long black hair covering the face, white dress, unsettling, barely visible",
+  "ghost_neg": "text, watermark, cartoon, anime, bright, colorful",
+  "ghost_seeds": [
+    7,
+    8,
+    9
+  ],
+  "subject": "a handsome adult japanese man, 25 years old, gentle face, short black hair, white gaming headset with microphone, dark t-shirt",
+  "pronoun": "his",
+  "body_box": [
+    280,
+    40,
+    720,
+    576
+  ],
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking",
+  "react_seed": 50,
+  "overlay": {
+    "ghost_box": [
+      100,
+      0,
+      350,
+      560
+    ],
+    "body_box": [
+      290,
+      50,
+      760,
+      570
+    ],
+    "lure_box": [
+      270,
+      10,
+      790,
+      570
+    ],
+    "feather": 16
+  },
+  "figure_prompt": "full body photo of a pale thin woman in a long white dress, long black hair covering her face, standing perfectly still, facing the camera, in total darkness, black background, creepy, low light, grainy",
+  "figure_neg": "bright background, colorful, cartoon, anime, text, watermark, smile, gore, blood, nude, child",
+  "figure_seeds": [
+    25,
+    26,
+    27,
+    28
+  ],
+  "figure_place": [
+    100,
+    0,
+    310,
+    540
+  ],
+  "lure_box": [
+    260,
+    0,
+    760,
+    576
+  ],
+  "lures": [
+    {
+      "name": "lean",
+      "prompt": "leaning forward toward the camera with a playful smile, resting his chin on his hand",
+      "strength": 0.7
+    },
+    {
+      "name": "stretch",
+      "prompt": "stretching both arms above his head with a relaxed smile, yawning slightly",
+      "strength": 0.7
+    }
+  ],
+  "figure_clip_y": 340,
+  "faces": [
+    {
+      "name": "smile",
+      "seeds": [50, 51],
+      "strength": 0.65,
+      "prompt": "warm cheerful smile looking at the camera, relaxed and friendly"
+    },
+    {
+      "name": "fear",
+      "seeds": [50, 51],
+      "strength": 0.72,
+      "prompt": "frightened, wide eyes and parted lips, shoulders tense, looking toward something behind him"
+    },
+    {
+      "name": "despair",
+      "seeds": [50, 51, 52],
+      "strength": 0.75,
+      "prompt": "worried and anxious expression, lips trembling, head slightly lowered, dark mood"
+    },
+    {
+      "name": "happy",
+      "seeds": [50, 51, 52],
+      "strength": 0.72,
+      "prompt": "beaming smile with eyes curved in joy, one hand waving at the camera, relieved and happy"
+    },
+    {
+      "name": "worry",
+      "seeds": [50],
+      "strength": 0.7,
+      "prompt": "worried expression with raised eyebrows, concerned look, biting his lip slightly"
+    }
+  ]
+}
