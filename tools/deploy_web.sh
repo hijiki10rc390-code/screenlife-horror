@@ -12,7 +12,12 @@
 set -euo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
-ROOT="$(pwd -W)"
+# Git Bash (Windows) と WSL bash の両方で動くよう、Windows パスを自動判定する
+if command -v wslpath >/dev/null 2>&1; then
+  ROOT="$(pwd)"
+else
+  ROOT="$(pwd -W)"
+fi
 
 echo "=== 1. 認証確認 ==="
 if ! gh auth status >/dev/null 2>&1; then
