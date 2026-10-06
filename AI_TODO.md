@@ -79,6 +79,27 @@
 
 ## 完了ログ（直近 5 件）
 
+- 2026-10-06 08:xx — 全体的なクオリティアップ（plan 15）
+  - docs/godot-tips.md: 2026-10 版に更新（Godot 4.7、diegetic UI、AI キャラ一貫性、ホラーペーシング研究）
+  - docs/character-bible.md: 性格の三軸・キャラ別口調・よく使う言葉・表情マッピングを追加
+  - main.gd: `_char_style(who)` を新設し、Mika/Aoi/ゆめ でチャット吹き出しの色とスタンプを差別化。チャットに [outline_color] と [indent] を追加して視認性アップ
+  - main.gd: `trust_bar_label` を追加し、現在の信頼度を % で表示（30% 以下=赤、60% 超=ピンク）
+  - main.gd: タイトル画面に「通話・配信の画面の向こうで何が起きているか」の説明文を追加
+  - main.gd: 終了画面にヘッダー帯を追加してメッセージを強調
+  - main.gd: `_build_ui` を 12 のサブ関数に分解（266 行 → 15 行）
+  - main.gd: `_on_comment` の `pos` 引数を `Variant` 型に明示
+  - tests/test_logic.gd: 17 件追加（合計 227 → 244 OK）
+  - tools/run_tests.sh: WSL bash でも動くよう `wslpath` フォールバック追加
+  - コミット: `433164d`, `9cca226`, `f15d56c`, `a73c8b6`, `83b1946`, `8b7a6d6`, `c585fe1`, `b04f61a`, `7678b40`, `59b9980`
+
+- 2026-10-06 08:xx — Web ビルドを GitHub Pages にデプロイ
+  - `gh` CLI を WSL にインストール（apt install gh）
+  - ユーザー PAT で `gh auth login` 認証（WSL のセキュリティで `--with-token` 引数は不可、ファイル経由で実行）
+  - `screenlife-horror` リポジトリを public 作成（GitHub Pages 無料枠のため。元の「必ず private」と一線を更改）
+  - master と gh-pages ブランチを push
+  - GitHub Pages を有効化し、公開 URL: https://hijiki10rc390-code.github.io/screenlife-horror/
+  - コミット: `1a2c52d`, `6906eb0`
+
 - 2026-10-06 01:43 — プラン 13 続き: 全ステージの怪異を lunge ポーズ figure に置き換え
   - stages_src/stage1/2/3_ghost_lunge.json: 'both hands raised reaching forward, body leaning toward the camera' で figure 生成
   - assets/stages/stage2/ghost_overlay.png, stage3, scene/ghost_overlay.png: 動的 lunge ポーズ
