@@ -130,6 +130,7 @@ var timer_label: Label
 var typing_label: Label
 var hint_label: Label
 var trust_bar_fill: ColorRect      # 信頼ゲージの中身（use_phrases のステージだけ作成）
+var trust_bar_label: Label          # 信頼ゲージの % 表示（use_phrases のステージだけ作成）
 var talk_btn: Button
 var warn_btn: Button
 var marker: Control
@@ -691,6 +692,14 @@ func _build_ui(vp: SubViewport) -> void:
 		trust_bar_fill.size = Vector2(0, bar_size.y)   # 初期は空。_process で目標値に追従させる
 		trust_bar_fill.color = Color(0.75, 0.3, 0.3)
 		add_child(trust_bar_fill)
+		# 信頼度の % 表示（ゲージ右側）
+		trust_bar_label = Label.new()
+		trust_bar_label.position = Vector2(bar_pos.x + bar_size.x - 60, bar_pos.y - 22)
+		trust_bar_label.size = Vector2(56, 18)
+		trust_bar_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		trust_bar_label.add_theme_font_size_override("font_size", 14)
+		trust_bar_label.modulate = Color(0.85, 0.85, 0.95)
+		add_child(trust_bar_label)
 
 	# 開始画面（着信）
 	title_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0.05, 0.06, 0.09, 0.96))
@@ -1579,6 +1588,16 @@ func _process(delta: float) -> void:
 		var t1 := clampf(belief / 0.5, 0.0, 1.0)
 		var t2 := clampf((belief - 0.5) / 0.3, 0.0, 1.0)
 		trust_bar_fill.color = red.lerp(amber, t1).lerp(green, t2)
+		# % 表示を更新（信頼度 60% を超えたら色も少し明るく）
+		if trust_bar_label:
+			trust_bar_label.text = "%d%%" % int(round(belief * 100))
+			# 60% 超は親しみ、30% 以下は警告色
+			if belief >= TRUST_HIGH - TRUST_EPS:
+				trust_bar_label.modulate = Color(1.0, 0.9, 0.95)
+			elif belief <= 0.3:
+				trust_bar_label.modulate = Color(1.0, 0.6, 0.6)
+			else:
+				trust_bar_label.modulate = Color(0.85, 0.85, 0.95)
 
 	# 音: 唸り・心音・環境音のこもり（人影が濃いほど強い）。人影の左右位置をパンに反映する
 	var pan := clampf((ghost_box_now().get_center().x / SCENE_W) * 2.0 - 1.0, -1.0, 1.0) * 0.6
