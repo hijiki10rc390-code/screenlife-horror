@@ -1010,6 +1010,71 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
+	# plan15: キャラ別のチャットスタイル
+	S.stage_no = 0
+	m = await fresh()
+	var cs_mika: Dictionary = m._char_style(m.friend)
+	check("plan15・Mika スタイルが返る", cs_mika.has("stamp") and cs_mika["stamp"].size() > 0)
+	check("plan15・Mika のスタイル名が正しく返る（フレッシュブルー）", cs_mika["name_color"] == "#a8c8e8")
+	m.queue_free()
+
+	S.stage_no = 1
+	m = await fresh()
+	var cs_aoi: Dictionary = m._char_style(m.friend)
+	check("plan15・Aoi スタイルが返る", cs_aoi.has("stamp") and cs_aoi["stamp"].size() > 0)
+	check("plan15・Aoi のスタイル名が正しく返る（くすみピンク）", cs_aoi["name_color"] == "#e8b0c8")
+	m.queue_free()
+
+	S.stage_no = 2
+	m = await fresh()
+	var cs_yume: Dictionary = m._char_style(m.friend)
+	check("plan15・ゆめ スタイルが返る", cs_yume.has("stamp") and cs_yume["stamp"].size() > 0)
+	check("plan15・ゆめ のスタイル名が正しく返る（ゴールド）", cs_yume["name_color"] == "#e8c890")
+	# 自分/視聴者（friend でない発言者）のスタイル
+	var cs_other: Dictionary = m._char_style("視聴者A")
+	check("plan15・自分/視聴者スタイルはstamp空配列", cs_other["stamp"].size() == 0)
+	m.queue_free()
+	S.stage_no = 0
+
+	# plan15: 信頼ゲージの % 表示ラベル
+	S.stage_no = 1   # use_phrases の stage2
+	m = await fresh()
+	check("plan15・trust_bar_fill がある", m.trust_bar_fill != null)
+	check("plan15・trust_bar_label がある", m.trust_bar_label != null)
+	m._start_call()
+	m.belief = 0.5
+	m._process(0.1)
+	check("plan15・ラベル更新: belief 0.5 で「50%」", m.trust_bar_label.text == "50%")
+	m.belief = 0.7
+	m._process(0.1)
+	check("plan15・ラベル更新: belief 0.7 で「70%」", m.trust_bar_label.text == "70%")
+	check("plan15・信頼60%超でラベル色ピンク系", m.trust_bar_label.modulate.r > 0.9)
+	m.belief = 0.2
+	m._process(0.1)
+	check("plan15・信頼30%以下でラベル色赤系", m.trust_bar_label.modulate.r >= 0.95)
+	m.queue_free()
+	S.stage_no = 0
+
+	# plan15: _say が 3 キャラ全員で動作する
+	for si in 3:
+		S.stage_no = si
+		m = await fresh()
+		m._start_call()
+		# チャットログに何か追加されることを確認
+		m._say(m.friend, "テストメッセージ")
+		var after_text: String = m.chat_log.get_parsed_text()
+		check("plan15・stage%d: _say で %s がチャットログに追記される" % [si + 1, m.friend], after_text.contains("テストメッセージ"))
+		m.queue_free()
+	S.stage_no = 0
+
+	# 静的型ヒントの検証（GDScript では実行時のみ確認可能だが、主要関数のシグネチャ確認）
+	# plan15: _char_style が Dictionary を返す（型推論可能なことを確認）
+	S.stage_no = 0
+	m = await fresh()
+	var _test: Dictionary = m._char_style(m.friend)
+	check("plan15・_char_style の戻り値型が Dictionary（型注釈確認）", typeof(_test) == TYPE_DICTIONARY)
+	m.queue_free()
+
 	quit(1 if fails > 0 else 0)
 
 
