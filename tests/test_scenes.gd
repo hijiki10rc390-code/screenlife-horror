@@ -148,13 +148,31 @@ func _initialize() -> void:
 	check("stage1: warm (at=19) 到達後 _scene_idx は 2", m._scene_idx == 2)
 	m.queue_free()
 
-	# 12. ステージ 2 / 3 には scenes が無い（現状）
+	# 12. 全 3 ステージで scenes が動く（Phase 2 で全展開）
+	m = await fresh(0)
+	check("stage1: scenes が読める", m.scenes.size() >= 4)
+	m._start_call()
+	m._process(5.5)
+	check("stage1: intro 到達で _waiting_choice", m._waiting_choice)
+	m.queue_free()
+
 	m = await fresh(1)
-	check("stage2: scenes は空配列", m.scenes.size() == 0)
+	check("stage2: scenes が読める", m.scenes.size() >= 4)
+	m._start_call()
+	m._process(5.5)
+	check("stage2: greeting 到達で _waiting_choice", m._waiting_choice)
+	m._on_scene_choice(0)
+	# belief_start=0.3 + difficulty 補正(= -0.05) → 0.25。+0.06 で 0.31 以上になる
+	check("stage2: 選択肢で belief +0.06", m.belief >= 0.30)
 	m.queue_free()
 
 	m = await fresh(2)
-	check("stage3: scenes は空配列", m.scenes.size() == 0)
+	check("stage3: scenes が読める", m.scenes.size() >= 4)
+	m._start_call()
+	m._process(3.5)
+	check("stage3: hello 到達で _waiting_choice", m._waiting_choice)
+	m._on_scene_choice(0)
+	check("stage3: 選択肢で belief +0.04", m.belief >= 1.0)   # 1.0 でクランプ
 	m.queue_free()
 
 	print("FAIL COUNT: %d" % fails)
