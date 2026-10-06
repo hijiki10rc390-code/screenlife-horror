@@ -10,6 +10,7 @@
   figure   … 人影を黒背景で別に作る（figure_seeds）。暗くて狭い場所は描き足しが失敗するので、この合成方式を使う
   lure     … 誘惑の仕草（設定の lures）の差分を作る
   faces    … 表情のバリエーション（設定の faces: 名前・プロンプト・強さ・seeds）を作る。ゲームオーバー・ハッピーエンド用など
+  outfit   … 衣装違いをインペイントで生成（設定の outfits: 名前・プロンプト・seeds）。表情は base のまま、衣装だけ描き換える
   pack     … 重ね画像を assets/stages/<id>/ に書き出す。番号 = 採用する人影の seed（figure_place があれば figure の seed）
 
 設定の例は stages_src/stage2.src.json。
@@ -255,6 +256,26 @@ def main():
             paths.append(p)
             print("保存:", p, flush=True)
         sheet(paths, work / "sheet_figure.png", cell=(300, 438))
+
+    elif step == "outfit":
+        # 衣装違い生成: 既存の base_image をベースに、複数衣装をインペイントで生成
+        # 設定形式:
+        #   "base_image": 既存の base 画像へのパス
+        #   "outfits": [{"name": "pajamas", "prompt": "...", "seeds": [...], "strength": 0.7}, ...]
+        #   "body_box": 衣装を描き換える範囲 [x1, y1, x2, y2]
+        base = Image.open(ROOT / spec["base_image"]).convert("RGB")
+        pipe = load("inpaint")
+        paths = [ROOT / spec["base_image"]]
+        for outfit in spec["outfits"]:
+            prompt = f"{spec['subject']}, {outfit['prompt']}, {spec['style']}"
+            for seed in outfit.get("seeds", [spec.get("react_seed", 40)]):
+                img = inpaint(pipe, base, spec["body_box"], prompt, spec.get("react_neg", ""),
+                              outfit.get("strength", 0.6), seed)
+                p = work / f"outfit_{outfit['name']}_{seed}.png"
+                img.save(p)
+                paths.append(p)
+                print("保存:", p, flush=True)
+        sheet(paths, work / "sheet_outfit.png")
 
     elif step == "pack":
         seed = int(sys.argv[3])

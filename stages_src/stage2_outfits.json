@@ -1,12 +1,22 @@
 {
   "id": "stage2_outfits",
-  "step": "base",
-  "pronoun": "her",
-  "base_prompt": "a pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair, curvy figure, full bust, white headset with microphone, soft oversized hoodie and shorts, cozy and sleepy, sitting at a desk facing the camera with a warm bright kawaii smile, laptop, dark room with door behind, soft warm lighting on face, idol energy",
-  "base_neg": "text, watermark, cartoon, anime, bright background, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles, mature, sexy",
+  "base_image": "assets/stages/stage2/base.png",
+  "subject": "a pretty adult japanese woman, 23 years old, round soft face, smooth skin, long light-brown hair, curvy figure, full bust, white headset with microphone, camisole top with lace trim",
   "style": "dark night webcam photo, grainy, medium shot, soft warm light on face, kawaii idol",
-  "body_box": [200, 60, 720, 400],
-  "react_seed": 50,
-  "base_seeds": [60, 61, 62, 63],
-  "out_path": "outputs/stages_build/stage2_outfits"
+  "react_neg": "text, watermark, cartoon, anime, bright, colorful, childlike, young-looking, thin face, hollow cheeks, wrinkles, tired eyes, dark circles",
+  "body_box": [340, 40, 790, 576],
+  "outfits": [
+    {
+      "name": "pajamas",
+      "prompt": "wearing a soft oversized cream-colored long-sleeve cotton pajama shirt with delicate lace trim at the collar, matching pajama pants",
+      "seeds": [60, 61, 62],
+      "strength": 0.5
+    },
+    {
+      "name": "hoodie",
+      "prompt": "wearing an oversized dusty-pink hoodie with the sleeves pulled over her hands, matching dark leggings",
+      "seeds": [60, 61, 62],
+      "strength": 0.55
+    }
+  ]
 }
