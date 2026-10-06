@@ -716,9 +716,11 @@ func _build_ui(vp: SubViewport) -> void:
 	answer.pressed.connect(_start_call)
 
 	# 終了画面
-	end_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0, 0, 0, 0.72))
+	end_panel = _panel(VIDEO_POS, VIDEO_SIZE, Color(0, 0, 0, 0.78))
 	end_panel.visible = false
-	end_label = _label("", Vector2(0, 60), Vector2(750, 70), end_panel, 44)
+	# 結果画面のヘッダー帯（メッセージ背景）
+	var header_band := _panel(Vector2(0, 30), Vector2(750, 90), Color(0.0, 0.0, 0.0, 0.55), end_panel)
+	end_label = _label("", Vector2(0, 50), Vector2(750, 60), end_panel, 44)
 	end_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# 表情表示（end_label の下。中央配置。end_panel の中央付近に大きめに）
 	end_face = TextureRect.new()
@@ -729,10 +731,10 @@ func _build_ui(vp: SubViewport) -> void:
 	end_face.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	end_face.modulate.a = 0.0
 	end_panel.add_child(end_face)
-	end_sub = _label("", Vector2(0, 440), Vector2(750, 60), end_panel, 20)
+	end_sub = _label("", Vector2(0, 430), Vector2(750, 80), end_panel, 20)
 	end_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	end_sub.modulate = Color(0.8, 0.84, 0.9)
-	retry_btn = _button("もう一度  (R)", Vector2(275, 510), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
+	retry_btn = _button("もう一度  (R)", Vector2(275, 530), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
 	retry_btn.pressed.connect(_after_end)
 	_build_pause_panel()
 	_build_title_screen()
