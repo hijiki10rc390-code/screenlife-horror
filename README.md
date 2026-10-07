@@ -15,7 +15,7 @@ PC 画面（ビデオ通話アプリ）を操作して、相手の背後に映�
 `outputs/build/screenlife-horror.exe`（単体・約179MB）ができる。配布前に、使ったモデルのライセンスを確認すること。
 
 - テスト: `bash tools/run_tests.sh` で全 4 種（logic / scenes / outfit_unlock / playthrough）のテストを実行。すべて OK で終了コード 0
-- 合計 557 OK / 0 NG（test_logic 328 + test_scenes 47 + test_outfit_unlock 71 + test_playthrough 111）
+- 合計 567 OK / 0 NG（test_logic 338 + test_scenes 47 + test_outfit_unlock 71 + test_playthrough 111）
 
 ## 遊び方（全10ステージ）
 

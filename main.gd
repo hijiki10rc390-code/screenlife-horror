@@ -409,19 +409,21 @@ func _button(text: String, pos: Vector2, size: Vector2, base: Color, parent: Con
 	var b := Button.new()
 	b.text = text
 	b.position = pos
-	b.size = size
 	b.focus_mode = Control.FOCUS_NONE   # Space を押したとき、ボタンが二重に反応しないように
 	b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	b.add_theme_stylebox_override("normal", _style(base))
 	b.add_theme_stylebox_override("hover", _style(base.lightened(0.18)))
 	b.add_theme_stylebox_override("pressed", _style(base.darkened(0.25)))
 	b.add_theme_stylebox_override("disabled", _style(base.darkened(0.45)))
+	(parent if parent else self).add_child(b)
+	# add_child の後で size を確定（スタイル余白で勝手に膨らまないように）
+	b.custom_minimum_size = size
+	b.size = size
 	b.button_down.connect(func() -> void:   # 押した瞬間にわずかに縮み、すぐ戻る
 		b.pivot_offset = b.size / 2.0
 		b.scale = Vector2(0.95, 0.95))
 	b.button_up.connect(func() -> void:
 		create_tween().tween_property(b, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT))
-	(parent if parent else self).add_child(b)
 	return b
 
 
@@ -1005,7 +1007,7 @@ func _build_title_screen() -> void:
 	outfit_btn_pajamas.pressed.connect(_set_outfit.bind("pajamas"))
 	outfit_btn_hoodie.pressed.connect(_set_outfit.bind("hoodie"))
 	_refresh_outfit_btns()
-	var y := 485   # 衣装選択を追加したので位置調整
+	var y := 470   # 衣装選択を追加したので位置調整。続きから・ステージ選択と干渉しないよう上に詰めた
 	var start := _button("はじめから", Vector2(500, y), Vector2(280, 56), Color(0.15, 0.45, 0.25), title_screen)
 	start.pressed.connect(_title_start.bind(0))
 	if reached > 0:
@@ -1017,18 +1019,18 @@ func _build_title_screen() -> void:
 		if next_stage_data != null and typeof(next_stage_data) == TYPE_DICTIONARY:
 			next_friend = (next_stage_data as Dictionary).get("friend", "")
 		var cont_label := "つづきから（ステージ%d・%s）  (Enter)" % [max_i, next_friend] if next_friend != "" else "つづきから（ステージ%d）  (Enter)" % max_i
-		var cont := _button(cont_label, Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
+		var cont := _button(cont_label, Vector2(450, y + 60), Vector2(380, 50), Color(0.2, 0.22, 0.28), title_screen)
 		cont.pressed.connect(_title_start.bind(reached))
 		# ステージ選択: 5列 × 2行のグリッド（全 10 ステージが画面内に収まる）
 		stage_select_btns.clear()
 		var ss_w := 100
-		var ss_h := 38
+		var ss_h := 32
 		var ss_gap_x := 12
-		var ss_gap_y := 6
+		var ss_gap_y := 4
 		var ss_cols := 5
 		var ss_total_w := ss_cols * ss_w + (ss_cols - 1) * ss_gap_x   # 548
 		var ss_x0 := int((1280 - ss_total_w) / 2.0)   # 366。中央寄せ
-		var ss_y0 := y + 130
+		var ss_y0 := y + 115
 		_label("ステージ選択  （%d / %d クリア）" % [max_i, STAGE_FILES.size()], Vector2(0, ss_y0 - 26), Vector2(1280, 22), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		for i in max_i:
 			var col := i % ss_cols

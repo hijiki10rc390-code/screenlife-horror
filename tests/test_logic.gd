@@ -781,6 +781,13 @@ func _initialize() -> void:
 			if b.position.y < 0 or b.position.y + b.size.y > 720:
 				in_bounds = false
 		check("reached=%d の全ボタンが画面内に収まる" % r, in_bounds)
+		# 下のヒント（Esc...F11: 全画面）と被らないか。ヒントは (0, 690) で高さ 30
+		var no_hint_overlap := true
+		for b in m.stage_select_btns:
+			if b.position.y + b.size.y > 690:
+				no_hint_overlap = false
+		if r > 0:
+			check("reached=%d のステージボタンがヒント (y=690) と重ならない" % r, no_hint_overlap)
 		# 右上「終了」ボタンが存在する
 		check("reached=%d で quit_btn_title が存在する" % r, m.quit_btn_title != null)
 		# reached > 0 のとき、最初のボタンはキャラ名を含む（stages/stage1.json の friend が 'Mika'）
