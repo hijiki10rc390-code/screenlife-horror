@@ -200,6 +200,14 @@
             "belief": 0.03
           },
           "next_scene": "chat_topic"
+        },
+        {
+          "text": "（スタンプだけ送る）",
+          "chat": "👍",
+          "effect": {
+            "belief": 0.0
+          },
+          "next_scene": "chat_topic"
         }
       ]
     },
