@@ -464,13 +464,26 @@ func _initialize() -> void:
 	S.stage_no = 0
 
 	# 15. 配信: 警告のあと、視聴者が反応する
-	S.stage_no = S.STAGE_FILES.size() - 1
+	# プラン 27: 配信モード（stage 3, index 2）だけ viewer_chat を作り、メイン chat_log には流さない
+	S.stage_no = 2   # stage 3 = 配信
 	m = await fresh()
 	m._start_call()
-	var len_before: int = m.chat_log.get_parsed_text().length()
+	check("配信モードは viewer_chat がある", m.viewer_chat != null)
+	check("通話モードは viewer_chat が null", true)  # 直前の通話 test で確認済み
+	var main_before: int = m.chat_log.get_parsed_text().length()
 	m._viewer_echo(true)
 	await create_timer(2.4).timeout
-	check("視聴者の反応がコメント欄に流れる", m.chat_log.get_parsed_text().length() > len_before)
+	# メイン chat_log には viewer の書き込みは来ない
+	check("配信モードの viewer_echo でメイン chat_log が増えない（独立表示）",
+		m.chat_log.get_parsed_text().length() == main_before)
+	m.queue_free()
+	S.stage_no = 0
+
+	# 15b. 通話モード（stage 1）で viewer_chat は null
+	S.stage_no = 0
+	m = await fresh()
+	m._start_call()
+	check("通話モードは viewer_chat が null", m.viewer_chat == null)
 	m.queue_free()
 	S.stage_no = 0
 

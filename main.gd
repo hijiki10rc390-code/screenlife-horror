@@ -137,6 +137,7 @@ var ghost_layer: TextureRect
 var video: TextureRect
 var cam_mat: ShaderMaterial
 var chat_log: RichTextLabel
+var viewer_chat: RichTextLabel   # 配信モード時のみ。視聴者コメントの独立表示用（プラン 27）
 var status_label: Label
 var timer_label: Label
 var typing_label: Label
@@ -716,14 +717,26 @@ func _build_hint_and_chat() -> void:
 	_label("コメント" if mode == "stream" else "チャット", Vector2(16, 8), Vector2(180, 26), chat)
 	chat_log = RichTextLabel.new()
 	chat_log.position = Vector2(16, 44)
-	chat_log.size = Vector2(190, 520)
+	chat_log.size = Vector2(190, 360)
 	chat_log.bbcode_enabled = true
 	chat_log.scroll_following = true
 	chat_log.add_theme_font_size_override("normal_font_size", 18)
 	chat.add_child(chat_log)
-	typing_label = _label(friend + " が入力中…", Vector2(16, 580), Vector2(190, 26), chat, 15)
+	typing_label = _label(friend + " が入力中…", Vector2(16, 410), Vector2(190, 26), chat, 15)
 	typing_label.modulate = Color(0.72, 0.76, 0.84)
 	typing_label.visible = false
+	# プラン 27（配信モードのみ）: 右下に視聴者コメント欄を独立表示
+	viewer_chat = null
+	if mode == "stream":
+		_label("視聴者のコメント", Vector2(16, 440), Vector2(180, 22), chat, 14).modulate = Color(0.65, 0.7, 0.8)
+		viewer_chat = RichTextLabel.new()
+		viewer_chat.position = Vector2(16, 466)
+		viewer_chat.size = Vector2(190, 150)
+		viewer_chat.bbcode_enabled = true
+		viewer_chat.scroll_following = true
+		viewer_chat.add_theme_font_size_override("normal_font_size", 14)
+		viewer_chat.modulate = Color(0.75, 0.78, 0.85)   # 少し暗くしてメインと差別化
+		chat.add_child(viewer_chat)
 
 
 # アクションボタン（話しかけ・警告・3つ目・4つ目）。ステージ別で配置・表示を切替
@@ -1766,7 +1779,9 @@ func _viewer_echo(real: bool) -> void:
 
 func _say_viewer(text: String) -> void:
 	var names := ["ゆう", "kai_", "のの", "たろう", "MM", "ぱんだ", "ひなた"]
-	chat_log.append_text("[color=#8a9]%s[/color]  %s\n" % [names.pick_random(), text])
+	# プラン 27: 配信モード時は viewer_chat に書く（独立表示）。非配信時はメイン chat_log
+	var target: RichTextLabel = viewer_chat if viewer_chat != null else chat_log
+	target.append_text("[color=#8a9]%s[/color]  %s\n" % [names.pick_random(), text])
 
 
 func _finish(new_state: State, message: String, color: Color) -> void:
