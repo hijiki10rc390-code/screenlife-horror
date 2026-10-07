@@ -510,11 +510,11 @@ func _draw_face_on(c: Control) -> void:
 	var fx := _current_face_fx()
 	var sx := VIDEO_SIZE.x / 1280.0
 	var sy := VIDEO_SIZE.y / 720.0
-	# デフォルトの口と目の位置（face_fx が無いとき、またはサイズが 0 のとき）
-	var mouth_pos := Vector2(VIDEO_SIZE.x * 0.5, VIDEO_SIZE.y * 0.78)
-	var mouth_size := Vector2(VIDEO_SIZE.x * 0.06, VIDEO_SIZE.y * 0.03)
+	# デフォルトの口と目の位置（face_fx が無いステージ用。プラン 25 で 78% → 60% に上げて顔の中央下に）
+	var mouth_pos := Vector2(VIDEO_SIZE.x * 0.5, VIDEO_SIZE.y * 0.60)
+	var mouth_size := Vector2(VIDEO_SIZE.x * 0.07, VIDEO_SIZE.y * 0.05)
 	var eye_pos := Vector2(VIDEO_SIZE.x * 0.5, VIDEO_SIZE.y * 0.38)
-	var eye_size := Vector2(VIDEO_SIZE.x * 0.18, VIDEO_SIZE.y * 0.04)
+	var eye_size := Vector2(VIDEO_SIZE.x * 0.20, VIDEO_SIZE.y * 0.05)
 	if fx.has("mouth"):
 		var mb = fx["mouth"]
 		if mb[2] > 0 and mb[3] > 0:
@@ -527,26 +527,26 @@ func _draw_face_on(c: Control) -> void:
 			eye_size = Vector2(eb[2] * sx, eb[3] * sy)
 	# 口（mouth_open に応じて縦に開く）
 	if mouth_open > 0.01:
-		var open_h := mouth_size.y * (0.2 + mouth_open * 0.8)
+		var open_h := mouth_size.y * (0.3 + mouth_open * 0.9)   # プラン 25: 最小時の高さを 0.2→0.3 に
 		var center := mouth_pos + Vector2(mouth_size.x * 0.5, mouth_size.y * 0.5)
-		# 口の影（黒い楕円）: draw_circle 2 枚で楕円を表現
+		# 口の影（黒い楕円）: draw_rect で楕円を表現
 		var rx := mouth_size.x * 0.45
 		var ry := open_h * 0.5
-		c.draw_rect(Rect2(center.x - rx, center.y - ry, rx * 2, ry * 2), Color(0.0, 0.0, 0.0, 0.7), true)
+		c.draw_rect(Rect2(center.x - rx, center.y - ry, rx * 2, ry * 2), Color(0.0, 0.0, 0.0, 0.85), true)   # プラン 25: 0.7→0.85 に
 		# 唇の薄い赤（楕円の輪郭）
 		var pts := PackedVector2Array()
 		for i in 24:
 			var a := float(i) / 24.0 * TAU
 			pts.append(Vector2(center.x + cos(a) * rx, center.y + sin(a) * ry))
 		pts.append(pts[0])
-		c.draw_polyline(pts, Color(0.5, 0.15, 0.15, 0.4), 1.5)
+		c.draw_polyline(pts, Color(0.55, 0.18, 0.18, 0.55), 1.5)   # プラン 25: 0.4→0.55
 	# 瞬き（目の上に矩形が降りてくる）
 	if blink_t > 0.0:
 		var p := clampf((t - blink_t) / BLINK_DURATION, 0.0, 1.0)
 		# 0.0→0.5: 降りてくる、0.5→1.0: 持ち上がる
 		var h := eye_size.y * (1.0 - absf(p * 2.0 - 1.0))
 		var eye_rect := Rect2(eye_pos.x, eye_pos.y, eye_size.x, h)
-		c.draw_rect(eye_rect, Color(0.1, 0.1, 0.15, 0.85))
+		c.draw_rect(eye_rect, Color(0.08, 0.08, 0.12, 0.92))   # プラン 25: 0.85→0.92 に
 
 
 func _refresh_rec_label() -> void:
@@ -1981,7 +1981,14 @@ func _process(delta: float) -> void:
 	ghost_layer.scale = Vector2.ONE * base_scale
 	var cur := ghost_layer.modulate.a
 	if state == State.PLAYING:
-		var alpha := clampf(target * (0.85 + 0.15 * sin(t * 9.0)), 0.0, 1.0) if target > 0.0 else 0.0
+		# プラン 25: 揺らぎを少し強めて「写真が透けていく」感を軽減
+		# 基本の sin 揺らぎ + 高頻度で短いスパイク（人が不意に動いた感じ）
+		var flicker := 0.85 + 0.18 * sin(t * 9.0) + 0.10 * sin(t * 23.0)
+		# スパイク: 1.2 秒周期で 0.08 秒だけ急にもやが薄くなる（パッと何かが動いた感じ）
+		var spike_phase := fmod(t, 1.2)
+		if spike_phase < 0.08 and target > 0.3:
+			flicker -= 0.30
+		var alpha := clampf(target * flicker, 0.0, 1.0) if target > 0.0 else 0.0
 		# コマ落ち演出: 0.07 秒だけ濃さを半分にする
 		if not calm and stutter_left > 0.0:
 			alpha *= 0.5
@@ -2060,9 +2067,11 @@ func _process(delta: float) -> void:
 	audio.update(delta, ghost_layer.modulate.a, state == State.PLAYING, state == State.SAVED, pan)
 
 	# 映像を生きたものに見せる: ごくわずかな拡大・揺れ。失敗時は大きく揺らす
-	var s := 1.0 + 0.006 * sin(t * 0.7)
+	# プラン 25: 人影が濃いとき映像もわずかに揺らす（一体化感）
+	var ghost_a := ghost_layer.modulate.a if ghost_layer != null else 0.0
+	var s := 1.0 + 0.006 * sin(t * 0.7) + 0.004 * ghost_a * sin(t * 5.3)
 	stage.scale = Vector2(s, s)
-	stage.position = Vector2(sin(t * 0.9) * 1.5, cos(t * 1.3) * 1.0)
+	stage.position = Vector2(sin(t * 0.9) * 1.5, cos(t * 1.3) * 1.0) + Vector2(ghost_a * 0.8, 0.0)
 	shake_left = maxf(0.0, shake_left - delta * 1.4)
 	var clock := Time.get_ticks_msec() / 1000.0   # 失敗後は t が止まるので、実時間で揺らす
 	var shake := shake_left * shake_left
@@ -2071,7 +2080,9 @@ func _process(delta: float) -> void:
 	cam_mat.set_shader_parameter("time", t)
 	# 映像の乱れ: 人影が濃くなるほど強い。プラン 13（過剰演出削減）:
 	# ghost alpha 0.4 までは出さない、0.4〜1.0 で 0.0〜0.5（半減）。stutter も同条件
-	var glitch_amt := 0.0 if calm else clampf((ghost_layer.modulate.a - 0.4) / 0.6, 0.0, 0.5)
+	# プラン 25: time の _curve_alpha 基準にする（一瞬の flicker で glitch が 0 になるのを防ぐ）
+	var ghost_target := _curve_alpha(t) if state == State.PLAYING else (1.0 if state == State.FAILED else 0.0)
+	var glitch_amt := 0.0 if calm else clampf((ghost_target - 0.4) / 0.6, 0.0, 0.5)
 	cam_mat.set_shader_parameter("glitch", glitch_amt)
 	# きしみに合わせた暗転（dim）: 0.3 秒だけ素早く点滅させて 0 に戻す。calm では常に 0
 	var dim := 0.0
