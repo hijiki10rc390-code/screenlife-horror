@@ -434,7 +434,7 @@ func _initialize() -> void:
 	check("練習以外のステージは合図なし（注意力に任せる）", not m.cue_first_seen and not m.onboarding)
 	m.lock_left = 2.0
 	at(m, 71.0)
-	check("ロック中は '警告できるまで あと N 秒' を表示", m.lock_label.text.contains("警告できるまで"))
+	check("ロック中は '🔒 Ns' を表示", m.lock_label.text.contains("🔒") and m.lock_label.text.contains("s"))
 	# プラン 24: 話しかけ直せるまでの文言は廃止
 	check("ロックラベルに '話しかけ' が出ていない", not m.lock_label.text.contains("話しかけ"))
 	m.queue_free()

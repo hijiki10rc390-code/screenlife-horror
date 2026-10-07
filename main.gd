@@ -712,16 +712,16 @@ func _build_hint_and_chat() -> void:
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint_label.modulate = Color(0.65, 0.7, 0.78)
 
-	var chat := _panel(Vector2(860, 40), Vector2(370, 620), Color(0.15, 0.16, 0.19))
-	_label("コメント" if mode == "stream" else "チャット", Vector2(16, 8), Vector2(200, 26), chat)
+	var chat := _panel(Vector2(1040, 40), Vector2(220, 620), Color(0.15, 0.16, 0.19))
+	_label("コメント" if mode == "stream" else "チャット", Vector2(16, 8), Vector2(180, 26), chat)
 	chat_log = RichTextLabel.new()
 	chat_log.position = Vector2(16, 44)
-	chat_log.size = Vector2(338, 520)
+	chat_log.size = Vector2(190, 520)
 	chat_log.bbcode_enabled = true
 	chat_log.scroll_following = true
-	chat_log.add_theme_font_size_override("normal_font_size", 20)
+	chat_log.add_theme_font_size_override("normal_font_size", 18)
 	chat.add_child(chat_log)
-	typing_label = _label(friend + " が入力中…", Vector2(16, 580), Vector2(338, 26), chat, 15)
+	typing_label = _label(friend + " が入力中…", Vector2(16, 580), Vector2(190, 26), chat, 15)
 	typing_label.modulate = Color(0.72, 0.76, 0.84)
 	typing_label.visible = false
 
@@ -1634,14 +1634,14 @@ func _show_scene_buttons(choices: Array) -> void:
 	var n := choices.size()
 	if n == 0:
 		return
-	# チャット欄の右側（VIDEO_POS + VIDEO_SIZE の下）に縦並び
+	# プラン 26: チャット枠の左側（映像の右、x=830-1030）に縦並び。チャットとは被らない
 	var start_y := VIDEO_POS.y + VIDEO_SIZE.y - 32.0 - float(n) * 60.0
 	for i in n:
 		var ch: Dictionary = choices[i]
 		var b := Button.new()
 		b.text = ch.get("text", "...")
-		b.custom_minimum_size = Vector2(220.0, 50.0)
-		b.position = Vector2(VIDEO_POS.x + VIDEO_SIZE.x + 12.0, start_y + i * 56.0)
+		b.custom_minimum_size = Vector2(200.0, 50.0)
+		b.position = Vector2(830, start_y + i * 56.0)
 		b.modulate = Color(0.95, 0.95, 1.0)
 		b.pressed.connect(_on_scene_choice.bind(i))
 		add_child(b)
@@ -1799,7 +1799,9 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 		tt.tween_property(end_panel, "modulate:a", 1.0, 0.5)
 		tt.parallel().tween_property(end_face, "modulate:a", 1.0, 0.5)
 	else:
+		# プラン 26: 救出時も 0.6 秒の待ち時間。仲間のリアクションを読んでから end panel を出す
 		var tt2 := create_tween()
+		tt2.tween_interval(0.6)
 		tt2.tween_property(end_panel, "modulate:a", 1.0, 0.5)
 		tt2.parallel().tween_property(end_face, "modulate:a", 1.0, 0.5)
 	# ルート分岐: 全 9 ステージの累計救出が一定数を超えると特別なメッセージを表示
@@ -2124,7 +2126,11 @@ func _process(delta: float) -> void:
 	var locked := lock_left > 0.0
 	var notes := []
 	if locked:
-		notes.append("警告できるまで あと %d 秒" % ceili(lock_left))
+		# プラン 26: 短く簡潔に。視覚的にも赤で「操作不可」を強調
+		notes.append("🔒 %ds" % ceili(lock_left))
+		lock_label.modulate = Color(1.0, 0.45, 0.45)   # 赤系で目立たせる
+	else:
+		lock_label.modulate = Color(1.0, 0.82, 0.45)   # 通常の色
 	# プラン 24: 話しかけ廃止のため talk_left の表示は削除
 	lock_label.text = "   /   ".join(PackedStringArray(notes))
 	# プラン 24: 下のアクションボタンを撤去したため、talk_btn 関連の更新はスキップ
