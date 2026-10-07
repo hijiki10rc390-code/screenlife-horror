@@ -767,6 +767,11 @@ func _initialize() -> void:
 		check("reached=%d の全ボタンが画面内に収まる" % r, in_bounds)
 		# 右上「終了」ボタンが存在する
 		check("reached=%d で quit_btn_title が存在する" % r, m.quit_btn_title != null)
+		# reached > 0 のとき、最初のボタンはキャラ名を含む（stages/stage1.json の friend が 'Mika'）
+		if r > 0:
+			var first_label: String = m.stage_select_btns[0].text
+			check("reached=%d の最初のボタンにキャラ名（'Mika'）が含まれる" % r,
+				"Mika" in first_label)
 		m.queue_free()
 	S.title_done = true
 

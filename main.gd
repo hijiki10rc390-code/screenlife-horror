@@ -1011,7 +1011,7 @@ func _build_title_screen() -> void:
 		# ステージ選択: 5列 × 2行のグリッド（全 10 ステージが画面内に収まる）
 		stage_select_btns.clear()
 		var ss_w := 100
-		var ss_h := 32
+		var ss_h := 38
 		var ss_gap_x := 12
 		var ss_gap_y := 6
 		var ss_cols := 5
@@ -1022,7 +1022,16 @@ func _build_title_screen() -> void:
 		for i in max_i:
 			var col := i % ss_cols
 			var row := i / ss_cols
-			var b := _button("ステージ%d" % (i + 1), Vector2(ss_x0 + col * (ss_w + ss_gap_x), ss_y0 + row * (ss_h + ss_gap_y)), Vector2(ss_w, ss_h), Color(0.2, 0.22, 0.28), title_screen)
+			# ボタンのラベルにキャラ名も添える（"ステージN\nキャラ名"）。JSON から friend を取得
+			var btn_label := "ステージ%d" % (i + 1)
+			var stage_path: String = STAGE_FILES[i]
+			var stage_data: Variant = JSON.parse_string(FileAccess.get_file_as_string(stage_path))
+			var friend_name := ""
+			if stage_data != null and typeof(stage_data) == TYPE_DICTIONARY:
+				friend_name = (stage_data as Dictionary).get("friend", "")
+			if friend_name != "":
+				btn_label += "\n" + friend_name
+			var b := _button(btn_label, Vector2(ss_x0 + col * (ss_w + ss_gap_x), ss_y0 + row * (ss_h + ss_gap_y)), Vector2(ss_w, ss_h), Color(0.2, 0.22, 0.28), title_screen)
 			b.pressed.connect(_title_start.bind(i))
 			stage_select_btns.append(b)
 	_label("Esc: 一時停止・音量　1・2・3: 伝え方　クリック: 危険を警告　F11: 全画面", Vector2(0, 690), Vector2(1280, 30), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
