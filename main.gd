@@ -169,6 +169,8 @@ const SETTINGS_PATH := "user://settings.cfg"
 var viewers := 0
 var retry_btn: Button
 var diff_btns: Array[Button] = []  # タイトル画面の難易度ボタン（見た目更新に使う）
+var stage_select_btns: Array[Button] = []  # タイトル画面のステージ選択ボタン（テスト用にも使う）
+var quit_btn_title: Button          # タイトル画面の右上「終了」ボタン
 var outfit_btn_default: Button     # 衣装選択: デフォルト
 var outfit_btn_pajamas: Button     # 衣装選択: パジャマ
 var outfit_btn_hoodie: Button      # 衣装選択: パーカー
@@ -967,6 +969,9 @@ func _build_title_screen() -> void:
 	title_screen = _panel(Vector2.ZERO, Vector2(1280, 720), Color(0.04, 0.05, 0.07, 1.0))
 	title_shot = "--title-shot" in OS.get_cmdline_user_args()   # 撮影用: タイトル画面を撮って終了
 	title_screen.visible = title_shot or (not title_done and not shot_mode and not ("--lunge-shot" in OS.get_cmdline_user_args()))
+	# 右上「終了」ボタン（5×2 グリッドで下にステージ選択を並べるためのスペース確保）
+	quit_btn_title = _button("終了", Vector2(1180, 20), Vector2(80, 36), Color(0.3, 0.14, 0.14), title_screen)
+	quit_btn_title.pressed.connect(get_tree().quit)
 	_label("SCREENLIFE HORROR", Vector2(0, 150), Vector2(1280, 70), title_screen, 52).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var sub := _label("（仮題）画面の向こうの異変に、いちばん早く気づけ", Vector2(0, 232), Vector2(1280, 30), title_screen, 20)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1006,13 +1011,26 @@ func _build_title_screen() -> void:
 	var start := _button("はじめから", Vector2(500, y), Vector2(280, 56), Color(0.15, 0.45, 0.25), title_screen)
 	start.pressed.connect(_title_start.bind(0))
 	if reached > 0:
-		var cont := _button("つづきから（ステージ%d）  (Enter)" % (reached + 1), Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
+		var max_i: int = mini(reached + 1, STAGE_FILES.size())   # 全ステージ数で頭打ち
+		var cont := _button("つづきから（ステージ%d）  (Enter)" % max_i, Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
 		cont.pressed.connect(_title_start.bind(reached))
-		for i in reached + 1:
-			var b := _button("ステージ%d" % (i + 1), Vector2(450 + i * 130, y + 130), Vector2(120, 44), Color(0.2, 0.22, 0.28), title_screen)
+		# ステージ選択: 5列 × 2行のグリッド（全 10 ステージが画面内に収まる）
+		stage_select_btns.clear()
+		var ss_w := 100
+		var ss_h := 32
+		var ss_gap_x := 12
+		var ss_gap_y := 6
+		var ss_cols := 5
+		var ss_total_w := ss_cols * ss_w + (ss_cols - 1) * ss_gap_x   # 548
+		var ss_x0 := int((1280 - ss_total_w) / 2.0)   # 366。中央寄せ
+		var ss_y0 := y + 130
+		_label("ステージ選択  （%d / %d クリア）" % [max_i, STAGE_FILES.size()], Vector2(0, ss_y0 - 26), Vector2(1280, 22), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		for i in max_i:
+			var col := i % ss_cols
+			var row := i / ss_cols
+			var b := _button("ステージ%d" % (i + 1), Vector2(ss_x0 + col * (ss_w + ss_gap_x), ss_y0 + row * (ss_h + ss_gap_y)), Vector2(ss_w, ss_h), Color(0.2, 0.22, 0.28), title_screen)
 			b.pressed.connect(_title_start.bind(i))
-	var quit_btn := _button("終了", Vector2(560, y + 196), Vector2(160, 44), Color(0.3, 0.14, 0.14), title_screen)
-	quit_btn.pressed.connect(get_tree().quit)
+			stage_select_btns.append(b)
 	_label("Esc: 一時停止・音量　1・2・3: 伝え方　クリック: 危険を警告　F11: 全画面", Vector2(0, 690), Vector2(1280, 30), title_screen, 16).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 

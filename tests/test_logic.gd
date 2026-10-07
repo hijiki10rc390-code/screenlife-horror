@@ -29,6 +29,21 @@ func fresh() -> Control:
 	return m
 
 
+# fresh の reached 指定版。_ready 前に reached を設定する必要があるため専用ヘルパー
+func fresh_with_reached(r: int) -> Control:
+	var m: Control = load("res://main.tscn").instantiate()
+	m.persist = false
+	m.reached = r
+	root.add_child(m)
+	await process_frame
+	m.scenes = []
+	m._scene_idx = 0
+	m._waiting_choice = false
+	m._hide_scene_buttons()
+	m.lock_left = 0.0
+	return m
+
+
 func at(m: Control, time: float) -> void:
 	m.t = time
 	m._process(0.0)
@@ -733,6 +748,26 @@ func _initialize() -> void:
 			diff_count += 1
 	check("タイトル画面に難しさボタンが 3 つある", diff_count == 3 and m.diff_btns.size() == 3)
 	m.queue_free()
+	S.title_done = true
+
+	# 18j. タイトル画面のステージ選択ボタン: 件数と画面内収まり（reached = 0..10）
+	for r in 11:
+		S.title_done = false
+		m = await fresh_with_reached(r)
+		# 件数（reached + 1 を STAGE_FILES.size() で頭打ち。reached=0 は 0）
+		var expected: int = min(r + 1, S.STAGE_FILES.size()) if r > 0 else 0
+		check("reached=%d のステージ選択ボタン数（%d 個）" % [r, expected], m.stage_select_btns.size() == expected)
+		# 画面内に収まっているか（すべて x: 0..1280 / y: 0..720）
+		var in_bounds := true
+		for b in m.stage_select_btns:
+			if b.position.x < 0 or b.position.x + b.size.x > 1280:
+				in_bounds = false
+			if b.position.y < 0 or b.position.y + b.size.y > 720:
+				in_bounds = false
+		check("reached=%d の全ボタンが画面内に収まる" % r, in_bounds)
+		# 右上「終了」ボタンが存在する
+		check("reached=%d で quit_btn_title が存在する" % r, m.quit_btn_title != null)
+		m.queue_free()
 	S.title_done = true
 
 	# 19. 人影の道筋（ghost_path）: キー値・補間・倍率・ghost_box_now の移動
