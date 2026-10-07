@@ -44,6 +44,22 @@ func fresh_with_reached(r: int) -> Control:
 	return m
 
 
+# fresh の reached + total_rescues 指定版
+func fresh_with_state(r: int, rescues: int) -> Control:
+	var m: Control = load("res://main.tscn").instantiate()
+	m.persist = false
+	m.reached = r
+	m.total_rescues = rescues
+	root.add_child(m)
+	await process_frame
+	m.scenes = []
+	m._scene_idx = 0
+	m._waiting_choice = false
+	m._hide_scene_buttons()
+	m.lock_left = 0.0
+	return m
+
+
 func at(m: Control, time: float) -> void:
 	m.t = time
 	m._process(0.0)
@@ -772,6 +788,24 @@ func _initialize() -> void:
 			var first_label: String = m.stage_select_btns[0].text
 			check("reached=%d の最初のボタンにキャラ名（'Mika'）が含まれる" % r,
 				"Mika" in first_label)
+		m.queue_free()
+	S.title_done = true
+
+	# 18k. タイトル画面に通算救出数（total_rescues）が表示される
+	for n_rescues in [0, 1, 5, 10, 50]:
+		S.title_done = false
+		m = await fresh_with_state(5, n_rescues)
+		# title_screen 内のラベルで '通算救出 %d回' を含むものを探す
+		var found := false
+		for child in m.title_screen.get_children():
+			if child is Label and (child as Label).text.contains("通算救出"):
+				if (child as Label).text.contains(str(n_rescues)):
+					found = true
+					break
+		if n_rescues == 0:
+			check("total_rescues=0 のときは通算救出ラベル無し", not found)
+		else:
+			check("total_rescues=%d のとき '通算救出 %d回' ラベルあり" % [n_rescues, n_rescues], found)
 		m.queue_free()
 	S.title_done = true
 

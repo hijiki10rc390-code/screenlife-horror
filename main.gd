@@ -966,6 +966,10 @@ func _build_title_screen() -> void:
 	# 右上「終了」ボタン（5×2 グリッドで下にステージ選択を並べるためのスペース確保）
 	quit_btn_title = _button("終了", Vector2(1180, 20), Vector2(80, 36), Color(0.3, 0.14, 0.14), title_screen)
 	quit_btn_title.pressed.connect(get_tree().quit)
+	# 左上: 通算救出数（リプレイ性の指標）
+	if total_rescues > 0:
+		var stat := _label("通算救出 %d回" % total_rescues, Vector2(20, 24), Vector2(220, 32), title_screen, 18)
+		stat.modulate = Color(0.7, 0.78, 0.86)
 	_label("SCREENLIFE HORROR", Vector2(0, 150), Vector2(1280, 70), title_screen, 52).horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var sub := _label("（仮題）画面の向こうの異変に、いちばん早く気づけ", Vector2(0, 232), Vector2(1280, 30), title_screen, 20)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
