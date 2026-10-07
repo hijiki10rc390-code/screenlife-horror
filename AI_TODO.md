@@ -18,9 +18,15 @@
   - 新規アンロック判定を old_max vs new_max の閾値比較に統一（テスト可）
   - 未使用になった `_outfit_was_unlocked` を削除
   - test_outfit_unlock.gd に新規テスト 7 件
-- テスト合計: **535 OK / 0 NG**（test_logic 306 + test_scenes 47 + test_outfit_unlock 71 + test_playthrough 111）
-- README.md: テスト数 495 → 535、exe サイズ 110MB → 179MB に更新
-- コミット: `7a9fea4` `8c98169`
+- ステージ選択ボタン・つづきからボタンにキャラ名を表示
+  - 各ボタンに "ステージN\nキャラ名" の 2 行ラベル（例: "ステージ1\nMika"）
+  - JSON から friend を読み取って添える
+  - 型注釈を明示して GDScript の型推論エラーを回避
+- _ending_rescue_message の段階メッセージをテスト（累計救出 1, 2, 3, 4, 5, 9, 10）
+- テスト合計: **552 OK / 0 NG**（test_logic 323 + test_scenes 47 + test_outfit_unlock 71 + test_playthrough 111）
+- README.md: テスト数 495 → 552、exe サイズ 110MB → 179MB に更新
+- AI_HANDOVER.md: 10/07夜の作業ログを追加
+- コミット: `7a9fea4` `8c98169` `c663795` `b3a12cb` `7d39081` `ac93d4f` `b686fd6`
 
 ## 方針の更新（2026-10-05 午後・ユーザー決定）
 
