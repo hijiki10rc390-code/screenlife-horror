@@ -1,0 +1,15 @@
+{
+  "_comment": "screenlife-horrorのランチャーカード。Godot を cmd /c start で切り離して起動（押下後ランチャーが固まらないように）。ゲームは Windows 配布前提。",
+  "name": "screenlife-horror",
+  "description": "ビデオ通話・配信画面で相手の背後の異変に気づき警告して救う 2D ホラー（Godot 4・全 10 ステージ）。素材は SDXL で生成した実写風。衣装アンロック・累計救出エンディング分岐あり",
+  "command": "cmd.exe",
+  "args": [
+    "/c", "start", "",
+    "C:\\Users\\hijik\\AppData\\Local\\Programs\\Godot\\Godot_v4.7.2-stable_win64.exe",
+    "--path",
+    "C:\\Users\\hijik\\ClaudeCode\\screenlife-horror"
+  ],
+  "cwd": "C:\\Users\\hijik\\ClaudeCode\\screenlife-horror",
+  "no_capture": true,
+  "env": {}
+}
