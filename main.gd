@@ -150,6 +150,7 @@ var title_panel: Control
 var end_panel: Control
 var end_label: Label
 var end_face: TextureRect      # 結果画面の表情（end_panel の子）
+var unlock_label: Label         # 衣装アンロック通知（end_panel の子。プラン 21 で追加）
 const AudioMgrScript := preload("res://audio_manager.gd")
 var audio: Node                    # 音の管理（audio_manager.gd）
 var paused := false
@@ -297,17 +298,6 @@ func _refresh_outfit_btns() -> void:
 		else:
 			btn.modulate = Color(0.45, 0.45, 0.45)   # 暗い灰色（ロック）
 			btn.disabled = true
-
-
-# 衣装が既にアンロックされているか（save_settings 経由で永続化される）
-func _outfit_was_unlocked(outfit_name: String) -> bool:
-	# 過去に同じ衣装を保存したことがあれば true
-	if not persist:
-		return true   # テスト時は常にアンロック扱い
-	var c := ConfigFile.new()
-	if c.load(SETTINGS_PATH) != OK:
-		return false
-	return c.get_value("visual", "outfit", "") == outfit_name or c.get_value("progress", "max_trust", 0.0) >= (OUTFIT_UNLOCK_PAJAMAS if outfit_name == "pajamas" else OUTFIT_UNLOCK_HOODIE)
 
 
 # 衣装がアンロック可能か
@@ -860,6 +850,10 @@ func _build_end_panel() -> void:
 	end_sub = _label("", Vector2(0, 430), Vector2(750, 80), end_panel, 20)
 	end_sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	end_sub.modulate = Color(0.8, 0.84, 0.9)
+	# 衣装アンロック通知（プラン 21: end_sub とは別レーンで金色のメッセージ。最初は透明）
+	unlock_label = _label("", Vector2(0, 388), Vector2(750, 32), end_panel, 22)
+	unlock_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	unlock_label.modulate = Color(1.0, 0.85, 0.5, 0.0)
 	retry_btn = _button("もう一度  (R)", Vector2(275, 530), Vector2(200, 56), Color(0.2, 0.22, 0.28), end_panel)
 	retry_btn.pressed.connect(_after_end)
 
@@ -1858,15 +1852,23 @@ func _finish(new_state: State, message: String, color: Color) -> void:
 			end_sub.text += "\n人影は約%d秒から映っていた。次は早めに目を凝らそう。" % seen_at
 	# 信頼度を進めていたら max_trust を更新（衣装アンロックに使う）
 	if belief > max_trust_reached:
+		var old_max := max_trust_reached
 		max_trust_reached = belief
-		# 新しくアンロックされた衣装を通知（テキストのみ）
+		# 新しくアンロックされた衣装を通知（プラン 21: 金色ラベル + 通知音 + フェード演出）
+		# 「新たに閾値を超えたか」を old_max との差で判定（_outfit_was_unlocked は既に更新後を参照してしまうため使わない）
 		var unlocked := ""
-		if max_trust_reached >= OUTFIT_UNLOCK_PAJAMAS and not _outfit_was_unlocked("pajamas"):
+		if old_max < OUTFIT_UNLOCK_PAJAMAS and max_trust_reached >= OUTFIT_UNLOCK_PAJAMAS:
 			unlocked += "パジャマ解放！ "
-		if max_trust_reached >= OUTFIT_UNLOCK_HOODIE and not _outfit_was_unlocked("hoodie"):
+		if old_max < OUTFIT_UNLOCK_HOODIE and max_trust_reached >= OUTFIT_UNLOCK_HOODIE:
 			unlocked += "パーカー解放！ "
 		if unlocked != "":
-			end_sub.text += "\n" + unlocked
+			unlock_label.text = unlocked
+			# フェードイン → 2 秒保持 → フェードアウト。救出画面でしばらく見えるよう end_panel 表示後に走る
+			var unlock_tw := create_tween()
+			unlock_tw.tween_property(unlock_label, "modulate:a", 1.0, 0.5)
+			unlock_tw.tween_interval(2.0)
+			unlock_tw.tween_property(unlock_label, "modulate:a", 0.0, 0.8)
+			_play("ping")
 	if new_state == State.SAVED:
 		reached = maxi(reached, mini(stage_no + 1, STAGE_FILES.size() - 1))
 		_save_settings()

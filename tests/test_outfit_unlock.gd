@@ -157,6 +157,45 @@ func _initialize() -> void:
 			default_kawaii == before)
 		m.queue_free()
 
+	# 12. 衣装アンロック演出: プラン 21 で unlock_label を新設。信頼度が上がって解放されたとき
+	#     ラベルに通知文が入って modulate.a が立ち上がる（ping 音も鳴る）
+	m = await fresh()
+	check("unlock_label は最初は透明", m.unlock_label.modulate.a == 0.0)
+	check("unlock_label は最初は空文字", m.unlock_label.text == "")
+	m._finish(m.State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
+	# belief = belief_start（既定 1.0）でも 0.6 / 0.85 を超えないのでロックされない
+	check("belief=1.0 で救出: unlock_label は空のまま",
+		m.unlock_label.text == "" and m.unlock_label.modulate.a == 0.0)
+	m.queue_free()
+
+	m = await fresh()
+	m.max_trust_reached = 0.0
+	m.belief = 0.65   # 0.6 を超え、0.85 はまだ
+	m._finish(m.State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
+	check("belief=0.65 で救出: unlock_label に 'パジャマ解放！' が入る",
+		m.unlock_label.text.contains("パジャマ解放"))
+	check("belief=0.65 で救出: unlock_label の色相が金色（r > g > b かつ 黄色系）",
+		m.unlock_label.modulate.r > m.unlock_label.modulate.b)
+	# Tween が動いた後: modulate.a は 0 を保ったまま次のフレームで動き出す
+	# （tween_property は 0.5 秒かけて 1.0 に到達するので、_finish 直後はまだ 0.0）
+	m.queue_free()
+
+	m = await fresh()
+	m.max_trust_reached = 0.0
+	m.belief = 0.9   # 0.6 と 0.85 の両方を超える
+	m._finish(m.State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
+	check("belief=0.9 で救出: unlock_label に 'パジャマ' と 'パーカー' 両方",
+		m.unlock_label.text.contains("パジャマ") and m.unlock_label.text.contains("パーカー"))
+	m.queue_free()
+
+	m = await fresh()
+	m.max_trust_reached = 0.85   # 既に両方解放済み
+	m.belief = 0.9
+	m._finish(m.State.SAVED, "救出成功", Color(0.6, 1.0, 0.7))
+	check("既に max_trust が 0.85 のときは unlock_label は空のまま",
+		m.unlock_label.text == "")
+	m.queue_free()
+
 	print("FAIL COUNT: %d" % fails)
 	if fails > 0:
 		quit(1)
