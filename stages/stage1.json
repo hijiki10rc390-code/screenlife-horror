@@ -198,6 +198,14 @@
             "belief": 0.04
           },
           "next_scene": "after_work"
+        },
+        {
+          "text": "そんな仕事向いてないかもね",
+          "chat": "そんな仕事向いてないかもね",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "after_work"
         }
       ]
     },
