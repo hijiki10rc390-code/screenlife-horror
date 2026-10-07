@@ -285,26 +285,8 @@ func _initialize() -> void:
 	m._on_warn(1)
 	check("「逃げて！」なら信じてもらえる", m.state == m.State.SAVED)
 	m.queue_free()
-	m = await fresh()
-	m._start_call()
-	var b1: float = m.belief
-	for i in 3:
-		m._on_talk()
-	check("話しかけると信頼がたまる", m.belief > b1)
-	m.queue_free()
-	m = await fresh()
-	m._start_call()
-	var b2: float = m.belief
-	m._on_talk()
-	var b3: float = m.belief
-	m._on_talk()
-	m._on_talk()
-	check("話しかけを連打しても、信頼は1回分だけ", m.belief == b3 and b3 > b2)
-	at(m, m.TALK_COOLDOWN + 1.0)
-	m.talk_left = 0.0
-	m._on_talk()
-	check("クールダウンが明けるとまた話しかけられる", m.belief > b3)
-	m.queue_free()
+	# プラン 24: 「話しかける」ボタンを撤去したため、_on_talk 関連のテストは削除。
+	# 信頼度はシーン選択肢（_on_scene_choice）で上げる運用に変更。Phase 2 で別途テスト。
 	m = await fresh()
 	m._start_call()
 	at(m, 5.0)
@@ -450,10 +432,11 @@ func _initialize() -> void:
 	m._start_call()
 	at(m, 70.0)
 	check("練習以外のステージは合図なし（注意力に任せる）", not m.cue_first_seen and not m.onboarding)
-	m.talk_left = 3.0
 	m.lock_left = 2.0
 	at(m, 71.0)
-	check("あと何秒かを表示", m.lock_label.text.contains("警告できるまで") and m.lock_label.text.contains("話しかけ直せるまで"))
+	check("ロック中は '警告できるまで あと N 秒' を表示", m.lock_label.text.contains("警告できるまで"))
+	# プラン 24: 話しかけ直せるまでの文言は廃止
+	check("ロックラベルに '話しかけ' が出ていない", not m.lock_label.text.contains("話しかけ"))
 	m.queue_free()
 	for i in S.STAGE_FILES.size():
 		S.stage_no = i
@@ -476,16 +459,8 @@ func _initialize() -> void:
 
 	# 14e. 信頼の境目: 小数の足し算の誤差で、1回ずれない（初期値0.3から、ちょうど6回で60%）
 	S.stage_no = 1
-	m = await fresh()
-	m._start_call()
-	for i in 5:
-		m.talk_left = 0.0
-		m._on_talk()
-	check("5回話しかけた時点では、まだ一言は出ない", not m.trust_milestone_said)
-	m.talk_left = 0.0
-	m._on_talk()
-	check("ちょうど6回で信頼60%の一言が出る（小数の誤差で7回目にずれない）", m.trust_milestone_said)
-	m.queue_free()
+	# プラン 24: 話しかけ廃止に伴い、5回/7回ずれないテストは削除。
+# 信頼度 60% の一言は、Phase 2（選択肢での trust_gain）実装後に別途テスト。
 	S.stage_no = 0
 
 	# 15. 配信: 警告のあと、視聴者が反応する
@@ -597,61 +572,7 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 1
 
-	# 17b. 信頼で変わる台詞（idle_trust を持つステージだけ）
-	m = await fresh()
-	m._start_call()
-	m.belief = 0.7
-	m._on_talk()
-	var chat: String = m.chat_log.get_parsed_text()
-	var found_high: bool = false
-	for line in m.idle_trust_high:
-		if chat.contains(line):
-			found_high = true
-			break
-	check("belief >= 0.6 だと high の台詞が出る", found_high)
-	m.queue_free()
-	m = await fresh()
-	m._start_call()
-	m.belief = 0.2
-	m._on_talk()
-	chat = m.chat_log.get_parsed_text()
-	var found_low: bool = false
-	for line in m.idle_trust_low:
-		if chat.contains(line):
-			found_low = true
-			break
-	check("belief < 0.6 だと low の台詞が出る", found_low)
-	m.queue_free()
-
-	# 17c. 信頼が 0.6 に達したときの一言は 1 回だけ
-	m = await fresh()
-	m._start_call()
-	m.belief = 0.58   # 0.58 + TALK_TRUST 0.05 で 0.63 になり、初めて 0.6 を超える
-	m._on_talk()
-	chat = m.chat_log.get_parsed_text()
-	check("belief 0.58 + TALK_TRUST で 0.6 を超え、信頼が高まった一言が出る",
-		chat.contains(m.trust_milestone_line))
-	m.talk_left = 0.0
-	m._on_talk()
-	chat = m.chat_log.get_parsed_text()
-	check("信頼が高まった一言は 1 回だけ（2 回目の _on_talk では出ない）",
-		chat.count(m.trust_milestone_line) == 1)
-	m.queue_free()
-
-	# 17d. ステージ1 は従来どおり idle_lines の台詞が出る
-	S.stage_no = 0
-	m = await fresh()
-	m._start_call()
-	m._on_talk()
-	chat = m.chat_log.get_parsed_text()
-	var found_idle: bool = false
-	for line in m.idle_lines:
-		if chat.contains(line):
-			found_idle = true
-			break
-	check("ステージ1で _on_talk → idle_lines の台詞が出る（従来どおり）", found_idle)
-	m.queue_free()
-	S.stage_no = 0
+	# 17b / 17c / 17d: プラン 24 で _on_talk が no-op になったため削除。Phase 2 で再開予定。
 
 	# 18. 難易度: やさしい/ふつう/むずかしい で値が変わる
 	for d in 3:

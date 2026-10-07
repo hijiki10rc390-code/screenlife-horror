@@ -7,8 +7,9 @@ extends Control
 #   通話   = 映像をクリックして「警告する」（疑り深い相手は、話しかけて信頼をため、伝え方を選ぶ）
 #   配信   = 警告コメントを、映っている間に何度か投稿する
 #   失敗   = 映る前や場所違いの警告が3回 / 気づかないまま時間切れ
-# 操作: 映像クリック=警告  1・2・3=伝え方の選択  Enter=応答・話しかける・もう一度  Esc=一時停止・音量  F11=全画面
+# 操作: 映像クリック=警告  1・2・3=伝え方の選択  Enter=応答・もう一度  Esc=一時停止・音量  F11=全画面
 #       R=もう一度  Esc=一時停止・音量・演出を弱める
+# プラン 24: 下のアクションボタン（話しかける／警告する／選択肢）を撤去。映像クリック 1 回で警告。
 
 const SCENE_W := 1024
 const SCENE_H := 576
@@ -64,14 +65,14 @@ var need_warnings := 3             # 配信：気づいてもらうのに必要�
 var warn_window := 20.0            # 配信：その数を数える秒数
 var warn_times := []
 var chatter_timer := 0.0
-var third_btn: Button
+var third_btn: Button              # プラン 24 で未使用（互換のため型だけ残す）
 var lock_label: Label              # 「あと何秒で操作できるか」の表示
 var hint_age := 0.0                # 今のヒントを出してからの秒数（一定時間でうっすら消す）
 var last_hint := ""
 var onboarding := false            # 練習ステージ: 人影が見え始めたときに、短いヒントを出す
 var cue_first_seen := false        # 練習ステージ: 人影が初めて映った瞬間に音で知らせる
 var seen_cue_played := false
-var fourth_btn: Button
+var fourth_btn: Button             # プラン 24 で未使用
 var act_btns := []                 # 警告として押すボタンの一覧（通話の単独ボタン / 伝え方3つ / 配信のコメント3つ）
 var belief_start := 1.0            # 相手が最初からどれだけ信じるか（1.0=すぐ信じる。小さいほど疑う）
 var belief := 1.0
@@ -142,8 +143,8 @@ var typing_label: Label
 var hint_label: Label
 var trust_bar_fill: ColorRect      # 信頼ゲージの中身（use_phrases のステージだけ作成）
 var trust_bar_label: Label          # 信頼ゲージの % 表示（use_phrases のステージだけ作成）
-var talk_btn: Button
-var warn_btn: Button
+var talk_btn: Button              # プラン 24 で未使用
+var warn_btn: Button              # プラン 24 で未使用
 var marker: Control
 var flash: ColorRect
 var title_panel: Control
@@ -727,48 +728,10 @@ func _build_hint_and_chat() -> void:
 
 # アクションボタン（話しかけ・警告・3つ目・4つ目）。ステージ別で配置・表示を切替
 func _build_action_buttons() -> void:
-	talk_btn = _button("話しかける  (Enter)", Vector2(70, 552), Vector2(200, 56), Color(0.2, 0.22, 0.28))
-	talk_btn.pressed.connect(_on_talk)
-	warn_btn = _button("警告する  (Space)", Vector2(290, 552), Vector2(200, 56), Color(0.45, 0.16, 0.16))
-	warn_btn.pressed.connect(_on_warn)
-	third_btn = _button("", Vector2(510, 552), Vector2(200, 56), Color(0.45, 0.16, 0.16))
-	third_btn.visible = false
-	fourth_btn = _button("", Vector2(630, 552), Vector2(150, 56), Color(0.45, 0.16, 0.16))
-	fourth_btn.visible = false
-	# stage1（伝え方が 1 つ）: 警告は映像クリックで出すので、画面下の警告ボタンは出さない
-	if not use_phrases and mode != "stream":
-		warn_btn.visible = false
-		third_btn.visible = false
-		fourth_btn.visible = false
-		act_btns = []
-	if use_phrases:   # 疑う相手: 話しかけて信頼をためつつ、伝え方を選んで警告する
-		talk_btn.size = Vector2(150, 56)
-		talk_btn.text = "話しかける"
-		warn_btn.position = Vector2(244, 552)
-		warn_btn.size = Vector2(160, 56)
-		third_btn.position = Vector2(414, 552)
-		third_btn.size = Vector2(160, 56)
-		fourth_btn.position = Vector2(584, 552)
-		fourth_btn.size = Vector2(160, 56)
-		third_btn.visible = true
-		fourth_btn.visible = true
-		warn_btn.pressed.disconnect(_on_warn)
-		act_btns = [warn_btn, third_btn, fourth_btn]
-		for i in 3:
-			(act_btns[i] as Button).text = "%d  %s" % [i + 1, PHRASES[i]]
-			(act_btns[i] as Button).pressed.connect(_select_phrase.bind(i))
-		_update_phrase_btns()
-	if mode == "stream":   # 配信では、3つのボタンがそれぞれ警告コメントの選択になる（押しただけでは警告しない）
-		talk_btn.pressed.disconnect(_on_talk)
-		warn_btn.pressed.disconnect(_on_warn)
-		third_btn.visible = true
-		act_btns = [talk_btn, warn_btn, third_btn]
-		for i in 3:
-			var b: Button = act_btns[i]
-			b.text = "%d  %s" % [i + 1, warn_phrases[i]]
-			b.pressed.connect(_select_phrase.bind(i))
-		_update_phrase_btns()
-
+	# プラン 24 で画面下の「話しかける／警告する／選択肢」を全撤去。映像クリック 1 回で警告する形に変更
+	# キー 1・2・3 で伝え方を選べるが、画面表示はしない（マウス中心の操作）
+	# シーン選択肢は ADV 風（_show_scene_buttons）に統一
+	act_btns = []
 	# ロックアウトのラベル（誤警告後のカウントダウン）
 	lock_label = _label("", Vector2(70, 614), Vector2(710, 24), self, 15)
 	lock_label.modulate = Color(1.0, 0.82, 0.45)
@@ -1694,24 +1657,9 @@ func _hide_scene_buttons() -> void:
 
 
 func _on_talk() -> void:
-	if state != State.PLAYING or mode == "stream" or talk_left > 0.0:
-		return
-	_say("あなた", "うん、聞いてるよ。")
-	var belief_now := belief   # 話しかけの効果を足す前の値で、信頼度による台詞分岐を判断する
-	if use_phrases and idle_trust_low.size() > 0 and idle_trust_high.size() > 0:
-		var trust_pick: Array = idle_trust_high if belief_now >= TRUST_HIGH - TRUST_EPS else idle_trust_low
-		_say(friend, trust_pick[idle_trust_idx % trust_pick.size()])
-		idle_trust_idx += 1
-	elif idle_lines.size() > 0:
-		_say(friend, idle_lines[idle_idx % idle_lines.size()])
-		idle_idx += 1
-	belief = minf(1.0, belief + TALK_TRUST)
-	# 信頼が初めて 0.6 を超えた瞬間だけ、一言と合図を出す（疑う相手のステージだけ）
-	if use_phrases and not trust_milestone_said and belief >= TRUST_HIGH - TRUST_EPS and trust_milestone_line != "":
-		_say(friend, trust_milestone_line)
-		hint_label.text = "信頼が高まった。警告が通りやすくなる。"
-		trust_milestone_said = true
-	talk_left = TALK_COOLDOWN
+	# プラン 24 で「話しかける」ボタンを撤去。互換のため関数は残すが no-op。
+	# 信頼度はシーン選択肢（_on_scene_choice）で上げる運用に変更。
+	pass
 
 
 func _on_warn(phrase := 0) -> void:
@@ -1937,7 +1885,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 				State.TITLE:
 					_start_call()
 				State.PLAYING:
-					_on_talk()
+					pass  # Plan 24: 話しかける廃止。Enter は no-op
 				_:
 					_after_end()
 		KEY_R:
@@ -1984,7 +1932,6 @@ func _process(delta: float) -> void:
 		t += delta
 	if state == State.PLAYING:
 		lock_left = maxf(0.0, lock_left - delta)
-		talk_left = maxf(0.0, talk_left - delta)
 		_scene_pulse()
 		while timeline_idx < timeline.size() and t >= timeline[timeline_idx][0]:
 			_say(friend, timeline[timeline_idx][1])
@@ -2167,12 +2114,9 @@ func _process(delta: float) -> void:
 	var notes := []
 	if locked:
 		notes.append("警告できるまで あと %d 秒" % ceili(lock_left))
-	if mode != "stream" and talk_left > 0.0:
-		notes.append("話しかけ直せるまで あと %d 秒" % ceili(talk_left))
+	# プラン 24: 話しかけ廃止のため talk_left の表示は削除
 	lock_label.text = "   /   ".join(PackedStringArray(notes))
-	# act_btns（stage2/3 の選択用）はいつでも押せる。ロック中・誤警告中でも選択だけは無効化しない
-	if mode != "stream":
-		talk_btn.disabled = not can_act or talk_left > 0.0
+	# プラン 24: 下のアクションボタンを撤去したため、talk_btn 関連の更新はスキップ
 
 
 # --- 画像確認用（-- --shot）---------------------------------------------------------
