@@ -12,10 +12,10 @@ PC 画面（ビデオ通話アプリ）を操作して、相手の背後に映�
 & "$env:LOCALAPPDATA\Programs\Godot\Godot_v4.7.2-stable_win64.exe" --path C:\Users\hijik\ClaudeCode\screenlife-horror
 ```
 
-`outputs/build/screenlife-horror.exe`（単体・約110MB）ができる。配布前に、使ったモデルのライセンスを確認すること。
+`outputs/build/screenlife-horror.exe`（単体・約179MB）ができる。配布前に、使ったモデルのライセンスを確認すること。
 
 - テスト: `bash tools/run_tests.sh` で全 4 種（logic / scenes / outfit_unlock / playthrough）のテストを実行。すべて OK で終了コード 0
-- 合計 495 OK / 0 NG（test_logic 273 + test_scenes 47 + test_outfit_unlock 64 + test_playthrough 111）
+- 合計 535 OK / 0 NG（test_logic 306 + test_scenes 47 + test_outfit_unlock 71 + test_playthrough 111）
 
 ## 遊び方（全10ステージ）
 
@@ -41,7 +41,7 @@ PC 画面（ビデオ通話アプリ）を操作して、相手の背後に映�
 "/c/Users/hijik/AppData/Local/Programs/Godot/Godot_v4.7.2-stable_win64_console.exe" --headless --path C:/Users/hijik/ClaudeCode/screenlife-horror --export-release "Windows Desktop" outputs/build/screenlife-horror.exe
 ```
 
-`outputs/build/screenlife-horror.exe`（単体・約110MB）ができる。配布前に、使ったモデルのライセンスを確認すること。
+`outputs/build/screenlife-horror.exe`（単体・約179MB）ができる。配布前に、使ったモデルのライセンスを確認すること。
 
 ## 素材パックの作り直し（外見を変えるとき）
 
