@@ -45,7 +45,7 @@
 - 警告が信じてもらえない演出
 - タイトル・エンディング・タイトル画面
 - 参考作品のストアページ・動画を見て比較表を埋める（`docs/references.md`）
-- 配布前: RealVisXL・SDXL のライセンス（商用可否）確認
+- 配布前: RealVisXL・SDXL のライセンス（商用可否）確認 → **完了（2026-10-07 `docs/licenses.md`）**
 - exe の書き出し
 
 ## 決定事項（ADR 簡易版）
@@ -78,6 +78,15 @@
 - 服装: キャミソール（ブラトップ型）とドルフィンパンツ、猫耳ヘッドセットは試した。外見は後から差し替える前提（作業 B の設定）
 
 ## 完了ログ（直近 5 件）
+
+- 2026-10-07 午後（自主）: ドキュメント整備 + exe 再ビルド + ライセンス確認
+  - 15 ファイルの行末が CRLF に戻っていたのを LF に戻した（pre-existing、git autocrlf 不在のため）
+  - 全テスト実行: **495 OK / 0 NG**（test_logic 273 + test_scenes 47 + test_outfit_unlock 64 + test_playthrough 111）
+  - AI_HANDOVER.md 更新（3ステージ・58テスト・2026-10-05 → 10ステージ・495テスト・2026-10-07）
+  - README.md のテスト数を 481 → 495 に更新
+  - launcher.card.json 新規追加（_launcher/server.py の glob が自動検出）
+  - exe を再ビルド（stage10 を含む全 10 ステージ。179MB）
+  - docs/licenses.md 新規作成: RealVisXL V5.0 / SDXL 1.0 / rembg / face_alignment / Pillow / numpy のライセンスを整理。配布可否を判断
 
 - 2026-10-07 朝まで自律開発: stage10 追加 + chat_log バグ修正
   - stage10（凛・看護師・23歳）を生成・追加（plan 20 続き）
