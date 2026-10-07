@@ -1217,6 +1217,22 @@ func _initialize() -> void:
 	check("plan17・belief=0.2 で low_belief が返る", "疑ってる" in low_line or "疑い" in low_line or "信じきれ" in low_line)
 	m.queue_free()
 
+	# plan21: 累計救出数による段階メッセージ（_ending_rescue_message）
+	S.stage_no = 0
+	m = await fresh()
+	check("累計 1: 初救出！", m._ending_rescue_message(1) == "初救出！")
+	check("累計 2: 空", m._ending_rescue_message(2) == "")
+	check("累計 3: 3 人目！ だいぶ慣れてきましたね",
+		m._ending_rescue_message(3) == "3 人目！ だいぶ慣れてきましたね")
+	check("累計 4: 空", m._ending_rescue_message(4) == "")
+	check("累計 5: 5 人目！ あなたは頼れる人ですね",
+		m._ending_rescue_message(5) == "5 人目！ あなたは頼れる人ですね")
+	check("累計 9（あと 1 人）: 空（全員救出は次の 1 人）",
+		m._ending_rescue_message(9) == "")
+	check("累計 10（STAGE_FILES.size() と同じ）: 全員救出！ クリア！",
+		m._ending_rescue_message(S.STAGE_FILES.size()) == "全員救出！ クリア！")
+	m.queue_free()
+
 	# plan16: 衣装選択のテスト
 	for si in 3:
 		S.stage_no = si
