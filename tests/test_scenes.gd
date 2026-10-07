@@ -107,6 +107,33 @@ func _initialize() -> void:
 	check("stage1: belief が 0.0 でクランプされる", m.belief == 0.0)
 	m.queue_free()
 
+	# 7b. プラン 24 Phase 2: 3 つの効果（+ / - / 0）
+	# stage2 の greeting シーンは3択: 正解 (+0.06) / 不正解 (-0.03) / どちらでもない (0)
+	m = await fresh(1)   # stage2
+	m._start_call()
+	var stage2_intro_at: float = 9.5
+	m._process(stage2_intro_at + 0.5)
+	var b_before: float = m.belief
+	m._on_scene_choice(2)   # 「どちらでもない」（中立, belief 0.0）
+	check("stage2 中立選択肢で belief は変化しない", m.belief == b_before)
+	m.queue_free()
+
+	m = await fresh(1)
+	m._start_call()
+	m._process(stage2_intro_at + 0.5)
+	b_before = m.belief
+	m._on_scene_choice(0)   # 「ちゃんと信じてるよ」(+0.06)
+	check("stage2 正解選択肢で belief が +0.06 上がる", absf(m.belief - (b_before + 0.06)) < 0.001)
+	m.queue_free()
+
+	m = await fresh(1)
+	m._start_call()
+	m._process(stage2_intro_at + 0.5)
+	b_before = m.belief
+	m._on_scene_choice(1)   # 「正直、ちょっと不安...」(-0.03)
+	check("stage2 不正解選択肢で belief が -0.03 下がる", absf(m.belief - (b_before - 0.03)) < 0.001)
+	m.queue_free()
+
 	# 8. condition の評価（belief による分岐）
 	# 構造化 condition: {"var": "belief", "op": ">=", "value": 0.5}
 	m = await fresh(0)

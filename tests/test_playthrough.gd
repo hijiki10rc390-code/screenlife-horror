@@ -61,10 +61,22 @@ func play_master(m: Control) -> bool:
 				n_comments += 1
 				last_comment = m.t
 		elif m.use_phrases:
-			# 疑り深い相手: 話しかけて信頼をため、濃さが十分なら「逃げて！」で警告
-			if m.t - last_talk >= 4.1 and m.talk_left <= 0:
-				m._on_talk()
-				last_talk = m.t
+			# 疑り深い相手（プラン 24）: シーン選択肢で信頼度を上げ、濃さが十分なら「逃げて！」で警告
+			# _on_talk は no-op 化されたので、_on_scene_choice で effect.belief (+0.06 程度) を拾う
+			if m._waiting_choice:
+				# 選択肢のうち effect.belief が最大のもの（正解）を選ぶ
+				var cs: Array = m._current_scene.get("choices", [])
+				var best: int = -1
+				var best_gain: float = -INF
+				for ci in cs.size():
+					var eff: Dictionary = (cs[ci] as Dictionary).get("effect", {})
+					var g: float = float(eff.get("belief", 0.0))
+					if g > best_gain:
+						best_gain = g
+						best = ci
+				if best >= 0:
+					m._on_scene_choice(best)
+					last_talk = m.t
 			if m.ghost_layer.modulate.a >= 0.5 and m.lock_left <= 0:
 				m._set_mark(m.ghost_box_now().get_center())
 				m._on_warn(1)
@@ -105,10 +117,20 @@ func play_master_click(m: Control) -> bool:
 				last_action = m.t
 				n_comments += 1
 		elif m.use_phrases:
-			# 疑り深い相手: 話しかけて信頼をため、「逃げて！」(phrase=1) を選んでからクリック
-			if m.t - last_talk >= 4.1 and m.talk_left <= 0.0:
-				m._on_talk()
-				last_talk = m.t
+			# 疑り深い相手（プラン 24）: シーン選択肢で信頼度を上げ、「逃げて！」を選んでから警告
+			if m._waiting_choice:
+				var cs: Array = m._current_scene.get("choices", [])
+				var best: int = -1
+				var best_gain: float = -INF
+				for ci in cs.size():
+					var eff: Dictionary = (cs[ci] as Dictionary).get("effect", {})
+					var g: float = float(eff.get("belief", 0.0))
+					if g > best_gain:
+						best_gain = g
+						best = ci
+				if best >= 0:
+					m._on_scene_choice(best)
+					last_talk = m.t
 			if m.ghost_layer.modulate.a >= 0.5 and m.lock_left <= 0.0:
 				m._select_phrase(1)
 				m._on_video_click(m.ghost_box_now().get_center())

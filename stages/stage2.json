@@ -427,6 +427,14 @@
             "belief": -0.03
           },
           "next_scene": "cold_open"
+        },
+        {
+          "text": "どうだろうね、よく分からない",
+          "chat": "どうだろうね、よく分からない。",
+          "effect": {
+            "belief": 0.0
+          },
+          "next_scene": "warm_open"
         }
       ]
     },
