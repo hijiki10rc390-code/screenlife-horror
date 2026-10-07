@@ -1006,7 +1006,14 @@ func _build_title_screen() -> void:
 	start.pressed.connect(_title_start.bind(0))
 	if reached > 0:
 		var max_i: int = mini(reached + 1, STAGE_FILES.size())   # 全ステージ数で頭打ち
-		var cont := _button("つづきから（ステージ%d）  (Enter)" % max_i, Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
+		# つづきからのボタンに次のステージのキャラ名も添える
+		var next_stage_idx: int = mini(reached, STAGE_FILES.size() - 1)
+		var next_stage_data: Variant = JSON.parse_string(FileAccess.get_file_as_string(STAGE_FILES[next_stage_idx]))
+		var next_friend := ""
+		if next_stage_data != null and typeof(next_stage_data) == TYPE_DICTIONARY:
+			next_friend = (next_stage_data as Dictionary).get("friend", "")
+		var cont_label := "つづきから（ステージ%d・%s）  (Enter)" % [max_i, next_friend] if next_friend != "" else "つづきから（ステージ%d）  (Enter)" % max_i
+		var cont := _button(cont_label, Vector2(450, y + 64), Vector2(380, 56), Color(0.2, 0.22, 0.28), title_screen)
 		cont.pressed.connect(_title_start.bind(reached))
 		# ステージ選択: 5列 × 2行のグリッド（全 10 ステージが画面内に収まる）
 		stage_select_btns.clear()
