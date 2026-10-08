@@ -1623,6 +1623,11 @@ func _on_scene_choice(choice_idx: int) -> void:
 				belief = clampf(belief + float(v), 0.0, 1.0)
 			_:
 				push_error("未知の effect キー: " + str(k))
+	# プラン 31: 選択時の delta を floating label で表示
+	if eff.has("belief"):
+		var delta_val: float = float(eff["belief"])
+		if absf(delta_val) >= 0.01:
+			_show_choice_delta(choice_idx, delta_val)
 	# 選択肢 UI を消す
 	_waiting_choice = false
 	_hide_scene_buttons()
@@ -1657,9 +1662,63 @@ func _show_scene_buttons(choices: Array) -> void:
 		b.custom_minimum_size = Vector2(200.0, 50.0)
 		b.position = Vector2(830, start_y + i * 56.0)
 		b.modulate = Color(0.95, 0.95, 1.0)
+		# プラン 31: 選択肢の belief 値に応じて薄 tint をつける（緑=信じてる / 灰=中立 / オレンジ=冷たい / 赤=誤答）
+		var belief_value: float = float(ch.get("effect", {}).get("belief", 0.0))
+		b.add_theme_stylebox_override("normal", _choice_tint_stylebox(_choice_tint_color(belief_value)))
 		b.pressed.connect(_on_scene_choice.bind(i))
 		add_child(b)
 		_scene_btns.append(b)
+
+
+# プラン 31: belief 値から tint 色（RGBA）を返す
+func _choice_tint_color(belief: float) -> Color:
+	if belief >= 0.04:
+		return Color(0.30, 0.55, 0.40, 0.35)   # 緑系（信じてる返答）
+	elif belief >= 0.0:
+		return Color(0.50, 0.50, 0.50, 0.20)   # 灰系（中立・ニュートラル）
+	elif belief >= -0.03:
+		return Color(0.65, 0.45, 0.30, 0.35)   # 薄オレンジ系（少し冷たい）
+	else:
+		return Color(0.65, 0.30, 0.30, 0.45)   # 赤系（誤答・拒絶）
+
+
+# プラン 31: tint 色を薄い背景＋細い枠線に焼き込んだ StyleBoxFlat を作る
+func _choice_tint_stylebox(tint: Color) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = tint
+	sb.border_width_left = 1
+	sb.border_width_top = 1
+	sb.border_width_right = 1
+	sb.border_width_bottom = 1
+	sb.border_color = Color(1, 1, 1, 0.25)
+	sb.corner_radius_top_left = 4
+	sb.corner_radius_top_right = 4
+	sb.corner_radius_bottom_left = 4
+	sb.corner_radius_bottom_right = 4
+	return sb
+
+
+# プラン 31: 選択時の delta を一発表示する floating label。0.6 秒で fadeout して queue_free
+func _show_choice_delta(choice_idx: int, delta: float) -> void:
+	var label := Label.new()
+	label.text = ("+" if delta > 0 else "") + "%.2f" % delta
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color",
+		Color(0.40, 0.85, 0.40, 1.0) if delta >= 0.0 else Color(0.95, 0.40, 0.40, 1.0))
+	# ボタンの右側に表示（ボタンの x=830 + width=200 → x=1035 付近）
+	var btn_y: float = VIDEO_POS.y + VIDEO_SIZE.y - 80.0
+	if choice_idx >= 0 and choice_idx < _scene_btns.size():
+		var btn := _scene_btns[choice_idx] as Button
+		btn_y = btn.position.y + 12.0
+	label.position = Vector2(1035, btn_y)
+	add_child(label)
+	# 0.6 秒で fadeout（上方向に 20px スライド）
+	var tw := create_tween()
+	tw.set_parallel(true)
+	tw.tween_property(label, "modulate:a", 0.0, 0.6)
+	tw.tween_property(label, "position:y", btn_y - 20.0, 0.6)
+	tw.set_parallel(false)
+	tw.tween_callback(label.queue_free)
 
 
 # 選択肢ボタンを消す。
@@ -2061,7 +2120,7 @@ func _process(delta: float) -> void:
 	# 信頼ゲージ（use_phrases のステージだけ。判定は変えずに、見た目だけ追従させる）
 	if trust_bar_fill:
 		var target_w := VIDEO_SIZE.x * belief
-		trust_bar_fill.size.x = move_toward(trust_bar_fill.size.x, target_w, delta * VIDEO_SIZE.x * 0.5)
+		trust_bar_fill.size.x = move_toward(trust_bar_fill.size.x, target_w, delta * VIDEO_SIZE.x * 1.0)
 		# 色: belief に応じて赤 → 琥珀 → 緑へ、なめらかに lerp する
 		var red := Color(0.75, 0.3, 0.3)
 		var amber := Color(0.85, 0.65, 0.25)

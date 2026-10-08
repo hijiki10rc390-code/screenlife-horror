@@ -6,6 +6,24 @@
 - 着手日: 2026-10-04
 - 直近の目標: 縦の1本（通話1回・約2分・相手1人）を「怖い」と言える品質にする
 
+## 2026-10-08 午前・続き（プラン 31 — 選択肢の視覚的フィードバック）
+
+- `_choice_tint_color(belief)` を追加。belief 値に応じて 4 段階の tint 色（RGBA）を返す:
+  - `>= +0.04`: 緑系（信じてる）
+  - `0.0 〜 +0.03`: 灰系（中立・ニュートラル）  
+  - `-0.01 〜 -0.03`: 薄オレンジ系（やや冷たい）
+  - `< -0.03`: 赤系（誤答・拒絶）
+- `_choice_tint_stylebox(tint)` で StyleBoxFlat を作ってボタンに適用。背景色 + 細い枠線（白・alpha 0.25）、角丸 4px
+- `_show_scene_buttons` で各 choice の belief から tint を計算して `add_theme_stylebox_override("normal", ...)` で適用
+- `_show_choice_delta(choice_idx, delta)` を追加。選択時の delta を floating Label で表示（+0.05=緑 / -0.04=赤、22pt、0.6 秒で fadeout + 上方向 20px スライド）
+- `_on_scene_choice` で `|delta| >= 0.01` のときに `_show_choice_delta` を呼ぶ
+- 信頼ゲージのアニメーション速度を 0.5x → 1.0x に上げて変化を体感しやすく
+- test_logic.gd に 8 件のプラン 31 テスト追加（_choice_tint_color の 4 段階 × 2 境界値）
+- 結果: **808 OK / 0 NG**（test_logic 576 + test_scenes 50 + test_outfit_unlock 71 + test_playthrough 111）
+  - 前回 800 → 808 で +8 件
+- exe 再ビルド: 179MB
+- コミット予定
+
 ## 2026-10-08 午前・続き（プラン 30 — stage1-4 残りシーンの 3 択化）
 
 - plan29 では stage5-10 のみを 3 択化した。stage1-4 には未着手のシーンが残っていた

@@ -1285,7 +1285,58 @@ func _initialize() -> void:
 				check("plan30・" + stage_id + "/" + scene_id + " の選択肢が effect.belief を持つ",
 					choice.has("effect") and choice["effect"].has("belief"))
 
+	# プラン 31: _choice_tint_color の挙動（belief 値 → 色）の境界テスト
+	# main インスタンス m を介して呼ぶ（_choice_tint_color は main.gd 側にある）
+	S.stage_no = 0
+	m = await fresh()
+	check("plan31・belief=0.05 は緑系（g > r かつ g > b）", _is_green_tint(m._choice_tint_color(0.05)))
+	check("plan31・belief=0.04 は緑系の境界（g >= r かつ g >= b）", _is_green_tint(m._choice_tint_color(0.04)))
+	check("plan31・belief=0.02 は灰系（r == g == b）", _is_neutral_tint(m._choice_tint_color(0.02)))
+	check("plan31・belief=0.0 は灰系の境界（r == g == b）", _is_neutral_tint(m._choice_tint_color(0.0)))
+	check("plan31・belief=-0.02 はオレンジ系（r > g > b）", _is_orange_tint(m._choice_tint_color(-0.02)))
+	check("plan31・belief=-0.03 はオレンジ系の境界", _is_orange_tint(m._choice_tint_color(-0.03)))
+	check("plan31・belief=-0.04 は赤系（r > g 且つ r > b が明確）", _is_red_tint(m._choice_tint_color(-0.04)))
+	check("plan31・belief=-0.05 は赤系", _is_red_tint(m._choice_tint_color(-0.05)))
+	m.queue_free()
+	S.stage_no = 0
+
+	# プラン 31: stage1 の hello シーン選択肢ボタンに stylebox が適用されているか
+	S.stage_no = 0
+	m = await fresh()
+	m._start_call()
+	if m.scenes.size() > 0:
+		# stage1 intro シーンを手動発火
+		m._process(5.0)
+		if m._waiting_choice and m._scene_btns.size() > 0:
+			for b in m._scene_btns:
+				var btn := b as Button
+				var sb := btn.get_theme_stylebox("normal")
+				check("plan31・stage1・選択肢ボタンに stylebox が適用されている", sb != null)
+	m.queue_free()
+	S.stage_no = 0
+
 	quit(1 if fails > 0 else 0)
+
+
+# プラン 31 の補助: tint 色が緑系か
+func _is_green_tint(c: Color) -> bool:
+	# 緑系: g > r かつ g > b
+	return c.g > c.r and c.g > c.b
+
+
+# プラン 31 の補助: tint 色が灰系か（r==g==b の近似。許容誤差 0.05）
+func _is_neutral_tint(c: Color) -> bool:
+	return absf(c.r - c.g) < 0.05 and absf(c.g - c.b) < 0.05
+
+
+# プラン 31 の補助: tint 色がオレンジ系か（r > g > b、オレンジは r が一番大きく b が一番小さい）
+func _is_orange_tint(c: Color) -> bool:
+	return c.r > c.g and c.g > c.b
+
+
+# プラン 31 の補助: tint 色が赤系か（r > g 且つ r > b が明確、g と b は小さい）
+func _is_red_tint(c: Color) -> bool:
+	return c.r > c.g + 0.2 and c.r > c.b
 
 
 func rescue(m: Control) -> void:
