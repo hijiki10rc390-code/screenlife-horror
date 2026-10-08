@@ -219,6 +219,14 @@
             "belief": 0.04
           },
           "next_scene": "about_room"
+        },
+        {
+          "text": "あんまり怖がらないでよ",
+          "chat": "あんまり怖がらないでよ。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "about_room"
         }
       ]
     },
@@ -241,6 +249,14 @@
           "chat": "大丈夫？",
           "effect": {
             "belief": -0.02
+          },
+          "next_scene": "about_room"
+        },
+        {
+          "text": "無理しないで休んで",
+          "chat": "無理しないで休んで。",
+          "effect": {
+            "belief": -0.03
           },
           "next_scene": "about_room"
         }
@@ -267,6 +283,14 @@
             "belief": -0.05
           },
           "next_scene": "trust_check"
+        },
+        {
+          "text": "寝ぼけてるんじゃない？",
+          "chat": "寝ぼけてるんじゃない？",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "trust_check"
         }
       ]
     },
@@ -291,6 +315,14 @@
             "belief": -0.04
           },
           "next_scene": "ending"
+        },
+        {
+          "text": "どうだろうね",
+          "chat": "どうだろうね。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "ending"
         }
       ]
     },
@@ -313,6 +345,13 @@
           "effect": {
             "belief": 0.06
           }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
+          }
         }
       ]
     },
@@ -334,6 +373,13 @@
           "chat": "信じてる。必ず逃げて。",
           "effect": {
             "belief": 0.08
+          }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
           }
         }
       ]

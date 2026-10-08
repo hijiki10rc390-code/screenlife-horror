@@ -459,6 +459,14 @@
             "belief": 0.04
           },
           "next_scene": "about_today"
+        },
+        {
+          "text": "大丈夫、落ち着いて",
+          "chat": "大丈夫、落ち着いて。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "about_today"
         }
       ]
     },
@@ -483,6 +491,14 @@
             "belief": -0.01
           },
           "next_scene": "about_today"
+        },
+        {
+          "text": "全然、つなげなくていいよ",
+          "chat": "全然、つなげなくていいよ。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "about_today"
         }
       ]
     },
@@ -503,6 +519,14 @@
         {
           "text": "それは...気のせいでは",
           "chat": "それは...気のせいじゃない？",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "trust_check"
+        },
+        {
+          "text": "ストレスかもよ",
+          "chat": "ストレスかもよ。",
           "effect": {
             "belief": -0.04
           },
@@ -531,6 +555,14 @@
             "belief": -0.03
           },
           "next_scene": "ending"
+        },
+        {
+          "text": "どうだろうね、あまり信じられないかも",
+          "chat": "どうだろうね、あまり信じられないかも。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "ending"
         }
       ]
     },
@@ -553,6 +585,13 @@
           "effect": {
             "belief": 0.05
           }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
+          }
         }
       ]
     },
@@ -574,6 +613,13 @@
           "chat": "信じてる。必ず逃げて。",
           "effect": {
             "belief": 0.08
+          }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
           }
         }
       ]

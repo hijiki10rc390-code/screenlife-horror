@@ -1263,6 +1263,28 @@ func _initialize() -> void:
 				check("plan29・" + stage_id + "/" + scene_id + " の選択肢が effect.belief を持つ",
 					choice.has("effect") and choice["effect"].has("belief"))
 
+	# プラン 30: stage1-4 で 3 択化されたシーンのみ検証（plan28 で 3 択済みの hello/hello/greeting はスキップ）
+	var plan30_targets = {
+		"stage1": ["intro", "distant", "after_work", "ghost_nervous", "end", "urgent_warning"],
+		"stage2": ["warm_open", "cold_open", "about_today", "trust_check", "ending", "urgent_warning"],
+		"stage3": ["chat_topic", "about_viewer", "feel_anxious", "ending", "urgent_warning"],
+		"stage4": ["warm_open", "cold_open", "about_room", "trust_check", "ending", "urgent_warning"],
+	}
+	for stage_id in plan30_targets.keys():
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/" + stage_id + ".json"))
+		var scenes: Array = data.get("scenes", [])
+		var target_ids: Array = plan30_targets[stage_id]
+		for scene in scenes:
+			var scene_id: String = scene.get("id", "?")
+			if not target_ids.has(scene_id):
+				continue
+			var choices: Array = scene.get("choices", [])
+			check("plan30・" + stage_id + "/" + scene_id + " の選択肢が 3 つ以上", choices.size() >= 3)
+			# 各選択肢が effect.belief を持つことを確認
+			for choice in choices:
+				check("plan30・" + stage_id + "/" + scene_id + " の選択肢が effect.belief を持つ",
+					choice.has("effect") and choice["effect"].has("belief"))
+
 	quit(1 if fails > 0 else 0)
 
 

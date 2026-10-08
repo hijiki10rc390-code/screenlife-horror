@@ -6,6 +6,25 @@
 - 着手日: 2026-10-04
 - 直近の目標: 縦の1本（通話1回・約2分・相手1人）を「怖い」と言える品質にする
 
+## 2026-10-08 午前・続き（プラン 30 — stage1-4 残りシーンの 3 択化）
+
+- plan29 では stage5-10 のみを 3 択化した。stage1-4 には未着手のシーンが残っていた
+- **23 個のシーンに「誤った選択肢」を 1 つずつ追加**（合計 23 個）:
+  - stage1 (Mika): intro / distant / after_work / ghost_nervous / end / urgent_warning の 6 シーン
+  - stage2 (Aoi): warm_open / cold_open / about_today / trust_check / ending / urgent_warning の 6 シーン
+  - stage3 (ゆめ): chat_topic / about_viewer / feel_anxious / ending / urgent_warning の 5 シーン
+  - stage4 (蓮): warm_open / cold_open / about_room / trust_check / ending / urgent_warning の 6 シーン
+- 信念値: 序盤の雑談シーンは中立寄り 0 〜 -0.03、ホラー兆候・信頼確認は -0.03 〜 -0.04、緊急 (-0.02)
+- next_scene: 既存 2 択のうち **より低い belief の方の遷移先** に揃える（誤選択肢＝先送りパターン）
+- ending / urgent_warning の 3 択目は plan29 と同じく「落ち着いて、もう少し。」（ゲーム終了なので next_scene なし）
+- test_logic.gd にプラン 30 検証テスト 92 件追加（23 シーン × (選択肢数 + 信念値キー 3 件) = 92）
+- test_scenes.gd の stage1 の選択肢ボタン数期待値を 3 に修正（旧 2 → 新 3）
+- 結果: **800 OK / 0 NG**（test_logic 568 + test_scenes 50 + test_outfit_unlock 71 + test_playthrough 111）
+  - 前回 708 → 800 で +92 件
+  - 全 10 ステージ × 全シーン で **3 択化達成**
+- exe 再ビルド: 179MB
+- コミット予定
+
 ## 2026-10-08 朝（続き: プラン 29 = stage5-10 全シーンの 3 択化 + 既存テスト修正）
 
 - plan29 着手: stage5-10 の全 36 シーンに「誤った選択肢」を 1 つずつ追加（合計 36 個）
@@ -24,7 +43,7 @@
   - 前回 552 → 708 で +156 件（plan29 144 + 既存テスト修正に伴う新規テスト）
 - exe 再ビルド: 179MB（変更なし、設定 JSON のみの更新のため）
 - README.md: テスト数 567 → 708 に更新
-- コミット予定
+- コミット: `622ced3 feat: プラン 29 — stage5-10 全シーンに 3 択目を追加、既存テスト修正`
 
 ## 2026-10-07 夜（自律作業: Claude → MiniMax 引き継ぎ直後、22時まで作業指示）
 

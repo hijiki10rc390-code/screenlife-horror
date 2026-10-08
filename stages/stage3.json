@@ -232,6 +232,14 @@
             "belief": 0.04
           },
           "next_scene": "about_viewer"
+        },
+        {
+          "text": "スタンプだけでいいよ〜",
+          "chat": "スタンプだけでいいよ〜。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "about_viewer"
         }
       ]
     },
@@ -254,6 +262,14 @@
           "chat": "大丈夫？",
           "effect": {
             "belief": 0.05
+          },
+          "next_scene": "feel_anxious"
+        },
+        {
+          "text": "配信中はそういうのやめて〜",
+          "chat": "配信中はそういうのやめて〜。",
+          "effect": {
+            "belief": -0.03
           },
           "next_scene": "feel_anxious"
         }
@@ -280,6 +296,14 @@
             "belief": -0.02
           },
           "next_scene": "ending"
+        },
+        {
+          "text": "いや、ちらついてないよ",
+          "chat": "いや、ちらついてないよ。",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "ending"
         }
       ]
     },
@@ -302,6 +326,13 @@
           "effect": {
             "belief": 0.05
           }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
+          }
         }
       ]
     },
@@ -323,6 +354,13 @@
           "chat": "信じてる。必ず逃げて。",
           "effect": {
             "belief": 0.08
+          }
+        },
+        {
+          "text": "落ち着いて、もう少し。",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
           }
         }
       ]

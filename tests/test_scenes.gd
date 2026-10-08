@@ -54,7 +54,7 @@ func _initialize() -> void:
 	m._process(stage1_intro_at + 0.5)   # intro at + 0.5 秒
 	check("stage1: intro 到達で _waiting_choice == true", m._waiting_choice)
 	check("stage1: _current_scene.id は intro", m._current_scene.get("id", "") == "intro")
-	check("stage1: 選択肢ボタンが 2 個表示される", m._scene_btns.size() == 2)
+	check("stage1: 選択肢ボタンが 3 個表示される", m._scene_btns.size() == 3)
 	m.queue_free()
 
 	# 3. 選択肢を押すと _waiting_choice が降り、belief が変動する
