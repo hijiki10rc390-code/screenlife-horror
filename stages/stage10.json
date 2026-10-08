@@ -203,6 +203,14 @@
             "belief": 0.03
           },
           "next_scene": "warm_open"
+        },
+        {
+          "text": "...ごめん、後でね",
+          "chat": "...ごめん、後でね。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "warm_open"
         }
       ]
     },
@@ -227,6 +235,14 @@
             "belief": 0.04
           },
           "next_scene": "about_room"
+        },
+        {
+          "text": "気にしすぎね",
+          "chat": "気にしすぎね。",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "about_room"
         }
       ]
     },
@@ -247,6 +263,14 @@
         {
           "text": "気のせいじゃない？",
           "chat": "気のせいじゃない？",
+          "effect": {
+            "belief": -0.04
+          },
+          "next_scene": "trust_check"
+        },
+        {
+          "text": "病室、普通ね",
+          "chat": "病室、普通ね。",
           "effect": {
             "belief": -0.04
           },
@@ -275,6 +299,14 @@
             "belief": -0.03
           },
           "next_scene": "ending"
+        },
+        {
+          "text": "気のせいじゃない？",
+          "chat": "気のせいじゃない？",
+          "effect": {
+            "belief": -0.03
+          },
+          "next_scene": "ending"
         }
       ]
     },
@@ -297,6 +329,13 @@
           "effect": {
             "belief": 0.06
           }
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
+          }
         }
       ]
     },
@@ -318,6 +357,13 @@
           "chat": "信じてる。必ず逃げて。",
           "effect": {
             "belief": 0.08
+          }
+        },
+        {
+          "text": "落ち着いて",
+          "chat": "落ち着いて、もう少し。",
+          "effect": {
+            "belief": -0.02
           }
         }
       ]

@@ -594,7 +594,8 @@ func _initialize() -> void:
 		m = await fresh()
 		check("難易度%d: max_false_alarms（%d/%d/%d）" % [d, m.max_false_alarms, m.false_alarm_lock, m.fail_at],
 				m.max_false_alarms == [4, 2, 2][d])
-		check("難易度%d: false_alarm_lock" % d, m.false_alarm_lock == [3.0, 4.0, 5.0][d])
+		# プラン 28 で短くした: やさしい 3.0→1.5, ふつう 4.0→2.0, むずかしい 5.0→2.5
+		check("難易度%d: false_alarm_lock" % d, m.false_alarm_lock == [1.5, 2.0, 2.5][d])
 		# stage1 の fail_at は 180。倍率 1.10 / 0.95 / 0.85 → 198 / 171 / 153
 		var want_fail: float = [198.0, 171.0, 153.0][d]
 		check("難易度%d: fail_at" % d, absf(m.fail_at - want_fail) < 0.001)
@@ -1012,10 +1013,12 @@ func _initialize() -> void:
 
 	# 28. 計画06: 画面下のボタン表示
 	# stage1: 警告ボタン群（warn_btn/third_btn/fourth_btn）は非表示、act_btns は空
+	# プラン 24 で warn_btn の構築は削除済み（画面下のアクションボタン全撤去）。
+	# 未使用なので null でも OK とみなす
 	S.stage_no = 0
 	m = await fresh()
 	m._start_call()
-	check("stage1・warn_btn は非表示", not m.warn_btn.visible)
+	check("stage1・warn_btn は null or 非表示", m.warn_btn == null or not m.warn_btn.visible)
 	check("stage1・act_btns は空", m.act_btns.is_empty())
 	m.queue_free()
 	S.stage_no = 0
@@ -1097,22 +1100,22 @@ func _initialize() -> void:
 	m.queue_free()
 	S.stage_no = 0
 
-	# stage2: act_btns は 3 つ、選択中のボタンは modulate が明るい
+	# stage2: プラン 24 で画面下のアクションボタンを撤去 → act_btns は空。
+	# 選択の内部状態は _select_phrase 経由で selected_phrase に反映される（後段で検証）
 	S.stage_no = 1
 	m = await fresh()
 	m._start_call()
-	check("stage2・act_btns の要素数 == 3", m.act_btns.size() == 3)
+	check("stage2・act_btns は空", m.act_btns.is_empty())
 	m._select_phrase(1)
-	check("stage2・選択ボタン modulate が他より明るい",
-		(m.act_btns[1] as Button).modulate.r > (m.act_btns[0] as Button).modulate.r)
+	check("stage2・_select_phrase(1) で selected_phrase == 1", m.selected_phrase == 1)
 	m.queue_free()
 	S.stage_no = 0
 
-	# stage3: act_btns は 3 つ
+	# stage3: 同上（プラン 24 でボタン撤去済み）
 	S.stage_no = 2
 	m = await fresh()
 	m._start_call()
-	check("stage3・act_btns の要素数 == 3", m.act_btns.size() == 3)
+	check("stage3・act_btns は空", m.act_btns.is_empty())
 	m.queue_free()
 	S.stage_no = 0
 
@@ -1244,6 +1247,21 @@ func _initialize() -> void:
 	check("plan16・設定保存: current_outfit が hoodie に切り替わった", m.current_outfit == "hoodie")
 	m.queue_free()
 	S.stage_no = 0
+
+	# プラン 29: stage5-10 の全シーンに 3 択目が追加されているか確認
+	# 各シーンの choices 配列サイズが 3 以上であることを確認
+	var plan29_stages = ["stage5", "stage6", "stage7", "stage8", "stage9", "stage10"]
+	for stage_id in plan29_stages:
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://stages/" + stage_id + ".json"))
+		var scenes: Array = data.get("scenes", [])
+		for scene in scenes:
+			var scene_id: String = scene.get("id", "?")
+			var choices: Array = scene.get("choices", [])
+			check("plan29・" + stage_id + "/" + scene_id + " の選択肢が 3 つ以上", choices.size() >= 3)
+			# 各選択肢が effect.belief を持つことを確認
+			for choice in choices:
+				check("plan29・" + stage_id + "/" + scene_id + " の選択肢が effect.belief を持つ",
+					choice.has("effect") and choice["effect"].has("belief"))
 
 	quit(1 if fails > 0 else 0)
 

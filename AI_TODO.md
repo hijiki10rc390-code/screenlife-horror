@@ -6,6 +6,26 @@
 - 着手日: 2026-10-04
 - 直近の目標: 縦の1本（通話1回・約2分・相手1人）を「怖い」と言える品質にする
 
+## 2026-10-08 朝（続き: プラン 29 = stage5-10 全シーンの 3 択化 + 既存テスト修正）
+
+- plan29 着手: stage5-10 の全 36 シーンに「誤った選択肢」を 1 つずつ追加（合計 36 個）
+  - hello / warm_open / about_room / trust_check / ending / urgent_warning の 6 シーン × 6 ステージ分
+  - 信念値は誤選択肢 -0.02 ～ -0.04、emergency (urgent_warning) は両方正解のため 3 択目は「落ち着いて、もう少し」(-0.02)
+  - キャラの口調は docs/character-bible.md に準拠（美咲「〜かしら」、結衣「〜！/〜だよね」、千夏「ふふ」、海「ありがと」、蒼「おつかれ」、凛「〜ね」）
+  - next_scene は既存 2 択と同じ遷移先を指定
+- test_logic.gd に 144 件のプラン 29 検証テストを追加（6 ステージ × 6 シーン × (選択肢数 + 信念値キー 3 件) = 144）
+- **既存の壊れていたテストを 2 件修正**:
+  - line 1018: `not m.warn_btn.visible` → `m.warn_btn == null or not m.warn_btn.visible`（プラン 24 で warn_btn が null になっていた）
+  - line 597: `false_alarm_lock == [3.0, 4.0, 5.0][d]` → `[1.5, 2.0, 2.5][d]`（プラン 28 でロック時間を短縮したのにテストが追従していなかった）
+  - line 1106: `act_btns.size() == 3` → `act_btns.is_empty()`（プラン 24 で画面下のボタンを撤去済み）
+  - line 1108-1109: `act_btns[1].modulate.r` 比較 → `selected_phrase == 1`（ボタン UI 廃止のため内部状態検証に置換）
+  - line 1117: 同上（stage3）
+- テスト合計: **708 OK / 0 NG**（test_logic 476 + test_scenes 50 + test_outfit_unlock 71 + test_playthrough 111）
+  - 前回 552 → 708 で +156 件（plan29 144 + 既存テスト修正に伴う新規テスト）
+- exe 再ビルド: 179MB（変更なし、設定 JSON のみの更新のため）
+- README.md: テスト数 567 → 708 に更新
+- コミット予定
+
 ## 2026-10-07 夜（自律作業: Claude → MiniMax 引き継ぎ直後、22時まで作業指示）
 
 - タイトル画面のステージ選択ボタンを 5×2 グリッドに変更（reached >= 5 で画面外にはみ出ていたバグ修正）
